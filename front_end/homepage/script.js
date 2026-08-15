@@ -23,3 +23,13 @@ async function getUserDetails() {
   }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  // Highlight active nav item on click
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      navItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+});

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leo Social — Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-name">Leo Social</span>
+    </div>
+
+    <nav class="nav">
+      <ul>
+        <li class="nav-item active">
+          <span class="nav-icon">▦</span> Dashboard
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">🗂</span> Campaign
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">🕒</span> Instagram
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">🔗</span> Whatsapp
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">👤</span> Gmail
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">🧾</span> Create
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">⚙</span>Settings
+        </li>
+        <li class="nav-item">
+          <span class="nav-icon">⚙</span>Log-out
+        </li>
+      </ul>
+    </nav>
+
+    <button class="support-btn">🛟 Support</button>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <header class="topbar">
+      <h1>Dashboard</h1>
+      <div class="topbar-right">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search...">
+        </div>
+        <button class="icon-btn" aria-label="Notifications">🔔</button>
+        <div class="avatar"></div>
+      </div>
+    </header>
+
+    <section class="overview">
+      <div class="overview-header">
+        <h2>Overview</h2>
+        <select class="range-select">
+          <option>Last 30 days</option>
+          <option>Last 7 days</option>
+          <option>Last 90 days</option>
+        </select>
+      </div>
+
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-top">
+            <span class="stat-icon">📊</span>
+            <span class="stat-badge up">↗ 12%</span>
+          </div>
+          <div class="stat-label">Total revenue</div>
+          <div class="stat-value">$53,900</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <span class="stat-icon">💼</span>
+            <span class="stat-badge down">↘ 10%</span>
+          </div>
+          <div class="stat-label">Projects</div>
+          <div class="stat-value">95 <span class="stat-sub">/100</span></div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <span class="stat-icon">🕒</span>
+            <span class="stat-badge up">↗ 8%</span>
+          </div>
+          <div class="stat-label">Time spent</div>
+          <div class="stat-value">1022 <span class="stat-sub">/1300 Hrs</span></div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <span class="stat-icon">👤</span>
+            <span class="stat-badge up">↗ 2%</span>
+          </div>
+          <div class="stat-label">Time spent</div>
+          <div class="stat-value">101 <span class="stat-sub">/120</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bottom-grid">
+
+      <div class="panel project-summary">
+        <div class="panel-header">
+          <h2>Project summary</h2>
+          <div class="filters">
+            <select><option>Project</option></select>
+            <select><option>Status</option></select>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Due date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Nelsa web developement</td>
+              <td>25.0124</td>
+              <td><span class="status completed">Completed</span></td>
+            </tr>
+            <tr>
+              <td>Datascale AI app</td>
+              <td>25.0124</td>
+              <td><span class="status delayed">Delayed</span></td>
+            </tr>
+            <tr>
+              <td>Media channel branding</td>
+              <td>25.0124</td>
+              <td><span class="status at-risk">At risk</span></td>
+            </tr>
+            <tr>
+              <td>Corlax iOS app devlopement</td>
+              <td>25.0124</td>
+              <td><span class="status completed">Completed</span></td>
+            </tr>
+            <tr>
+              <td>Website builder development</td>
+              <td>25.0124</td>
+              <td><span class="status ongoing">On going</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel overall-progress">
+        <div class="panel-header">
+          <h2>Overall Progress</h2>
+          <select><option>All</option></select>
+        </div>
+
+        <div class="bar-chart">
+          <div class="bar-col">
+            <div class="bar-track"><div class="bar-fill" style="height:65%; background:#f97316;"></div></div>
+            <div class="bar-pct">65%</div>
+            <div class="bar-label">Completed</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-track"><div class="bar-fill" style="height:87%; background:#fb923c;"></div></div>
+            <div class="bar-pct">87%</div>
+            <div class="bar-label">On going</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-track"><div class="bar-fill" style="height:20%; background:#fdba74;"></div></div>
+            <div class="bar-pct">20%</div>
+            <div class="bar-label">At risk</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-track"><div class="bar-fill" style="height:25%; background:#fed7aa;"></div></div>
+            <div class="bar-pct">25%</div>
+            <div class="bar-label">Delayed</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
