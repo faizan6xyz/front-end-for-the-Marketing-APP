@@ -18,29 +18,29 @@
 
     <nav class="nav">
       <ul>
-        <li class="nav-item active">
+        <li class="nav-item active" data-target="dashboard">
           <span class="nav-icon">▦</span> Dashboard
         </li>
-        <li class="nav-item">
+        <li class="nav-item" data-target="campaign">
           <span class="nav-icon">🗂</span> Campaign
         </li>
-        <li class="nav-item">
+        <li class="nav-item" data-target="instagram">
           <span class="nav-icon">🕒</span> Instagram
         </li>
-        <li class="nav-item">
+        <li class="nav-item" data-target="whatsapp">
           <span class="nav-icon">🔗</span> Whatsapp
         </li>
-        <li class="nav-item">
+        <li class="nav-item" data-target="gmail">
           <span class="nav-icon">👤</span> Gmail
         </li>
-        <li class="nav-item">
+        <li class="nav-item" data-target="create">
           <span class="nav-icon">🧾</span> Create
         </li>
-        <li class="nav-item">
-          <span class="nav-icon">⚙</span>Settings
+        <li class="nav-item" data-target="settings">
+          <span class="nav-icon">⚙</span> Settings
         </li>
-        <li class="nav-item">
-          <span class="nav-icon">⚙</span>Log-out
+        <li class="nav-item" data-target="logout">
+          <span class="nav-icon">⏻</span> Log-out
         </li>
       </ul>
     </nav>
@@ -52,7 +52,7 @@
   <main class="main">
 
     <header class="topbar">
-      <h1>Dashboard</h1>
+      <h1 id="page-title">Dashboard</h1>
       <div class="topbar-right">
         <div class="search-box">
           <span class="search-icon">🔍</span>
@@ -63,134 +63,509 @@
       </div>
     </header>
 
-    <section class="overview">
-      <div class="overview-header">
-        <h2>Overview</h2>
-        <select class="range-select">
-          <option>Last 30 days</option>
-          <option>Last 7 days</option>
-          <option>Last 90 days</option>
-        </select>
-      </div>
+    <!-- ============ DASHBOARD ============ -->
+    <section class="page active" id="page-dashboard">
 
-      <div class="stat-cards">
-        <div class="stat-card">
-          <div class="stat-top">
-            <span class="stat-icon">📊</span>
-            <span class="stat-badge up">↗ 12%</span>
-          </div>
-          <div class="stat-label">Total revenue</div>
-          <div class="stat-value">$53,900</div>
+      <section class="overview">
+        <div class="overview-header">
+          <h2>Overview</h2>
+          <select class="range-select">
+            <option>Last 30 days</option>
+            <option>Last 7 days</option>
+            <option>Last 90 days</option>
+          </select>
         </div>
 
-        <div class="stat-card">
-          <div class="stat-top">
-            <span class="stat-icon">💼</span>
-            <span class="stat-badge down">↘ 10%</span>
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon">📊</span>
+              <span class="stat-badge up">↗ 12%</span>
+            </div>
+            <div class="stat-label">Total revenue</div>
+            <div class="stat-value">$53,900</div>
           </div>
-          <div class="stat-label">Projects</div>
-          <div class="stat-value">95 <span class="stat-sub">/100</span></div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon">💼</span>
+              <span class="stat-badge down">↘ 10%</span>
+            </div>
+            <div class="stat-label">Projects</div>
+            <div class="stat-value">95 <span class="stat-sub">/100</span></div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon">🕒</span>
+              <span class="stat-badge up">↗ 8%</span>
+            </div>
+            <div class="stat-label">Time spent</div>
+            <div class="stat-value">1022 <span class="stat-sub">/1300 Hrs</span></div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon">👤</span>
+              <span class="stat-badge up">↗ 2%</span>
+            </div>
+            <div class="stat-label">Time spent</div>
+            <div class="stat-value">101 <span class="stat-sub">/120</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bottom-grid">
+
+        <div class="panel project-summary">
+          <div class="panel-header">
+            <h2>Project summary</h2>
+            <div class="filters">
+              <select><option>Project</option></select>
+              <select><option>Status</option></select>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Due date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Nelsa web developement</td>
+                <td>25.0124</td>
+                <td><span class="status completed">Completed</span></td>
+              </tr>
+              <tr>
+                <td>Datascale AI app</td>
+                <td>25.0124</td>
+                <td><span class="status delayed">Delayed</span></td>
+              </tr>
+              <tr>
+                <td>Media channel branding</td>
+                <td>25.0124</td>
+                <td><span class="status at-risk">At risk</span></td>
+              </tr>
+              <tr>
+                <td>Corlax iOS app devlopement</td>
+                <td>25.0124</td>
+                <td><span class="status completed">Completed</span></td>
+              </tr>
+              <tr>
+                <td>Website builder development</td>
+                <td>25.0124</td>
+                <td><span class="status ongoing">On going</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <div class="stat-card">
-          <div class="stat-top">
-            <span class="stat-icon">🕒</span>
-            <span class="stat-badge up">↗ 8%</span>
+        <div class="panel overall-progress">
+          <div class="panel-header">
+            <h2>Overall Progress</h2>
+            <select><option>All</option></select>
           </div>
-          <div class="stat-label">Time spent</div>
-          <div class="stat-value">1022 <span class="stat-sub">/1300 Hrs</span></div>
+
+          <div class="bar-chart">
+            <div class="bar-col">
+              <div class="bar-track"><div class="bar-fill" style="height:65%; background:#f97316;"></div></div>
+              <div class="bar-pct">65%</div>
+              <div class="bar-label">Completed</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-track"><div class="bar-fill" style="height:87%; background:#fb923c;"></div></div>
+              <div class="bar-pct">87%</div>
+              <div class="bar-label">On going</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-track"><div class="bar-fill" style="height:20%; background:#fdba74;"></div></div>
+              <div class="bar-pct">20%</div>
+              <div class="bar-label">At risk</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-track"><div class="bar-fill" style="height:25%; background:#fed7aa;"></div></div>
+              <div class="bar-pct">25%</div>
+              <div class="bar-label">Delayed</div>
+            </div>
+          </div>
         </div>
 
-        <div class="stat-card">
-          <div class="stat-top">
-            <span class="stat-icon">👤</span>
-            <span class="stat-badge up">↗ 2%</span>
-          </div>
-          <div class="stat-label">Time spent</div>
-          <div class="stat-value">101 <span class="stat-sub">/120</span></div>
-        </div>
-      </div>
+      </section>
     </section>
 
-    <section class="bottom-grid">
+    <!-- ============ CAMPAIGN ============ -->
+    <section class="page" id="page-campaign">
+      <section class="overview">
+        <div class="overview-header">
+          <h2>Active campaigns</h2>
+          <button class="primary-btn">+ New campaign</button>
+        </div>
 
-      <div class="panel project-summary">
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">🚀</span><span class="stat-badge up">↗ 5%</span></div>
+            <div class="stat-label">Running</div>
+            <div class="stat-value">6</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">🎯</span><span class="stat-badge up">↗ 18%</span></div>
+            <div class="stat-label">Avg. conversion</div>
+            <div class="stat-value">4.2%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">💰</span><span class="stat-badge down">↘ 3%</span></div>
+            <div class="stat-label">Spend this month</div>
+            <div class="stat-value">$8,210</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="panel">
         <div class="panel-header">
-          <h2>Project summary</h2>
+          <h2>Campaign list</h2>
           <div class="filters">
-            <select><option>Project</option></select>
+            <select><option>Channel</option></select>
             <select><option>Status</option></select>
           </div>
         </div>
-
         <table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Due date</th>
+              <th>Campaign</th>
+              <th>Channel</th>
+              <th>Reach</th>
+              <th>Conversion</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Nelsa web developement</td>
-              <td>25.0124</td>
+              <td>Autumn drop teaser</td>
+              <td>Instagram</td>
+              <td>32.1k</td>
+              <td>3.8%</td>
+              <td><span class="status ongoing">On going</span></td>
+            </tr>
+            <tr>
+              <td>Order follow-up series</td>
+              <td>WhatsApp</td>
+              <td>9.4k</td>
+              <td>6.1%</td>
               <td><span class="status completed">Completed</span></td>
             </tr>
             <tr>
-              <td>Datascale AI app</td>
-              <td>25.0124</td>
-              <td><span class="status delayed">Delayed</span></td>
-            </tr>
-            <tr>
-              <td>Media channel branding</td>
-              <td>25.0124</td>
+              <td>Re-engagement blast</td>
+              <td>Gmail</td>
+              <td>14.7k</td>
+              <td>2.4%</td>
               <td><span class="status at-risk">At risk</span></td>
             </tr>
             <tr>
-              <td>Corlax iOS app devlopement</td>
-              <td>25.0124</td>
-              <td><span class="status completed">Completed</span></td>
-            </tr>
-            <tr>
-              <td>Website builder development</td>
-              <td>25.0124</td>
+              <td>Product launch reel</td>
+              <td>Instagram</td>
+              <td>41.0k</td>
+              <td>5.0%</td>
               <td><span class="status ongoing">On going</span></td>
             </tr>
           </tbody>
         </table>
       </div>
+    </section>
 
-      <div class="panel overall-progress">
-        <div class="panel-header">
-          <h2>Overall Progress</h2>
-          <select><option>All</option></select>
+    <!-- ============ INSTAGRAM ============ -->
+    <section class="page" id="page-instagram">
+      <section class="overview">
+        <div class="overview-header">
+          <h2>Instagram overview</h2>
+          <select class="range-select">
+            <option>Last 30 days</option>
+            <option>Last 7 days</option>
+          </select>
+        </div>
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">💬</span><span class="stat-badge up">↗ 14%</span></div>
+            <div class="stat-label">DMs received</div>
+            <div class="stat-value">1,284</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">❤️</span><span class="stat-badge up">↗ 9%</span></div>
+            <div class="stat-label">Engagement rate</div>
+            <div class="stat-value">6.7%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">👥</span><span class="stat-badge up">↗ 3%</span></div>
+            <div class="stat-label">Followers</div>
+            <div class="stat-value">18.9k</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="bottom-grid">
+        <div class="panel project-summary">
+          <div class="panel-header">
+            <h2>Recent conversations</h2>
+            <div class="filters"><select><option>Unread</option></select></div>
+          </div>
+          <ul class="message-list">
+            <li class="message-item">
+              <div class="avatar-sm"></div>
+              <div class="message-body">
+                <div class="message-top"><span class="message-name">@studio.mira</span><span class="message-time">2m</span></div>
+                <div class="message-preview">Is the sand-beige colourway back in stock?</div>
+              </div>
+              <span class="dot unread"></span>
+            </li>
+            <li class="message-item">
+              <div class="avatar-sm"></div>
+              <div class="message-body">
+                <div class="message-top"><span class="message-name">@rohan.codes</span><span class="message-time">18m</span></div>
+                <div class="message-preview">Thanks for the quick reply, order placed!</div>
+              </div>
+            </li>
+            <li class="message-item">
+              <div class="avatar-sm"></div>
+              <div class="message-body">
+                <div class="message-top"><span class="message-name">@fern_and_co</span><span class="message-time">1h</span></div>
+                <div class="message-preview">Can I get a bulk pricing sheet?</div>
+              </div>
+              <span class="dot unread"></span>
+            </li>
+          </ul>
         </div>
 
-        <div class="bar-chart">
-          <div class="bar-col">
-            <div class="bar-track"><div class="bar-fill" style="height:65%; background:#f97316;"></div></div>
-            <div class="bar-pct">65%</div>
-            <div class="bar-label">Completed</div>
-          </div>
-          <div class="bar-col">
-            <div class="bar-track"><div class="bar-fill" style="height:87%; background:#fb923c;"></div></div>
-            <div class="bar-pct">87%</div>
-            <div class="bar-label">On going</div>
-          </div>
-          <div class="bar-col">
-            <div class="bar-track"><div class="bar-fill" style="height:20%; background:#fdba74;"></div></div>
-            <div class="bar-pct">20%</div>
-            <div class="bar-label">At risk</div>
-          </div>
-          <div class="bar-col">
-            <div class="bar-track"><div class="bar-fill" style="height:25%; background:#fed7aa;"></div></div>
-            <div class="bar-pct">25%</div>
-            <div class="bar-label">Delayed</div>
+        <div class="panel overall-progress">
+          <div class="panel-header"><h2>Comments vs DMs</h2></div>
+          <div class="bar-chart">
+            <div class="bar-col">
+              <div class="bar-track"><div class="bar-fill" style="height:72%; background:#f97316;"></div></div>
+              <div class="bar-pct">72%</div>
+              <div class="bar-label">Comments</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-track"><div class="bar-fill" style="height:48%; background:#fb923c;"></div></div>
+              <div class="bar-pct">48%</div>
+              <div class="bar-label">DMs</div>
+            </div>
           </div>
         </div>
       </div>
+    </section>
 
+    <!-- ============ WHATSAPP ============ -->
+    <section class="page" id="page-whatsapp">
+      <section class="overview">
+        <div class="overview-header">
+          <h2>WhatsApp overview</h2>
+          <select class="range-select">
+            <option>Last 30 days</option>
+            <option>Last 7 days</option>
+          </select>
+        </div>
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">📩</span><span class="stat-badge up">↗ 22%</span></div>
+            <div class="stat-label">Messages received</div>
+            <div class="stat-value">3,051</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">✅</span><span class="stat-badge up">↗ 6%</span></div>
+            <div class="stat-label">Conversion rate</div>
+            <div class="stat-value">11.3%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">⏱</span><span class="stat-badge down">↘ 15%</span></div>
+            <div class="stat-label">Avg. response time</div>
+            <div class="stat-value">4m 20s</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Webhook event log</h2>
+          <div class="filters"><select><option>All events</option></select></div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Contact</th>
+              <th>Received</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>message</td>
+              <td>+91 98xxxxxx21</td>
+              <td>2m ago</td>
+              <td><span class="status completed">Delivered</span></td>
+            </tr>
+            <tr>
+              <td>message_status</td>
+              <td>+91 90xxxxxx08</td>
+              <td>7m ago</td>
+              <td><span class="status completed">Read</span></td>
+            </tr>
+            <tr>
+              <td>message</td>
+              <td>+91 88xxxxxx77</td>
+              <td>21m ago</td>
+              <td><span class="status at-risk">Failed</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ GMAIL ============ -->
+    <section class="page" id="page-gmail">
+      <section class="overview">
+        <div class="overview-header">
+          <h2>Gmail overview</h2>
+          <select class="range-select">
+            <option>Last 30 days</option>
+            <option>Last 7 days</option>
+          </select>
+        </div>
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">📥</span><span class="stat-badge up">↗ 4%</span></div>
+            <div class="stat-label">Inbound emails</div>
+            <div class="stat-value">742</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">📤</span><span class="stat-badge up">↗ 11%</span></div>
+            <div class="stat-label">Open rate</div>
+            <div class="stat-value">38.4%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">🖱</span><span class="stat-badge down">↘ 2%</span></div>
+            <div class="stat-label">Click rate</div>
+            <div class="stat-value">5.9%</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="panel project-summary">
+        <div class="panel-header">
+          <h2>Inbox</h2>
+          <div class="filters"><select><option>Primary</option></select></div>
+        </div>
+        <ul class="message-list">
+          <li class="message-item">
+            <div class="avatar-sm"></div>
+            <div class="message-body">
+              <div class="message-top"><span class="message-name">Priya Nair</span><span class="message-time">9:14 AM</span></div>
+              <div class="message-preview">Re: Invoice for August — could you resend the PDF?</div>
+            </div>
+            <span class="dot unread"></span>
+          </li>
+          <li class="message-item">
+            <div class="avatar-sm"></div>
+            <div class="message-body">
+              <div class="message-top"><span class="message-name">Vendor Support</span><span class="message-time">Yesterday</span></div>
+              <div class="message-preview">Your ticket #4521 has been resolved</div>
+            </div>
+          </li>
+          <li class="message-item">
+            <div class="avatar-sm"></div>
+            <div class="message-body">
+              <div class="message-top"><span class="message-name">Aman Gupta</span><span class="message-time">Yesterday</span></div>
+              <div class="message-preview">Following up on the partnership proposal</div>
+            </div>
+            <span class="dot unread"></span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ CREATE ============ -->
+    <section class="page" id="page-create">
+      <div class="panel form-panel">
+        <div class="panel-header">
+          <h2>Create a new post</h2>
+        </div>
+        <form class="create-form" onsubmit="return false;">
+          <label class="form-field">
+            <span>Title</span>
+            <input type="text" placeholder="Give your post a name">
+          </label>
+          <label class="form-field">
+            <span>Channel</span>
+            <select>
+              <option>Instagram</option>
+              <option>WhatsApp</option>
+              <option>Gmail</option>
+            </select>
+          </label>
+          <label class="form-field">
+            <span>Message</span>
+            <textarea rows="5" placeholder="Write your content here..."></textarea>
+          </label>
+          <label class="form-field">
+            <span>Schedule</span>
+            <input type="datetime-local">
+          </label>
+          <div class="form-actions">
+            <button type="button" class="ghost-btn">Save draft</button>
+            <button type="button" class="primary-btn">Publish</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============ SETTINGS ============ -->
+    <section class="page" id="page-settings">
+      <div class="panel">
+        <div class="panel-header"><h2>Connected accounts</h2></div>
+        <ul class="settings-list">
+          <li class="settings-row">
+            <div class="settings-info"><span class="settings-icon">🕒</span><span>Instagram</span></div>
+            <span class="status completed">Connected</span>
+          </li>
+          <li class="settings-row">
+            <div class="settings-info"><span class="settings-icon">🔗</span><span>WhatsApp</span></div>
+            <span class="status completed">Connected</span>
+          </li>
+          <li class="settings-row">
+            <div class="settings-info"><span class="settings-icon">👤</span><span>Gmail</span></div>
+            <span class="status at-risk">Not connected</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Account</h2></div>
+        <form class="create-form" onsubmit="return false;">
+          <label class="form-field">
+            <span>Display name</span>
+            <input type="text" value="Leo Social Admin">
+          </label>
+          <label class="form-field">
+            <span>Email</span>
+            <input type="email" value="admin@leosocial.app">
+          </label>
+          <div class="form-actions">
+            <button type="button" class="primary-btn">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============ LOGOUT ============ -->
+    <section class="page" id="page-logout">
+      <div class="panel logout-panel">
+        <div class="logout-icon">⏻</div>
+        <h2>You've been logged out</h2>
+        <p>Come back any time — your dashboard will be right where you left it.</p>
+        <button class="primary-btn" id="relogin-btn">Log back in</button>
+      </div>
     </section>
 
   </main>
