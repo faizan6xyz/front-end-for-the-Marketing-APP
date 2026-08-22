@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #161922;
+    --panel-alt: #1c202b;
+    --border: #262b38;
+    --text: #e7e9ee;
+    --text-dim: #8b91a3;
+    --accent: #4f8cff;
+    --accent-dim: #294a85;
+    --success: #35c98f;
+    --warn: #f2a93c;
+    --danger: #ef5a5a;
+    --radius: 10px;
+    --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar {
+    width: 230px;
+    flex-shrink: 0;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+  }
+
+  .sidebar-header {
+    padding: 0 20px 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .sidebar-header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .sidebar-header span {
+    display: block;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .nav-group {
+    padding: 0 12px;
+  }
+
+  .nav-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    padding: 14px 8px 6px 8px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 13.5px;
+    transition: background 0.15s ease, color 0.15s ease;
+    user-select: none;
+  }
+
+  .nav-item:hover {
+    background: var(--panel-alt);
+    color: var(--text);
+  }
+
+  .nav-item.active {
+    background: var(--accent-dim);
+    color: #cfe0ff;
+  }
+
+  .nav-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .nav-item.active .nav-dot { background: var(--accent); }
+
+  /* ---------- Main ---------- */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .topbar-title h2 {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .topbar-title p {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  select, button {
+    background: var(--panel-alt);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  select:focus, button:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 500;
+  }
+
+  button.primary:hover { background: #3d78e8; }
+  button:hover { background: #232838; }
+
+  .content {
+    flex: 1;
+    padding: 24px 28px;
+    overflow-y: auto;
+  }
+
+  .status-bar {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-dim);
+    padding: 10px 14px;
+    background: var(--panel-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 18px;
+  }
+
+  .status-bar.visible { display: flex; }
+  .status-bar.error { color: var(--danger); border-color: #4a2a2a; }
+
+  .spinner {
+    width: 13px;
+    height: 13px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .kpi-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+
+  .kpi-card .label {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .kpi-card .value {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .kpi-card .delta {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .delta.up { color: var(--success); }
+  .delta.down { color: var(--danger); }
+
+  .chart-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 900px) {
+    .chart-grid { grid-template-columns: 1fr; }
+    body { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 12px; }
+    .sidebar-header { display: none; }
+    .nav-group { display: flex; padding: 0; gap: 6px; }
+    .nav-label { display: none; }
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+
+  .panel h3 {
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+
+  .panel canvas { max-height: 300px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+  }
+
+  .empty-state h3 { color: var(--text); margin-bottom: 6px; font-size: 15px; }
+  .empty-state p { font-size: 13px; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #2a2f3d; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h1>MessageFlow</h1>
+    <span>Analytics</span>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Channels</div>
+    <div class="nav-item active" data-source="instagram">
+      <span class="nav-dot"></span> Instagram
+    </div>
+    <div class="nav-item" data-source="gmail">
+      <span class="nav-dot"></span> Gmail
+    </div>
+    <div class="nav-item" data-source="whatsapp">
+      <span class="nav-dot"></span> WhatsApp
+    </div>
+    <div class="nav-label">Revenue</div>
+    <div class="nav-item" data-source="payments">
+      <span class="nav-dot"></span> Payments
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">
+      <h2 id="pageTitle">Instagram</h2>
+      <p id="pageSubtitle">Engagement and growth over time</p>
+    </div>
+    <div class="controls">
+      <select id="rangeFilter">
+        <option value="7d">Last 7 days</option>
+        <option value="30d" selected>Last 30 days</option>
+        <option value="90d">Last 90 days</option>
+        <option value="all">All time</option>
+      </select>
+      <select id="metricFilter">
+        <option value="all">All metrics</option>
+        <option value="growth">Growth only</option>
+        <option value="engagement">Engagement only</option>
+      </select>
+      <button class="primary" id="refreshBtn">Refresh</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="status-bar" id="statusBar">
+      <span class="spinner"></span>
+      <span id="statusText">Loading data…</span>
+    </div>
+
+    <div class="kpi-row" id="kpiRow"></div>
+
+    <div class="chart-grid">
+      <div class="panel">
+        <h3 id="mainChartTitle">Trend over time</h3>
+        <canvas id="mainChart"></canvas>
+      </div>
+      <div class="panel">
+        <h3 id="sideChartTitle">Breakdown</h3>
+        <canvas id="sideChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — point this at your Flask backend.
+   Each source maps to an endpoint. Adjust paths/params to match
+   your actual routes (e.g. Blueprint prefixes like /api/instagram/analytics).
+   ============================================================ */
+const API_BASE = "https://your-backend.example.com"; // <-- change me
+
+const SOURCES = {
+  instagram: {
+    label: "Instagram",
+    subtitle: "Engagement and growth over time",
+    endpoint: "/api/instagram/analytics"
+  },
+  gmail: {
+    label: "Gmail",
+    subtitle: "Campaign sends, opens and bounces",
+    endpoint: "/api/gmail/analytics"
+  },
+  whatsapp: {
+    label: "WhatsApp",
+    subtitle: "Message delivery and response rates",
+    endpoint: "/api/whatsapp/analytics"
+  },
+  payments: {
+    label: "Payments",
+    subtitle: "Revenue and transaction volume",
+    endpoint: "/api/payments/analytics"
+  }
+};
+
+let mainChart = null;
+let sideChart = null;
+let currentSource = "instagram";
+
+const els = {
+  navItems: document.querySelectorAll(".nav-item"),
+  pageTitle: document.getElementById("pageTitle"),
+  pageSubtitle: document.getElementById("pageSubtitle"),
+  rangeFilter: document.getElementById("rangeFilter"),
+  metricFilter: document.getElementById("metricFilter"),
+  refreshBtn: document.getElementById("refreshBtn"),
+  statusBar: document.getElementById("statusBar"),
+  statusText: document.getElementById("statusText"),
+  kpiRow: document.getElementById("kpiRow"),
+  mainChartTitle: document.getElementById("mainChartTitle"),
+  sideChartTitle: document.getElementById("sideChartTitle"),
+};
+
+/* ---------- Sidebar click handling ---------- */
+els.navItems.forEach(item => {
+  item.addEventListener("click", () => {
+    els.navItems.forEach(i => i.classList.remove("active"));
+    item.classList.add("active");
+    currentSource = item.dataset.source;
+    const meta = SOURCES[currentSource];
+    els.pageTitle.textContent = meta.label;
+    els.pageSubtitle.textContent = meta.subtitle;
+    loadData();
+  });
+});
+
+els.refreshBtn.addEventListener("click", loadData);
+els.rangeFilter.addEventListener("change", loadData);
+els.metricFilter.addEventListener("change", loadData);
+
+/* ---------- Status helpers ---------- */
+function setStatus(mode, text) {
+  els.statusBar.classList.remove("visible", "error");
+  if (mode === "loading") {
+    els.statusBar.classList.add("visible");
+    els.statusText.textContent = text || "Loading data…";
+  } else if (mode === "error") {
+    els.statusBar.classList.add("visible", "error");
+    els.statusText.textContent = text || "Something went wrong.";
+  }
+  // mode === "idle" leaves it hidden
+}
+
+/* ---------- Fetch + parse ---------- */
+async function fetchData(source, range, metric) {
+  const meta = SOURCES[source];
+  const url = new URL(API_BASE + meta.endpoint);
+  url.searchParams.set("range", range);
+  url.searchParams.set("metric", metric);
+
+  const res = await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+      // "Authorization": `Bearer ${yourToken}`  // add if your routes are JWT-protected
+    },
+    credentials: "include" // if you're using httpOnly cookie auth
+  });
+
+  if (!res.ok) {
+    throw new Error(`Request failed (${res.status}): ${res.statusText}`);
+  }
+  return res.json();
+}
+
+/* ---------- Mock fallback so the page is demoable without a backend ---------- */
+function mockData(range) {
+  const points = range === "7d" ? 7 : range === "90d" ? 90 : 30;
+  const labels = Array.from({ length: points }, (_, i) => `Day ${i + 1}`);
+  const series = (base, spread) =>
+    labels.map(() => Math.max(0, Math.round(base + (Math.random() - 0.5) * spread)));
+
+  return {
+    kpis: [
+      { label: "Total Reach", value: "48.2K", delta: "+12.4%", direction: "up" },
+      { label: "Engagement Rate", value: "6.8%", delta: "+1.1%", direction: "up" },
+      { label: "New Followers", value: "1,204", delta: "-3.2%", direction: "down" },
+      { label: "Posts", value: "18", delta: "+2", direction: "up" }
+    ],
+    trend: {
+      labels,
+      datasets: [
+        { name: "Engagement", data: series(120, 60) },
+        { name: "Growth", data: series(60, 30) }
+      ]
+    },
+    breakdown: {
+      labels: ["Likes", "Comments", "Shares", "Saves"],
+      data: [420, 180, 95, 140]
+    }
+  };
+}
+
+/* ---------- Render ---------- */
+function renderKpis(kpis) {
+  els.kpiRow.innerHTML = kpis.map(k => `
+    <div class="kpi-card">
+      <div class="label">${escapeHtml(k.label)}</div>
+      <div class="value">${escapeHtml(k.value)}</div>
+      <div class="delta ${k.direction === 'up' ? 'up' : 'down'}">${escapeHtml(k.delta)}</div>
+    </div>
+  `).join("");
+}
+
+function renderCharts(trend, breakdown) {
+  const ctxMain = document.getElementById("mainChart");
+  const ctxSide = document.getElementById("sideChart");
+
+  if (mainChart) mainChart.destroy();
+  if (sideChart) sideChart.destroy();
+
+  const palette = ["#4f8cff", "#35c98f", "#f2a93c", "#ef5a5a"];
+
+  mainChart = new Chart(ctxMain, {
+    type: "line",
+    data: {
+      labels: trend.labels,
+      datasets: trend.datasets.map((d, i) => ({
+        label: d.name,
+        data: d.data,
+        borderColor: palette[i % palette.length],
+        backgroundColor: palette[i % palette.length] + "22",
+        tension: 0.3,
+        fill: true,
+        pointRadius: 0,
+        borderWidth: 2
+      }))
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: "#8b91a3" } }
+      },
+      scales: {
+        x: { ticks: { color: "#8b91a3", maxTicksLimit: 8 }, grid: { color: "#1e2230" } },
+        y: { ticks: { color: "#8b91a3" }, grid: { color: "#1e2230" } }
+      }
+    }
+  });
+
+  sideChart = new Chart(ctxSide, {
+    type: "doughnut",
+    data: {
+      labels: breakdown.labels,
+      datasets: [{
+        data: breakdown.data,
+        backgroundColor: palette,
+        borderColor: "#161922",
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "bottom", labels: { color: "#8b91a3" } }
+      }
+    }
+  });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
+/* ---------- Main load flow ---------- */
+async function loadData() {
+  const range = els.rangeFilter.value;
+  const metric = els.metricFilter.value;
+
+  setStatus("loading", `Fetching ${SOURCES[currentSource].label} data…`);
+
+  try {
+    const data = await fetchData(currentSource, range, metric);
+    setStatus("idle");
+    renderKpis(data.kpis);
+    renderCharts(data.trend, data.breakdown);
+  } catch (err) {
+    console.warn("Live fetch failed, falling back to mock data:", err.message);
+    setStatus("error", `Couldn't reach backend (${err.message}). Showing sample data.`);
+    const data = mockData(range);
+    renderKpis(data.kpis);
+    renderCharts(data.trend, data.breakdown);
+  }
+}
+
+/* ---------- Init ---------- */
+loadData();
+</script>
+
+</body>
+</html>
