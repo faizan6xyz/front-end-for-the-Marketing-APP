@@ -144,9 +144,52 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 
-document.getElementById('hello_insta').textContent = 'Error loading users.';
+async function loadInstaPosts() {
+  const container = document.getElementById('hello_insta');
+  container.innerHTML = '<p>Loading posts…</p>';
 
+  try {
+    const res = await fetch('/api/instagram/media');
+    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+    const posts = await res.json();
+    container.innerHTML = '';
+    posts.forEach(post => {
+      const card = document.createElement('div');
+      card.className = 'insta-card';
 
+      const img = document.createElement('img');
+      img.src = post.thumbnail_url || post.media_url;
+      img.alt = post.caption ? post.caption.slice(0, 60) : 'Instagram post';
+      img.loading = 'lazy';
+
+      const body = document.createElement('div');
+      body.className = 'body';
+
+      const caption = document.createElement('p');
+      caption.className = 'caption';
+      caption.textContent = post.caption || '';
+
+      const stats = document.createElement('div');
+      stats.className = 'stats';
+      stats.innerHTML = `
+        <span><span class="label">♥</span> ${post.like_count ?? 0}</span>
+        <span><span class="label">💬</span> ${post.comments_count ?? 0}</span>
+      `;
+      body.appendChild(caption);
+      body.appendChild(stats);
+      card.appendChild(img);
+      card.appendChild(body);
+      container.appendChild(card);
+    });
+    if (posts.length === 0) {
+      container.innerHTML = '<p>No posts found.</p>';
+    }
+  } catch (err) {
+    container.innerHTML = `<p style="color:#c0392b;">Failed to load posts: ${err.message}</p>`;
+    console.error(err);
+  }
+}
+loadInstaPosts();
 
 
 
