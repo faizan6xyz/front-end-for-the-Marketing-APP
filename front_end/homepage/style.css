@@ -34,7 +34,7 @@ body {
 
 /* ===== Sidebar ===== */
 .sidebar {
-  width: 10vw;
+  width: 10%;
   flex-shrink: 0;
   background: var(--card);
   border-right: 1px solid var(--line);

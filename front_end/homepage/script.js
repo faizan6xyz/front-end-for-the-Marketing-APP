@@ -47,7 +47,7 @@ function showPage(target) {
 //         const data = await res.json();
 //         const posts = data.posts || [];
 //         container.innerHTML = '';
-//         if (posts.length === 0) {   container.innerHTML = '<p>No posts found.</p>';
+//         if (posts.length === 0) { container.innerHTML = '<p>No posts found.</p>';
 //             return; }
 //         posts.forEach(post => {
 //             const card = document.createElement('div');
@@ -65,20 +65,19 @@ function showPage(target) {
 //             stats.className = 'stats';
 //             stats.innerHTML = `
 //                 <span><span class="label">♥</span> ${post.like_count ?? 0}</span>
-//                 <span><span class="label">💬</span> ${post.comments_count ?? 0}</span>  `;
+//                 <span><span class="label">💬</span> ${post.comments_count ?? 0}</span>`;
 //             body.appendChild(caption);
 //             body.appendChild(stats);
 //             card.appendChild(img);
 //             card.appendChild(body);
-//             container.appendChild(card);});
-//     } catch (err) {
-//         container.innerHTML = `<p style="color:#c0392b;">Failed to load posts: ${err.message}</p>`;
-//         console.error(err);}}
+//             container.appendChild(card);    });}
+//     catch (err) { container.innerHTML = `<p style="color:#c0392b;">Failed to load posts: ${err.message}</p>`;
+//         console.error(err); } }
 
 // async function checkInstagramConnection() {
 //     const token = localStorage.getItem("authToken");
 //     const account_id = localStorage.getItem("account_id");
-//     if (!account_id) {  showInstagramConnectPrompt();
+//     if (!account_id) { showInstagramConnectPrompt(); 
 //         return false; }
 //     try {
 //         const params = new URLSearchParams({ token: token, account_id: account_id });
@@ -87,9 +86,9 @@ function showPage(target) {
 //             return false; }
 //         if (!response.ok) { console.error("Instagram check failed:", response.status);
 //             return false; }
-//         return response; }
+//         return response; } 
 //     catch (error) { console.error("Network error checking Instagram:", error);
-//         return false; }}
+//         return false; } }
 
 // function showInstagramConnectPrompt() {
 //     const container = document.getElementById("hello_insta");
@@ -99,8 +98,71 @@ function showPage(target) {
 //         <div class="ig-connect-box">
 //             <p>No Instagram account connected</p>
 //             <button id="ig-connect-btn">Connect Instagram</button>
-//         </div>   `;
-//     document.getElementById("ig-connect-btn").addEventListener("click", () => {   window.location.href = "/auth/instagram/login"; }); }
+//         </div>`;
+//     document.getElementById("ig-connect-btn").addEventListener("click", () => {
+//         window.location.href = "/auth/instagram/login";  }); }
+
+// async function loadLinkedinPosts(res) {
+//     const container = document.getElementById('hello_linkedin');
+//     container.innerHTML = '<p>Loading posts…</p>';
+//     try {
+//         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+//         const data = await res.json();
+//         const posts = data.posts || [];
+//         container.innerHTML = '';
+//         if (posts.length === 0) { container.innerHTML = '<p>No posts found.</p>';
+//             return; }
+//         posts.forEach(post => {
+//             const card = document.createElement('div');
+//             card.className = 'linkedin-card';
+//             const img = document.createElement('img');
+//             img.src = post.thumbnail_url || post.media_url;
+//             img.alt = post.caption ? post.caption.slice(0, 60) : 'LinkedIn post';
+//             img.loading = 'lazy';
+//             const body = document.createElement('div');
+//             body.className = 'body';
+//             const caption = document.createElement('p');
+//             caption.className = 'caption';
+//             caption.textContent = post.caption || '';
+//             const stats = document.createElement('div');
+//             stats.className = 'stats';
+//             stats.innerHTML = `
+//                 <span><span class="label">♥</span> ${post.like_count ?? 0}</span>
+//                 <span><span class="label">💬</span> ${post.comments_count ?? 0}</span>`;
+//             body.appendChild(caption);
+//             body.appendChild(stats);
+//             card.appendChild(img);
+//             card.appendChild(body);
+//             container.appendChild(card);    }); }
+//     catch (err) {  container.innerHTML = `<p style="color:#c0392b;">Failed to load posts: ${err.message}</p>`;
+//         console.error(err); } }
+
+// async function checkLinkedinConnection() {
+//     const token = localStorage.getItem("authToken");
+//     const linkedin_account_id = localStorage.getItem("linkedin_account_id");
+//     if (!linkedin_account_id) { showLinkedinConnectPrompt();
+//         return false; }
+//     try {
+//         const params = new URLSearchParams({ token: token, account_id: linkedin_account_id });
+//         const response = await fetch(`/linkedin/posts?${params.toString()}`);
+//         if (response.status === 400) { window.location.href = "/auth/linkedin/login";
+//             return false; }
+//         if (!response.ok) { console.error("LinkedIn check failed:", response.status);
+//             return false; }
+//         return response; }
+//     catch (error) { console.error("Network error checking LinkedIn:", error);
+//         return false; } }
+
+// function showLinkedinConnectPrompt() {
+//     const container = document.getElementById("hello_linkedin");
+//     if (!container) { console.error("Main content container not found");
+//         return; }
+//     container.innerHTML = `
+//         <div class="ig-connect-box">
+//             <p>No LinkedIn account connected</p>
+//             <button id="linkedin-connect-btn">Connect LinkedIn</button>
+//         </div>`;
+//     document.getElementById("linkedin-connect-btn").addEventListener("click", () => {   window.location.href = "/auth/linkedin/login"; }); }
 
 navItems.forEach((item) => {
     item.addEventListener("click", async () => {
@@ -110,8 +172,14 @@ navItems.forEach((item) => {
         //     if (!res) return;
         //     showPage(target);
         //     loadInstaPosts(res);
+        //     return;        }
+        // if (target === "campaign") {
+        //     const res = await checkLinkedinConnection();
+        //     if (!res) return;
+        //     showPage(target);
+        //     loadLinkedinPosts(res);
         //     return; }
-        showPage(target); });});
+        showPage(target);  }); });
 
 const initial = window.location.hash.replace("#", "");
 if (initial && titles[initial]) {showPage(initial);}
@@ -133,58 +201,3 @@ if (container) {
             label.textContent = selected.length ? selected.join(", ") : "Select metrics";   }); });}})
 
 
-
-
-
-// // <button data-endpoint="/api/data1" data-id="btn1">Data 1</button>
-// // <button data-endpoint="/api/data2" data-id="btn2">Data 2</button>
-// // <button data-endpoint="/api/data3" data-id="btn3">Data 3</button>
-// // <button data-endpoint="/api/data4" data-id="btn4">Data 4</button>
-
-// // <div id="output"></div>
-
-// const CACHE_DURATION = 60 * 1000; // 1 minute in ms
-// // Store cache + last fetch time per button
-// const cache = {
-//   btn1: { data: null, lastFetched: 0 },
-//   btn2: { data: null, lastFetched: 0 },
-//   btn3: { data: null, lastFetched: 0 },
-//   btn4: { data: null, lastFetched: 0 },
-// };
-
-// async function handleButtonClick(btnId, endpoint) {
-//   const now = Date.now();
-//   const entry = cache[btnId];
-//   const container = document.getElementById('output');
-//   const isFresh = entry.data && (now - entry.lastFetched < CACHE_DURATION);
-//   if (isFresh) {
-//     console.log(`${btnId}: using cached data`);
-//     displayData(entry.data);
-//     return; }
-//   container.innerHTML = '<p>Loading...</p>';
-//   try {
-//     const response = await fetch(endpoint);
-//     if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-//     const data = await response.json();
-//     // Update this button's cache
-//     entry.data = data;
-//     entry.lastFetched = now;
-//     displayData(data);
-//   } catch (error) {
-//     console.error(`Failed to fetch ${btnId}:`, error);
-//     container.innerHTML = '<p>Failed to load data.</p>';
-//   }}
-// function displayData(data) {
-//   const container = document.getElementById('output');
-//   container.innerHTML = '';
-//   data.forEach(item => {
-//     const el = document.createElement('div');
-//     el.innerHTML = `<h3>${item.title}</h3><p>${item.description}</p>`;
-//     container.appendChild(el);
-//   });}
-// // Wire up all buttons automatically
-// document.querySelectorAll('[data-endpoint]').forEach(btn => {
-//   btn.addEventListener('click', () => {
-//     handleButtonClick(btn.dataset.id, btn.dataset.endpoint);
-//   });
-// });
