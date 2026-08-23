@@ -1,195 +1,136 @@
 // async function getUserDetails() {
 //     const token = localStorage.getItem("authToken");
-//     if (!token) {
-//         window.location.href = "http://127.0.0.1:5501/front_end/login/login.html";
-//         return false;
-//     }
-//     try {
-//         const response = await fetch("backend_user_check_url", {
+//     if (!token) { window.location.href = "http://127.0.0.1:5501/front_end/login/login.html";
+//         return false; }
+//     try { const response = await fetch("backend_user_check_url", {
 //             method: "GET",
-//             headers: {
-//                 "Content-Type": "application/json",
-//                 "Authorization": `Bearer ${token}`
-//             }
-//         });
-//         if (!response.ok) {
-//             if (response.status === 401) {
-//                 console.error("Token invalid or expired");
-//             }
+//             headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`  }});
+//         if (!response.ok) { 
+//             if (response.status === 401) {  console.error("Token invalid or expired");  }
 //             localStorage.removeItem("authToken");
 //             window.location.href = "http://127.0.0.1:5501/front_end/login/login.html";
-//             return false;
-//         }
+//             return false; }
 //         const data = await response.json();
-//         if (data.status) {
-//             return true;
-//         }
-
+//         if (data.status) { return true; }
 //         window.location.href = "http://127.0.0.1:5501/front_end/login/login.html";
 //         return false;
-//     } catch (err) {
+//     } catch (err) { 
 //         console.error("Request failed:", err);
 //         window.location.href = "http://127.0.0.1:5501/front_end/login/login.html";
-//         return false;
-//     }
-// }
+//         return false;} }
 
 document.addEventListener("DOMContentLoaded", async () => {
     // const isAuthed = await getUserDetails();
     // if (!isAuthed) return; 
-
     const navItems = document.querySelectorAll(".nav-item[data-target]");
     const pages = document.querySelectorAll(".page");
     const pageTitle = document.getElementById("page-title");
-    const titles = {
-        dashboard: "Dashboard",
+    const titles = {dashboard: "Dashboard",
         campaign: "Campaign",
         instagram: "Instagram",
         whatsapp: "Whatsapp",
         gmail: "Gmail",
         create: "Create", settings: "Settings",
-        logout: "Log-out",
-    };
+        logout: "Log-out",  };
 
-    function showPage(target) {
-        pages.forEach((page) => {
-            page.classList.toggle("active", page.id === `page-${target}`);
-        }); 
+function showPage(target) {
+    pages.forEach((page) => {   page.classList.toggle("active", page.id === `page-${target}`);  });
+    navItems.forEach((item) => { item.classList.toggle("active", item.dataset.target === target);});
+    if (pageTitle && titles[target]) { pageTitle.textContent = titles[target]; }
+    history.replaceState(null, "", `#${target}`); }
 
-        navItems.forEach((item) => {
-            item.classList.toggle("active", item.dataset.target === target);
-        }); 
+// async function loadInstaPosts(res) {
+//     const container = document.getElementById('hello_insta');
+//     container.innerHTML = '<p>Loading posts…</p>';
+//     try {
+//         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+//         const data = await res.json();
+//         const posts = data.posts || [];
+//         container.innerHTML = '';
+//         if (posts.length === 0) {   container.innerHTML = '<p>No posts found.</p>';
+//             return; }
+//         posts.forEach(post => {
+//             const card = document.createElement('div');
+//             card.className = 'insta-card';
+//             const img = document.createElement('img');
+//             img.src = post.thumbnail_url || post.media_url;
+//             img.alt = post.caption ? post.caption.slice(0, 60) : 'Instagram post';
+//             img.loading = 'lazy';
+//             const body = document.createElement('div');
+//             body.className = 'body';
+//             const caption = document.createElement('p');
+//             caption.className = 'caption';
+//             caption.textContent = post.caption || '';
+//             const stats = document.createElement('div');
+//             stats.className = 'stats';
+//             stats.innerHTML = `
+//                 <span><span class="label">♥</span> ${post.like_count ?? 0}</span>
+//                 <span><span class="label">💬</span> ${post.comments_count ?? 0}</span>  `;
+//             body.appendChild(caption);
+//             body.appendChild(stats);
+//             card.appendChild(img);
+//             card.appendChild(body);
+//             container.appendChild(card);});
+//     } catch (err) {
+//         container.innerHTML = `<p style="color:#c0392b;">Failed to load posts: ${err.message}</p>`;
+//         console.error(err);}}
 
-        if (pageTitle && titles[target]) {
-            pageTitle.textContent = titles[target];
-        } 
+// async function checkInstagramConnection() {
+//     const token = localStorage.getItem("authToken");
+//     const account_id = localStorage.getItem("account_id");
+//     if (!account_id) {  showInstagramConnectPrompt();
+//         return false; }
+//     try {
+//         const params = new URLSearchParams({ token: token, account_id: account_id });
+//         const response = await fetch(`/instagram/posts?${params.toString()}`);
+//         if (response.status === 400) { window.location.href = "/auth/instagram/login";
+//             return false; }
+//         if (!response.ok) { console.error("Instagram check failed:", response.status);
+//             return false; }
+//         return response; }
+//     catch (error) { console.error("Network error checking Instagram:", error);
+//         return false; }}
 
-        history.replaceState(null, "", `#${target}`); 
-    }
-    // async function checkInstagramConnection() {
-    //     const token = localStorage.getItem("authToken");
-    //     const account_id = localStorage.getItem("account_id");
-    //     try {
-    //         const accountId = window.currentAccountId || "";
-    //         const params = new URLSearchParams({
-    //             token: token, account_id: account_id
-    //         });
+// function showInstagramConnectPrompt() {
+//     const container = document.getElementById("hello_insta");
+//     if (!container) { console.error("Main content container not found");
+//         return; }
+//     container.innerHTML = `
+//         <div class="ig-connect-box">
+//             <p>No Instagram account connected</p>
+//             <button id="ig-connect-btn">Connect Instagram</button>
+//         </div>   `;
+//     document.getElementById("ig-connect-btn").addEventListener("click", () => {   window.location.href = "/auth/instagram/login"; }); }
 
-    //         const response = await fetch(`/instagram/posts?${params.toString()}`);
+navItems.forEach((item) => {
+    item.addEventListener("click", async () => {
+        const target = item.dataset.target;
+        // if (target === "instagram") {
+        //     const res = await checkInstagramConnection();
+        //     if (!res) return;
+        //     showPage(target);
+        //     loadInstaPosts(res);
+        //     return; }
+        showPage(target); });});
 
-    //         if (response.status === 400) {
-    //             window.location.href = "/auth/instagram/login";
-    //             return false;
-    //         }
-    //         if (!response.ok) {
-    //             console.error("Instagram check failed:", response.status);
-    //             return false;
-    //         }
-    //         return true;
-    //     } catch (error) {
-    //         console.error("Network error checking Instagram:", error);
-    //         return false;
-    //     }
-    // }
-
-    navItems.forEach((item) => {
-        item.addEventListener("click", async () => {
-            const target = item.dataset.target;
-
-            // if (target === "instagram") {
-            //     const ok = await checkInstagramConnection();
-            //     if (!ok) return; 
-            // }
-            showPage(target);
-        });
-    });
-
-    const initial = window.location.hash.replace("#", "");
-    if (initial && titles[initial]) {
-        showPage(initial); 
-    }
-
-    const reloginBtn = document.getElementById("relogin-btn");
-    if (reloginBtn) {
-        reloginBtn.addEventListener("click", () => showPage("dashboard"));
-    }
-
-    const container = document.getElementById("rangeSelect");
-    if (container) {
-        const trigger = container.querySelector(".multi-select-trigger");
-        const optionsBox = container.querySelector(".multi-select-options");
-        const label = container.querySelector(".multi-select-label");
-        const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-
-        trigger.addEventListener("click", () => {
-            optionsBox.classList.toggle("open");
-        });
-
-        document.addEventListener("click", (e) => {
-            if (!container.contains(e.target)) optionsBox.classList.remove("open");
-        });
-
-        checkboxes.forEach((cb) => {
-            cb.addEventListener("change", () => {
-                const selected = Array.from(checkboxes)
-                    .filter((c) => c.checked)
-                    .map((c) => c.value);
-                label.textContent = selected.length
-                    ? selected.join(", ")
-                    : "Select metrics";
-            });
-        });
-    }
-});
-
-
-
-async function loadInstaPosts() {
-  const container = document.getElementById('hello_insta');
-  container.innerHTML = '<p>Loading posts…</p>';
-
-  try {
-    const res = await fetch('/api/instagram/media');
-    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-    const posts = await res.json();
-    container.innerHTML = '';
-    posts.forEach(post => {
-      const card = document.createElement('div');
-      card.className = 'insta-card';
-
-      const img = document.createElement('img');
-      img.src = post.thumbnail_url || post.media_url;
-      img.alt = post.caption ? post.caption.slice(0, 60) : 'Instagram post';
-      img.loading = 'lazy';
-
-      const body = document.createElement('div');
-      body.className = 'body';
-
-      const caption = document.createElement('p');
-      caption.className = 'caption';
-      caption.textContent = post.caption || '';
-
-      const stats = document.createElement('div');
-      stats.className = 'stats';
-      stats.innerHTML = `
-        <span><span class="label">♥</span> ${post.like_count ?? 0}</span>
-        <span><span class="label">💬</span> ${post.comments_count ?? 0}</span>
-      `;
-      body.appendChild(caption);
-      body.appendChild(stats);
-      card.appendChild(img);
-      card.appendChild(body);
-      container.appendChild(card);
-    });
-    if (posts.length === 0) {
-      container.innerHTML = '<p>No posts found.</p>';
-    }
-  } catch (err) {
-    container.innerHTML = `<p style="color:#c0392b;">Failed to load posts: ${err.message}</p>`;
-    console.error(err);
-  }
-}
-loadInstaPosts();
+const initial = window.location.hash.replace("#", "");
+if (initial && titles[initial]) {showPage(initial);}
+const reloginBtn = document.getElementById("relogin-btn");
+if (reloginBtn) { reloginBtn.addEventListener("click", () => showPage("dashboard")); }
+const container = document.getElementById("rangeSelect");
+if (container) {
+    const trigger = container.querySelector(".multi-select-trigger");
+    const optionsBox = container.querySelector(".multi-select-options");
+    const label = container.querySelector(".multi-select-label");
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    trigger.addEventListener("click", () => {  optionsBox.classList.toggle("open"); });
+    document.addEventListener("click", (e) => { if (!container.contains(e.target)) optionsBox.classList.remove("open");    });
+    checkboxes.forEach((cb) => {
+        cb.addEventListener("change", () => {
+            const selected = Array.from(checkboxes)
+                .filter((c) => c.checked)
+                .map((c) => c.value);
+            label.textContent = selected.length ? selected.join(", ") : "Select metrics";   }); });}})
 
 
 
