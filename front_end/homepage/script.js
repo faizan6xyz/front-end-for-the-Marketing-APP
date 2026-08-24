@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const pages = document.querySelectorAll(".page");
     const pageTitle = document.getElementById("page-title");
     const titles = {dashboard: "Dashboard",
-        campaign: "Campaign",
+        linkedln: "Linkedln",
         instagram: "Instagram",
         whatsapp: "Whatsapp",
         gmail: "Gmail",
@@ -164,6 +164,129 @@ function showPage(target) {
 //         </div>`;
 //     document.getElementById("linkedin-connect-btn").addEventListener("click", () => {   window.location.href = "/auth/linkedin/login"; }); }
 
+// async function loadGmailMessages(res) {
+//     const container = document.getElementById('hello_gmail');
+//     container.innerHTML = '<p>Loading messages…</p>';
+//     try {
+//         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+//         const data = await res.json();
+//         const messages = data.messages || [];
+//         container.innerHTML = '';
+//         if (messages.length === 0) { container.innerHTML = '<p>No sent messages found.</p>';
+//             return;   }
+//         messages.forEach(msg => {
+//             const card = document.createElement('div');
+//             card.className = 'gmail-card';
+//             const header = document.createElement('div');
+//             header.className = 'header';
+//             header.innerHTML = `
+//                 <span class="to">To: ${msg.to || 'Unknown'}</span>
+//                 <span class="date">${msg.sent_at ? new Date(msg.sent_at).toLocaleString() : ''}</span>`;
+//             const subject = document.createElement('p');
+//             subject.className = 'subject';
+//             subject.textContent = msg.subject || '(no subject)';
+//             const snippet = document.createElement('p');
+//             snippet.className = 'snippet';
+//             snippet.textContent = msg.snippet || '';
+//             const stats = document.createElement('div');
+//             stats.className = 'stats';
+//             stats.innerHTML = `
+//                 <span><span class="label">Status:</span> ${msg.status || 'sent'}</span>`;
+//             card.appendChild(header);
+//             card.appendChild(subject);
+//             card.appendChild(snippet);
+//             card.appendChild(stats);
+//             container.appendChild(card); }); }
+//     catch (err) {container.innerHTML = `<p style="color:#c0392b;">Failed to load messages: ${err.message}</p>`;
+//         console.error(err); } }
+
+// async function checkGmailConnection() {
+//     const token = localStorage.getItem("authToken");
+//     const gmail_account_id = localStorage.getItem("gmail_account_id");
+//     if (!gmail_account_id) { showGmailConnectPrompt();
+//         return false; }
+//     try {
+//         const params = new URLSearchParams({ token: token, account_id: gmail_account_id });
+//         const response = await fetch(`/gmail/sent?${params.toString()}`);
+//         if (response.status === 400) { window.location.href = "/auth/gmail/login";
+//             return false; }
+//         if (!response.ok) { console.error("Gmail check failed:", response.status);
+//             return false;    }
+//         return response; }
+//     catch (error) { console.error("Network error checking Gmail:", error);
+//         return false; } }
+
+// function showGmailConnectPrompt() {
+//     const container = document.getElementById("hello_gmail");
+//     if (!container) { console.error("Main content container not found");
+//         return; }
+//     container.innerHTML = `
+//         <div class="ig-connect-box">
+//             <p>No Gmail account connected</p>
+//             <button id="gmail-connect-btn">Connect Gmail</button>
+//         </div>`;
+//     document.getElementById("gmail-connect-btn").addEventListener("click", () => {  window.location.href = "/auth/gmail/login";    }); }
+
+// async function loadWhatsappMessages(res) {
+//     const container = document.getElementById('hello_whatsapp');
+//     container.innerHTML = '<p>Loading messages…</p>';
+//     try {
+//         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+//         const data = await res.json();
+//         const messages = data.messages || [];
+//         container.innerHTML = '';
+//         if (messages.length === 0) { container.innerHTML = '<p>No sent messages found.</p>';
+//             return;    }
+//         messages.forEach(msg => {
+//             const card = document.createElement('div');
+//             card.className = 'whatsapp-card';
+//             const header = document.createElement('div');
+//             header.className = 'header';
+//             header.innerHTML = `
+//                 <span class="to">To: ${msg.recipient || 'Unknown'}</span>
+//                 <span class="date">${msg.sent_at ? new Date(msg.sent_at).toLocaleString() : ''}</span>`;
+//             const body = document.createElement('p');
+//             body.className = 'body';
+//             body.textContent = msg.text || '';
+//             const stats = document.createElement('div');
+//             stats.className = 'stats';
+//             stats.innerHTML = `
+//                 <span><span class="label">Status:</span> ${msg.status || 'sent'}</span>`;
+//             card.appendChild(header);
+//             card.appendChild(body);
+//             card.appendChild(stats);
+//             container.appendChild(card);    });}
+//     catch (err) { container.innerHTML = `<p style="color:#c0392b;">Failed to load messages: ${err.message}</p>`;
+//         console.error(err);    } }
+
+// async function checkWhatsappConnection() {
+//     const token = localStorage.getItem("authToken");
+//     const whatsapp_account_id = localStorage.getItem("whatsapp_account_id");
+//     if (!whatsapp_account_id) { showWhatsappConnectPrompt();
+//         return false;  }
+//     try {
+//         const params = new URLSearchParams({ token: token, account_id: whatsapp_account_id });
+//         const response = await fetch(`/whatsapp/sent?${params.toString()}`);
+//         if (response.status === 400) { window.location.href = "/auth/whatsapp/login";
+//             return false;    }
+//         if (!response.ok) { console.error("WhatsApp check failed:", response.status);
+//             return false;    }
+//         return response; }
+//     catch (error) { console.error("Network error checking WhatsApp:", error);
+//         return false;    } }
+
+// function showWhatsappConnectPrompt() {
+//     const container = document.getElementById("hello_whatsapp");
+//     if (!container) { console.error("Main content container not found");
+//         return; }
+//     container.innerHTML = `
+//         <div class="ig-connect-box">
+//             <p>No WhatsApp account connected</p>
+//             <button id="whatsapp-connect-btn">Connect WhatsApp</button>
+//         </div>`;
+//     document.getElementById("whatsapp-connect-btn").addEventListener("click", () => {    window.location.href = "/auth/whatsapp/login";    });}
+
+
 navItems.forEach((item) => {
     item.addEventListener("click", async () => {
         const target = item.dataset.target;
@@ -173,11 +296,23 @@ navItems.forEach((item) => {
         //     showPage(target);
         //     loadInstaPosts(res);
         //     return;        }
-        // if (target === "campaign") {
+        // if (target === "linkedln") {
         //     const res = await checkLinkedinConnection();
         //     if (!res) return;
         //     showPage(target);
         //     loadLinkedinPosts(res);
+        //     return; }
+        // if (target === "gmail") {
+        //     const res = await checkGmailConnection();
+        //     if (!res) return;
+        //     showPage(target);
+        //     loadGmailMessages(res);
+        //     return;  }
+        // if (target === "whatsapp") {
+        //     const res = await checkWhatsappConnection();
+        //     if (!res) return;
+        //     showPage(target);
+        //     loadWhatsappMessages(res);
         //     return; }
         showPage(target);  }); });
 
