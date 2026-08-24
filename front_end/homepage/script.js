@@ -334,5 +334,3 @@ document.querySelectorAll(".multi-select").forEach((container) => {
                 .filter((c) => c.checked)
                 .map((c) => c.value);
             label.textContent = selected.length ? selected.join(", ") : "Select metrics";    }); }); }); })
-
-
