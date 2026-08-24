@@ -321,18 +321,18 @@ if (initial && titles[initial]) {showPage(initial);}
 const reloginBtn = document.getElementById("relogin-btn");
 if (reloginBtn) { reloginBtn.addEventListener("click", () => showPage("dashboard")); }
 const container = document.getElementById("rangeSelect");
-if (container) {
+document.querySelectorAll(".multi-select").forEach((container) => {
     const trigger = container.querySelector(".multi-select-trigger");
     const optionsBox = container.querySelector(".multi-select-options");
     const label = container.querySelector(".multi-select-label");
     const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-    trigger.addEventListener("click", () => {  optionsBox.classList.toggle("open"); });
-    document.addEventListener("click", (e) => { if (!container.contains(e.target)) optionsBox.classList.remove("open");    });
+    trigger.addEventListener("click", () => {  optionsBox.classList.toggle("open");    });
+    document.addEventListener("click", (e) => {  if (!container.contains(e.target)) optionsBox.classList.remove("open");    });
     checkboxes.forEach((cb) => {
         cb.addEventListener("change", () => {
             const selected = Array.from(checkboxes)
                 .filter((c) => c.checked)
                 .map((c) => c.value);
-            label.textContent = selected.length ? selected.join(", ") : "Select metrics";   }); });}})
+            label.textContent = selected.length ? selected.join(", ") : "Select metrics";    }); }); }); })
 
 
