@@ -119,25 +119,45 @@
               <span class="multi-select-label">Select metrics</span>
               <span class="multi-select-arrow">▾</span>
           </div>
-          <select id="contentType" name="contentType">
-            <option value="post">Post</option>
-            <option value="story">Story</option>
-          </select>
           <div class="multi-select-options">
-              <label><input type="checkbox" value="Comments"> Comments</label>
-              <label><input type="checkbox" value="Followers"> Followers</label>
-              <label><input type="checkbox" value="Likes"> Likes</label>
-              <label><input type="checkbox" value="Reach"> Reach</label>
-              <label><input type="checkbox" value="Shares"> Shares</label>
-              <label><input type="checkbox" value="Profile Activity"> Profile Activity</label>
-              <label><input type="checkbox" value="Saved"> Saved</label>
-              <label><input type="checkbox" value="All"> All</label>
+             <label><input type="checkbox" value="media_id"> Media ID</label>
+              <label><input type="checkbox" value="views"> Views</label>
+              <label><input type="checkbox" value="likes"> Likes</label>
+              <label><input type="checkbox" value="reach"> Reach</label>
+              <label><input type="checkbox" value="replies"> Replies</label>
+              <label><input type="checkbox" value="shares"> Shares</label>
+              <label><input type="checkbox" value="navigation"> Navigation</label>
+              <label><input type="checkbox" value="follows"> Follows</label>
+              <label><input type="checkbox" value="profile_activity"> Profile Activity</label>
+              <label><input type="checkbox" value="hour"> Hour</label>
+              <label><input type="checkbox" value="story_is"> Story ID</label>
+              <label><input type="checkbox" value="thumbnail"> Thumbnail</label>
+              <label><input type="checkbox" value="time"> Time</label>
           </div>
-      </div>
+          <div class="multi-select-options1">
+            <label><input type="checkbox" value="media_id"> Media ID</label>
+            <label><input type="checkbox" value="views"> Views</label>
+            <label><input type="checkbox" value="likes"> Likes</label>
+            <label><input type="checkbox" value="comments"> Comments</label>
+            <label><input type="checkbox" value="saved"> Saved</label>
+            <label><input type="checkbox" value="shares"> Shares</label>
+            <label><input type="checkbox" value="total_interaction"> Total Interaction</label>
+            <label><input type="checkbox" value="profile_activity"> Profile Activity</label>
+            <label><input type="checkbox" value="time"> Time</label>
+            <label><input type="checkbox" value="follows"> Follows</label>
+            <label><input type="checkbox" value="thumbnail"> Thumbnail</label>
+            <label><input type="checkbox" value="posted"> Posted</label>
+            <label><input type="checkbox" value="All"> All</label>
+          </div>
+        </div>
+        <select class="contentType" id="contentType" name="contentType">
+          <option value="post">Post</option>
+          <option value="story">Story</option>  
+        </select>
           <button  class="shiiii" >+ Post </button>
-          <select class="range-select">
-            <option>Last 30 days</option>
-            <option>Last 7 days</option>
+          <select class="multipe">
+            <option value="30">Last 30 days</option>
+            <option value="7">Last 7 days</option>
           </select>
         </div>
       </section>
