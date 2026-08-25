@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leo Social — Linkedln</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-name">Leo Social</span>
+    </div>
+
+    <nav class="nav">
+      <ul>
+        <li class="nav-item"><a class="nav-link" href="dashboard.html"><span class="nav-icon">▦</span> Dashboard</a></li>
+        <li class="nav-item active"><a class="nav-link" href="linkedln.html"><span class="nav-icon">🗂</span> Linkdeln</a></li>
+        <li class="nav-item"><a class="nav-link" href="instagram.html"><span class="nav-icon">🕒</span> Instagram</a></li>
+        <li class="nav-item"><a class="nav-link" href="whatsapp.html"><span class="nav-icon">🔗</span> Whatsapp</a></li>
+        <li class="nav-item"><a class="nav-link" href="gmail.html"><span class="nav-icon">👤</span> Gmail</a></li>
+        <li class="nav-item"><a class="nav-link" href="create.html"><span class="nav-icon">🧾</span> Create</a></li>
+        <li class="nav-item"><a class="nav-link" href="settings.html"><span class="nav-icon">⚙</span> Settings</a></li>
+        <li class="nav-item"><a class="nav-link" href="logout.html"><span class="nav-icon">⏻</span> Log-out</a></li>
+      </ul>
+    </nav>
+
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+    <header class="topbar">
+      <h1 id="page-title">Linkedln</h1>
+      <div class="topbar-right">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search...">
+        </div>
+        <button class="icon-btn" aria-label="Notifications">🔔</button>
+        <div class="avatar"></div>
+      </div>
+    </header>
+
+    <section class="page active" id="page-linkedln">
+      <section class="overview">
+        <div class="overview-header">
+          <div class="multi-select" id="rangeSelect">
+          <div class="multi-select-trigger">
+              <span class="multi-select-label">Select metrics</span>
+              <span class="multi-select-arrow">▾</span>
+          </div>
+          <div class="multi-select-options">
+             <label><input type="checkbox" value="Media ID"> Media ID</label>
+            <label><input type="checkbox" value="Publish At"> Publish At</label>
+            <label><input type="checkbox" value="Impressions"> Impressions</label>
+            <label><input type="checkbox" value="Likes"> Likes</label>
+            <label><input type="checkbox" value="Comments"> Comments</label>
+            <label><input type="checkbox" value="Shares"> Shares</label>
+            <label><input type="checkbox" value="Clicks"> Clicks</label>
+            <label><input type="checkbox" value="Engagements"> Engagements</label>
+            <label><input type="checkbox" value="Profile Views"> Profile Views</label>
+            <label><input type="checkbox" value="Follower Gained"> Follower Gained</label>
+            <label><input type="checkbox" value="Saves"> Saves</label>
+            <label><input type="checkbox" value="Reaction"> Reaction</label>
+            <label><input type="checkbox" value="Send"> Send</label>
+          </div>
+      </div>
+          <button  class="shiiii" >+ Post </button>
+          <select class="range-select">
+            <option>Last 30 days</option>
+            <option>Last 7 days</option>
+          </select>
+        </div>
+      </section>
+    </section>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
