@@ -377,36 +377,15 @@ const reloginBtn = document.getElementById("relogin-btn");
 if (reloginBtn) { reloginBtn.addEventListener("click", () => showPage("dashboard")); }
 const container = document.getElementById("rangeSelect");
 document.querySelectorAll(".multi-select").forEach((container) => {
-    const rangeDropdown = document.querySelector(".contentType");   
-    rangeDropdown.addEventListener("change", () => {
-        const label = container.querySelector(".multi-select-label");
-        const storyBox = container.querySelector(".multi-select-options");
-        const postBox = container.querySelector(".multi-select-options1");
-        [storyBox, postBox].forEach((box) => {
-            box.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
-            box.classList.remove("open"); });
-        label.textContent = "Select metrics";
-        if (rangeDropdown.value === "story") {
-            const trigger = container.querySelector(".multi-select-trigger");
-            const optionsBox = container.querySelector(".multi-select-options");
-            const checkboxes = optionsBox.querySelectorAll('input[type="checkbox"]'); 
-            trigger.addEventListener("click", () => { optionsBox.classList.toggle("open"); });
-            document.addEventListener("click", (e) => { if (!container.contains(e.target)) optionsBox.classList.remove("open"); });
-            checkboxes.forEach((cb) => {
-                cb.addEventListener("change", () => {
-                    const selected = Array.from(checkboxes)
-                        .filter((c) => c.checked)
-                        .map((c) => c.value);
-                    label.textContent = selected.length ? selected.join(", ") : "Select metrics";   });});} 
-        if (rangeDropdown.value === "post") {
-            const trigger = container.querySelector(".multi-select-trigger");
-            const optionsBox = container.querySelector(".multi-select-options1");
-            const checkboxes = optionsBox.querySelectorAll('input[type="checkbox"]'); 
-            trigger.addEventListener("click", () => { optionsBox.classList.toggle("open"); });
-            document.addEventListener("click", (e) => { if (!container.contains(e.target)) optionsBox.classList.remove("open"); });
-            checkboxes.forEach((cb) => {
-                cb.addEventListener("change", () => {
-                    const selected = Array.from(checkboxes)
-                        .filter((c) => c.checked)
-                        .map((c) => c.value);
-                    label.textContent = selected.length ? selected.join(", ") : "Select metrics";    }); });  }  });  });       })
+    const trigger = container.querySelector(".multi-select-trigger");
+    const optionsBox = container.querySelector(".multi-select-options");
+    const label = container.querySelector(".multi-select-label");
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    trigger.addEventListener("click", () => {  optionsBox.classList.toggle("open");    });
+    document.addEventListener("click", (e) => {  if (!container.contains(e.target)) optionsBox.classList.remove("open");    });
+    checkboxes.forEach((cb) => {
+        cb.addEventListener("change", () => {
+            const selected = Array.from(checkboxes)
+                .filter((c) => c.checked)
+                .map((c) => c.value);
+            label.textContent = selected.length ? selected.join(", ") : "Select metrics";    }); }); }); })
