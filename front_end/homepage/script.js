@@ -66,13 +66,41 @@ function showPage(target) {
 //             stats.innerHTML = `
 //                 <span><span class="label">♥</span> ${post.like_count ?? 0}</span>
 //                 <span><span class="label">💬</span> ${post.comments_count ?? 0}</span>`;
+//             const toggleRow = document.createElement('div');
+//             toggleRow.className = 'post-toggle-row';
+//             toggleRow.innerHTML = `
+//                 <span class="post-toggle-title">Analysis</span>
+//                 <label class="post-toggle">
+//                     <input type="checkbox" class="post-toggle-input" data-post-id="${post.id}">
+//                     <span class="post-toggle-slider"></span>
+//                 </label>
+//                 <span class="post-toggle-status">Off</span>`;
+//             const toggleInput = toggleRow.querySelector('.post-toggle-input');
+//             const toggleStatus = toggleRow.querySelector('.post-toggle-status');
+//             toggleInput.addEventListener('change', async (e) => {
+//                 toggleStatus.textContent = e.target.checked ? 'On' : 'Off';
+//                 if (!e.target.checked) return;
+//                 e.target.disabled = true;
+//                 try {
+//                     const response = await fetch('/posts/watch', {
+//                         method: 'POST',
+//                         headers: { 'Content-Type': 'application/json' },
+//                         body: JSON.stringify({ post_id: post.id }) });
+//                     if (!response.ok) throw new Error(`Toggle failed: ${response.status}`);}
+//                 catch (err) {
+//                     console.error('Toggle request failed:', err);
+//                     e.target.checked = false;
+//                     toggleStatus.textContent = 'Off'; }
+//                 finally { e.target.disabled = false; }  });
 //             body.appendChild(caption);
 //             body.appendChild(stats);
+//             body.appendChild(toggleRow);
 //             card.appendChild(img);
 //             card.appendChild(body);
 //             container.appendChild(card);    });}
-//     catch (err) { container.innerHTML = `<p style="color:#c0392b;">Failed to load posts: ${err.message}</p>`;
-//         console.error(err); } }
+//     catch (err) {
+//         container.innerHTML = `<p style="color:#c0392b;">Failed to load posts: ${err.message}</p>`;
+//         console.error(err);   }}
 
 // async function checkInstagramConnection() {
 //     const token = localStorage.getItem("authToken");
@@ -322,12 +350,18 @@ const reloginBtn = document.getElementById("relogin-btn");
 if (reloginBtn) { reloginBtn.addEventListener("click", () => showPage("dashboard")); }
 const container = document.getElementById("rangeSelect");
 document.querySelectorAll(".multi-select").forEach((container) => {
-    const rangeDropdown = document.querySelector(".contentType");
+    const rangeDropdown = document.querySelector(".contentType");   
     rangeDropdown.addEventListener("change", () => {
+        const label = container.querySelector(".multi-select-label");
+        const storyBox = container.querySelector(".multi-select-options");
+        const postBox = container.querySelector(".multi-select-options1");
+        [storyBox, postBox].forEach((box) => {
+            box.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
+            box.classList.remove("open"); });
+        label.textContent = "Select metrics";
         if (rangeDropdown.value === "story") {
             const trigger = container.querySelector(".multi-select-trigger");
             const optionsBox = container.querySelector(".multi-select-options");
-            const label = container.querySelector(".multi-select-label");
             const checkboxes = optionsBox.querySelectorAll('input[type="checkbox"]'); 
             trigger.addEventListener("click", () => { optionsBox.classList.toggle("open"); });
             document.addEventListener("click", (e) => { if (!container.contains(e.target)) optionsBox.classList.remove("open"); });
@@ -340,7 +374,6 @@ document.querySelectorAll(".multi-select").forEach((container) => {
         if (rangeDropdown.value === "post") {
             const trigger = container.querySelector(".multi-select-trigger");
             const optionsBox = container.querySelector(".multi-select-options1");
-            const label = container.querySelector(".multi-select-label");
             const checkboxes = optionsBox.querySelectorAll('input[type="checkbox"]'); 
             trigger.addEventListener("click", () => { optionsBox.classList.toggle("open"); });
             document.addEventListener("click", (e) => { if (!container.contains(e.target)) optionsBox.classList.remove("open"); });
@@ -349,4 +382,4 @@ document.querySelectorAll(".multi-select").forEach((container) => {
                     const selected = Array.from(checkboxes)
                         .filter((c) => c.checked)
                         .map((c) => c.value);
-                    label.textContent = selected.length ? selected.join(", ") : "Select metrics";    }); });  }  });  });})
+                    label.textContent = selected.length ? selected.join(", ") : "Select metrics";    }); });  }  });  });       })

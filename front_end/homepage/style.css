@@ -285,6 +285,44 @@ body {
 
 .multi-select-options1 label:hover { background: var(--orange-50); }
 
+.post-toggle {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    margin-top: 8px;
+}
+.post-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.post-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #ccc;
+    border-radius: 20px;
+    transition: 0.2s;
+}
+.post-toggle-slider::before {
+    content: "";
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+.post-toggle input:checked + .post-toggle-slider {
+    background-color: #2e7d32;
+}
+.post-toggle input:checked + .post-toggle-slider::before {
+    transform: translateX(16px);
+}
+
 /* ===== Panels ===== */
 .panel {
   background: var(--card);
