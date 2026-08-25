@@ -389,3 +389,8 @@ document.querySelectorAll(".multi-select").forEach((container) => {
                 .filter((c) => c.checked)
                 .map((c) => c.value);
             label.textContent = selected.length ? selected.join(", ") : "Select metrics";    }); }); }); })
+
+
+
+
+    // now add the configrations of the accont in a section so the user can delete and add account
