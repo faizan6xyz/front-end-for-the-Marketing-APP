@@ -30,7 +30,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         instagram: "Instagram",
         whatsapp: "Whatsapp",
         gmail: "Gmail",
-        create: "Create", settings: "Settings",
+        create: "Create",
+        settings: "Settings",
         logout: "Log-out",  };
 
 function showPage(target) {
@@ -341,10 +342,82 @@ function showPage(target) {
 //         </div>`;
 //     document.getElementById("whatsapp-connect-btn").addEventListener("click", () => {    window.location.href = "/auth/whatsapp/login";    });}
 
+// async function checkSettingsConnection() {
+//     const token = localStorage.getItem("authToken");
+//     try {
+//         const params = new URLSearchParams({ token });
+//         const response = await fetch(`/vrify?${params.toString()}`);
+//         if (response.status === 401) {    window.location.href = "/login";
+//             return false; }
+//         if (!response.ok) { console.error("Settings check failed:", response.status);
+//             return false; }
+//         return response; }
+//     catch (error) { console.error("Network error checking settings:", error);
+//         return false;  }  }
+
+// async function loadSettingsAccounts(res) {
+//     const container = document.getElementById("settings-accounts");
+//     if (!container) { console.error("Settings container not found");
+//         return; }
+//     container.innerHTML = "<p>Loading accounts…</p>";
+//     try {
+//         const body = await res.json();
+//         if (!body.status) throw new Error(body.reason || "Failed to load accounts");
+//         const data = body.data;
+//         const categories = { instagram_account_ids: { label: "Instagram", loginRoute: "/auth/instagram/login" },
+//             whatsapp_account_ids: { label: "WhatsApp", loginRoute: "/auth/whatsapp/login" },
+//             gmail_emails: { label: "Gmail", loginRoute: "/auth/gmail/login" },
+//             drive_emails: { label: "Drive", loginRoute: "/auth/drive/login" },
+//             linkedin_account_ids: { label: "LinkedIn", loginRoute: "/auth/linkedin/login" },  };
+//         container.innerHTML = "";
+//         Object.entries(categories).forEach(([key, { label, loginRoute }]) => {
+//             const values = data[key] || [];
+//             const section = document.createElement("div");
+//             section.className = "settings-category";
+//             const heading = document.createElement("h3");
+//             heading.textContent = label;
+//             section.appendChild(heading);
+//             if (values.length === 0) {
+//                 const empty = document.createElement("div");
+//                 empty.className = "ig-connect-box";
+//                 empty.innerHTML = `
+//                     <p>No ${label} account connected</p>
+//                     <button class="connect-btn" data-route="${loginRoute}">Connect ${label}</button>`;
+//                 section.appendChild(empty);  } 
+//             else {
+//                 const list = document.createElement("div");
+//                 list.className = "settings-account-list";
+//                 values.forEach((value, i) => {
+//                     const row = document.createElement("label");
+//                     row.className = "settings-account-row";
+//                     const checkboxId = `${key}-${i}`;
+//                     row.innerHTML = `
+//                         <input type="checkbox" id="${checkboxId}" name="${key}" value="${value}" checked>
+//                         <span>${value}</span>`;
+//                     list.appendChild(row); });
+//                 const addMore = document.createElement("button");
+//                 addMore.className = "connect-btn add-more";
+//                 addMore.dataset.route = loginRoute;
+//                 addMore.textContent = `+ Add another ${label} account`;
+//                 list.appendChild(addMore);
+//                 section.appendChild(list); }
+//             container.appendChild(section);   });
+//         container.querySelectorAll(".connect-btn").forEach((btn) => {
+//             btn.addEventListener("click", () => {window.location.href = btn.dataset.route;    });   });  }
+//     catch (err) {
+//         container.innerHTML = `<p style="color:#c0392b;">Failed to load accounts: ${err.message}</p>`;
+//         console.error(err);   }}
+
 
 navItems.forEach((item) => {
     item.addEventListener("click", async () => {
         const target = item.dataset.target;
+        //  if (target === "settings") {
+        //     const res = await checkSettingsConnection();
+        //     if (!res) return;
+        //     showPage(target);
+        //     loadSettingsAccounts(res);
+        //     return;  }
         // if (target === "instagram") {
         //     const res = await checkInstagramConnection();
         //     if (!res) return;
