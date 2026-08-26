@@ -34,7 +34,7 @@ body {
 
 /* ===== Sidebar ===== */
 .sidebar {
-  width: 10%;
+  width: 13%;
   flex-shrink: 0;
   background: var(--card);
   border-right: 1px solid var(--line);
@@ -447,22 +447,15 @@ body {
 .form-panel { max-width: 560px; }
 
 /* ===== Logout ===== */
-.logout-panel {
-  max-width: 420px;
-  margin: 60px auto;
-  text-align: center;
-  padding: 40px 24px;
+#logout {
+  margin-top: auto; 
+  margin-bottom: 10px; 
+  border: 2px solid gray;
+  width: 80%;
+  height: auto;
+  align-self: center; 
+  border-radius: 5px; 
 }
-
-.logout-icon {
-  font-size: 32px;
-  color: var(--orange-500);
-  margin-bottom: 12px;
-}
-
-.logout-panel h2 { margin: 0 0 8px; font-size: 18px; }
-.logout-panel p { margin: 0 0 20px; color: var(--ink-400); font-size: 13px; }
-
 /* ===== Responsive ===== */
 @media (max-width: 640px) {
   .app { flex-direction: column; }
