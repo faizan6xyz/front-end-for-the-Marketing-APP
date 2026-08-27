@@ -191,7 +191,8 @@ body {
 }
 
 .shiiii {
-  border: 1px solid greenyellow;
+  border: 1px solid black;
+  border-radius: 5px;
 }
 
 /* ===== Multi-select dropdown ===== */
