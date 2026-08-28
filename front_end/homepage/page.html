@@ -1,267 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leo Social — Dashboard</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leo Social — Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
-<div class="app">
+  <div class="app">
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="brand">
-      <span class="brand-name">Leo Social</span>
-    </div>
-    <nav class="nav">
-      <ul>
-        <li class="nav-item active" data-target="dashboard">
-          <span class="nav-icon">▦</span> Dashboard
-        </li>
-        <li class="nav-item" data-target="linkedln">
-          <span class="nav-icon">🗂</span> Linkdeln
-        </li>
-        <li class="nav-item" data-target="instagram">
-          <span class="nav-icon">🕒</span> Instagram
-        </li>
-        <li class="nav-item" data-target="whatsapp">
-          <span class="nav-icon">🔗</span> Whatsapp
-        </li>
-        <li class="nav-item" data-target="gmail">
-          <span class="nav-icon">👤</span> Gmail
-        </li>
-        <li class="nav-item" data-target="post">
-          <span class="nav-icon">🧾</span> Post
-        </li>
-        <li class="nav-item" data-target="campaign">
-          <span class="nav-icon">👤</span> Campaign
-        </li>
-        <li class="nav-item" data-target="settings">
-          <span class="nav-icon">⚙</span> Settings
-        </li>
-      </ul>
-    </nav>
-    <button id="logout">Log-out</button>
-  </aside>
-
-  <!-- Main content -->
-  <main class="main">
-    <header class="topbar">
-      <h1 id="page-title">Dashboard</h1>
-      <div class="topbar-right">
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" placeholder="Search...">
-        </div>
-        <button class="icon-btn" aria-label="Notifications">🔔</button>
-        <div class="avatar"></div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-name">Leo Social</span>
       </div>
-    </header>
+      <nav class="nav">
+        <ul>
+          <li class="nav-item active" data-target="dashboard">
+            <span class="nav-icon">▦</span> Dashboard
+          </li>
+          <li class="nav-item" data-target="linkedln">
+            <span class="nav-icon">🗂</span> Linkdeln
+          </li>
+          <li class="nav-item" data-target="instagram">
+            <span class="nav-icon">🕒</span> Instagram
+          </li>
+          <li class="nav-item" data-target="whatsapp">
+            <span class="nav-icon">🔗</span> Whatsapp
+          </li>
+          <li class="nav-item" data-target="gmail">
+            <span class="nav-icon">👤</span> Gmail
+          </li>
+          <li class="nav-item" data-target="post">
+            <span class="nav-icon">🧾</span> Post
+          </li>
+          <li class="nav-item" data-target="campaign">
+            <span class="nav-icon">👤</span> Campaign
+          </li>
+          <li class="nav-item" data-target="settings">
+            <span class="nav-icon">⚙</span> Settings
+          </li>
+        </ul>
+      </nav>
+      <button id="logout">Log-out</button>
+    </aside>
 
-    <!--  DASHBOARD  -->
-    <section class="page active" id="page-dashboard">
-      <section class="overview">
-        <div class="overview-header">
-          <h2>Overview</h2>
-          <select class="range-select">
-            <option>Last 30 days</option>
-            <option>Last 7 days</option>
-            <option>Last 90 days</option>
-          </select>
+    <!-- Main content -->
+    <main class="main">
+      <header class="topbar">
+        <h1 id="page-title">Dashboard</h1>
+        <div class="topbar-right">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search...">
+          </div>
+          <button class="icon-btn" aria-label="Notifications">🔔</button>
+          <div class="avatar"></div>
         </div>
+      </header>
+
+      <!--  DASHBOARD  -->
+      <section class="page active" id="page-dashboard">
+        <section class="overview">
+          <div class="overview-header">
+            <h2>Overview</h2>
+            <select class="range-select">
+              <option>Last 30 days</option>
+              <option>Last 7 days</option>
+              <option>Last 90 days</option>
+            </select>
+          </div>
+        </section>
       </section>
-    </section>
 
-    <!--  LINKEDLN  -->
-    <section class="page" id="page-linkedln">
-      <section class="overview">
-        <div class="overview-header">
-          <div class="multi-select" id="rangeSelect">
-          <div class="multi-select-trigger">
-              <span class="multi-select-label">Select Post metrics</span>
-              <span class="multi-select-arrow">▾</span>
-          </div>
-          <div class="multi-select-options">
-             <label><input type="checkbox" value="Media ID"> Media ID</label>
-            <label><input type="checkbox" value="Publish At"> Publish At</label>
-            <label><input type="checkbox" value="Impressions"> Impressions</label>
-            <label><input type="checkbox" value="Likes"> Likes</label>
-            <label><input type="checkbox" value="Comments"> Comments</label>
-            <label><input type="checkbox" value="Shares"> Shares</label>
-            <label><input type="checkbox" value="Clicks"> Clicks</label>
-            <label><input type="checkbox" value="Engagements"> Engagements</label>
-            <label><input type="checkbox" value="Profile Views"> Profile Views</label>
-            <label><input type="checkbox" value="Follower Gained"> Follower Gained</label>
-            <label><input type="checkbox" value="Saves"> Saves</label>
-            <label><input type="checkbox" value="Reaction"> Reaction</label>
-            <label><input type="checkbox" value="Send"> Send</label>
-          </div>
-      </div>
-          <select class="range-select">
-            <option>Last 30 days</option>
-            <option>Last 7 days</option>
-          </select>
-        </div>
-      </section>
-    </section>
-
-    <!-- INSTAGRAM  -->
-    <section class="page" id="page-instagram">
-      <section class="overview">
-        <div class="overview-header">
-          <div class="multi-select" id="rangeSelect">
-          <div class="multi-select-trigger">
-              <span class="multi-select-label">Select Post metrics</span>
-              <span class="multi-select-arrow">▾</span>
-          </div>
-          <div class="multi-select-options">
-              <label><input type="checkbox" value="views"> Views</label>
-              <label><input type="checkbox" value="likes"> Likes</label>
-              <label><input type="checkbox" value="reach"> Reach</label>
-              <label><input type="checkbox" value="replies"> Replies</label>
-              <label><input type="checkbox" value="shares"> Shares</label>
-              <label><input type="checkbox" value="navigation"> Navigation</label>
-              <label><input type="checkbox" value="follows"> Follows</label>
-              <label><input type="checkbox" value="profile_activity"> Profile Activity</label>
-              <label><input type="checkbox" value="hour"> Hour</label>
-              <label><input type="checkbox" value="story_is"> Story ID</label>
-              <label><input type="checkbox" value="thumbnail"> Thumbnail</label>
-              <label><input type="checkbox" value="time"> Time</label>
-          </div>
-        </div>
-      <div class="multi-select" id="rangeSelect">
-          <div class="multi-select-trigger">
-              <span class="multi-select-label">Select Story metrics</span>
-              <span class="multi-select-arrow">▾</span>
-          </div>
-          <div class="multi-select-options">
-            <label><input type="checkbox" value="views"> Views</label>
-            <label><input type="checkbox" value="likes"> Likes</label>
-            <label><input type="checkbox" value="comments"> Comments</label>
-            <label><input type="checkbox" value="saved"> Saved</label>
-            <label><input type="checkbox" value="shares"> Shares</label>
-            <label><input type="checkbox" value="total_interaction"> Total Interaction</label>
-            <label><input type="checkbox" value="profile_activity"> Profile Activity</label>
-            <label><input type="checkbox" value="time"> Time</label>
-            <label><input type="checkbox" value="follows"> Follows</label>
-            <label><input type="checkbox" value="thumbnail"> Thumbnail</label>
-            <label><input type="checkbox" value="posted"> Posted</label>
-          </div>
-          </div>
-          <select class="multipe">
-            <option value="30">Last 30 days</option>
-            <option value="7">Last 7 days</option>
-          </select>
-        </div>
-      </section>
-      <div id="hello_insta" >
-      <div class="insta-grid"></div>
-      </div>
-    </section>
-
-<!--  WHATSAPP  -->
-    <section class="page" id="page-whatsapp">
-      <section class="overview">
-        <div class="overview-header">
-          <div class="multi-select" id="whatsappRangeSelect">
-            <div class="multi-select-trigger">
-              <span class="multi-select-label">Select Campaign metrics</span>
-              <span class="multi-select-arrow">▾</span>
+      <!--  LINKEDLN  -->
+      <section class="page" id="page-linkedln">
+        <section class="overview">
+          <div class="overview-header">
+            <div class="multi-select" id="rangeSelect">
+              <div class="multi-select-trigger">
+                <span class="multi-select-label">Select Post metrics</span>
+                <span class="multi-select-arrow">▾</span>
+              </div>
+              <div class="multi-select-options">
+                <label><input type="checkbox" value="Media ID"> Media ID</label>
+                <label><input type="checkbox" value="Publish At"> Publish At</label>
+                <label><input type="checkbox" value="Impressions"> Impressions</label>
+                <label><input type="checkbox" value="Likes"> Likes</label>
+                <label><input type="checkbox" value="Comments"> Comments</label>
+                <label><input type="checkbox" value="Shares"> Shares</label>
+                <label><input type="checkbox" value="Clicks"> Clicks</label>
+                <label><input type="checkbox" value="Engagements"> Engagements</label>
+                <label><input type="checkbox" value="Profile Views"> Profile Views</label>
+                <label><input type="checkbox" value="Follower Gained"> Follower Gained</label>
+                <label><input type="checkbox" value="Saves"> Saves</label>
+                <label><input type="checkbox" value="Reaction"> Reaction</label>
+                <label><input type="checkbox" value="Send"> Send</label>
+              </div>
             </div>
-            <div class="multi-select-options">
-              <label><input type="checkbox" value="Phone Number"> Phone Number</label>
-              <label><input type="checkbox" value="Campaign ID"> Campaign ID</label>
-              <label><input type="checkbox" value="Campaign Name"> Campaign Name</label>
-              <label><input type="checkbox" value="Send Time"> Send Time</label>
-              <label><input type="checkbox" value="Receive Time"> Receive Time</label>
-              <label><input type="checkbox" value="Interest"> Interest</label>
-            </div>
+            <select class="range-select">
+              <option>Last 30 days</option>
+              <option>Last 7 days</option>
+            </select>
           </div>
-          <select class="range-select">
-            <option>Last 30 days</option>
-            <option>Last 7 days</option>
-          </select>
+        </section>
+      </section>
+
+      <!-- INSTAGRAM  -->
+      <section class="page" id="page-instagram">
+        <section class="overview">
+          <div class="overview-header">
+            <div class="multi-select" id="rangeSelect">
+              <div class="multi-select-trigger">
+                <span class="multi-select-label">Select Post metrics</span>
+                <span class="multi-select-arrow">▾</span>
+              </div>
+              <div class="multi-select-options">
+                <label><input type="checkbox" value="views"> Views</label>
+                <label><input type="checkbox" value="likes"> Likes</label>
+                <label><input type="checkbox" value="reach"> Reach</label>
+                <label><input type="checkbox" value="replies"> Replies</label>
+                <label><input type="checkbox" value="shares"> Shares</label>
+                <label><input type="checkbox" value="navigation"> Navigation</label>
+                <label><input type="checkbox" value="follows"> Follows</label>
+                <label><input type="checkbox" value="profile_activity"> Profile Activity</label>
+                <label><input type="checkbox" value="hour"> Hour</label>
+                <label><input type="checkbox" value="story_is"> Story ID</label>
+                <label><input type="checkbox" value="thumbnail"> Thumbnail</label>
+                <label><input type="checkbox" value="time"> Time</label>
+              </div>
+            </div>
+            <div class="multi-select" id="rangeSelect">
+              <div class="multi-select-trigger">
+                <span class="multi-select-label">Select Story metrics</span>
+                <span class="multi-select-arrow">▾</span>
+              </div>
+              <div class="multi-select-options">
+                <label><input type="checkbox" value="views"> Views</label>
+                <label><input type="checkbox" value="likes"> Likes</label>
+                <label><input type="checkbox" value="comments"> Comments</label>
+                <label><input type="checkbox" value="saved"> Saved</label>
+                <label><input type="checkbox" value="shares"> Shares</label>
+                <label><input type="checkbox" value="total_interaction"> Total Interaction</label>
+                <label><input type="checkbox" value="profile_activity"> Profile Activity</label>
+                <label><input type="checkbox" value="time"> Time</label>
+                <label><input type="checkbox" value="follows"> Follows</label>
+                <label><input type="checkbox" value="thumbnail"> Thumbnail</label>
+                <label><input type="checkbox" value="posted"> Posted</label>
+              </div>
+            </div>
+            <select class="multipe">
+              <option value="30">Last 30 days</option>
+              <option value="7">Last 7 days</option>
+            </select>
+          </div>
+        </section>
+        <div id="hello_insta">
+          <div class="insta-grid"></div>
         </div>
       </section>
-      <div id="hello_whatsapp">
-        <div class="whatsapp-grid"></div>
-      </div>
-    </section>
 
-    <!--  GMAIL  -->
-    <section class="page" id="page-gmail">
-      <section class="overview">
-        <div class="overview-header">
-          <div class="multi-select" id="gmailRangeSelect">
-            <div class="multi-select-trigger">
-              <span class="multi-select-label">Select Campaign metrics</span>
-              <span class="multi-select-arrow">▾</span>
+      <!--  WHATSAPP  -->
+      <section class="page" id="page-whatsapp">
+        <section class="overview">
+          <div class="overview-header">
+            <div class="multi-select" id="whatsappRangeSelect">
+              <div class="multi-select-trigger">
+                <span class="multi-select-label">Select Campaign metrics</span>
+                <span class="multi-select-arrow">▾</span>
+              </div>
+              <div class="multi-select-options">
+                <label><input type="checkbox" value="Phone Number"> Phone Number</label>
+                <label><input type="checkbox" value="Campaign ID"> Campaign ID</label>
+                <label><input type="checkbox" value="Campaign Name"> Campaign Name</label>
+                <label><input type="checkbox" value="Send Time"> Send Time</label>
+                <label><input type="checkbox" value="Receive Time"> Receive Time</label>
+                <label><input type="checkbox" value="Interest"> Interest</label>
+              </div>
             </div>
-            <div class="multi-select-options">
-            <label><input type="checkbox" value="Email"> Email</label>
-            <label><input type="checkbox" value="Campaign ID"> Campaign ID</label>
-            <label><input type="checkbox" value="Campaign Name"> Campaign Name</label>
-            <label><input type="checkbox" value="Send Time"> Send Time</label>
-            <label><input type="checkbox" value="Receive Time"> Receive Time</label>
-            <label><input type="checkbox" value="Interest"> Interest</label>
-            </div>
+            <select class="range-select">
+              <option>Last 30 days</option>
+              <option>Last 7 days</option>
+            </select>
           </div>
-          <select class="range-select">
-            <option>Last 30 days</option>
-            <option>Last 7 days</option>
-          </select>
+        </section>
+        <div id="hello_whatsapp">
+          <div class="whatsapp-grid"></div>
         </div>
       </section>
-      <div id="hello_gmail">
-        <div class="gmail-grid"></div>
-      </div>
-    </section>
 
-    <!--  post  -->
-    <section class="page" id="page-post">
-      <div class="post">
-        <select class="paltformslecr">
-          <option value="instagram">Instagram</option>
-          <option value="linkedln">Linkdeln</option>
-      </select>
-      <div class="caption">  
-        <label> Caption : </label>
-        <input class="cap" placeholder="  Enter the caption for the post"></input>
-      </div>
-            <form id="uploadForm" enctype="multipart/form-data">
-        <div class="upload-box" id="dropZone">
-          <input type="file" id="fileInput" name="file" hidden />
-            <p id="textforfile" >Drag & drop a file here, or click to browse</p>
+      <!--  GMAIL  -->
+      <section class="page" id="page-gmail">
+        <section class="overview">
+          <div class="overview-header">
+            <div class="multi-select" id="gmailRangeSelect">
+              <div class="multi-select-trigger">
+                <span class="multi-select-label">Select Campaign metrics</span>
+                <span class="multi-select-arrow">▾</span>
+              </div>
+              <div class="multi-select-options">
+                <label><input type="checkbox" value="Email"> Email</label>
+                <label><input type="checkbox" value="Campaign ID"> Campaign ID</label>
+                <label><input type="checkbox" value="Campaign Name"> Campaign Name</label>
+                <label><input type="checkbox" value="Send Time"> Send Time</label>
+                <label><input type="checkbox" value="Receive Time"> Receive Time</label>
+                <label><input type="checkbox" value="Interest"> Interest</label>
+              </div>
+            </div>
+            <select class="range-select">
+              <option>Last 30 days</option>
+              <option>Last 7 days</option>
+            </select>
+          </div>
+        </section>
+        <div id="hello_gmail">
+          <div class="gmail-grid"></div>
         </div>
-        <button class="submit" type="submit">Upload</button>
-      </form>   
-      </div>
-    </section>
-    <!--  campign  -->
+      </section>
 
-    <section class="page" id="page-campaign">
-      <form id="uploadForm" enctype="multipart/form-data">
-        <div class="upload-box" id="dropZone">
-          <input type="file" id="fileInput" name="file" hidden />
-            <p id="textforfile" >Drag & drop a file here, or click to browse</p>
+      <!--  post  -->
+      <section class="page" id="page-post">
+        <div class="post">
+          <div class="postselect">
+            <select class="paltformslecr" id="platform" name="platform">
+              <option value="instagram">Instagram</option>
+              <option value="linkedin">LinkedIn</option>
+            </select>
+            <select class="typeopost" id="postType" name="postType">
+            </select>
+          </div>
+          <div class="caption">
+            <label class="ccaption" for="captt">Caption:</label>
+            <textarea class="cap" id="captt" name="caption" maxlength="2170"
+              placeholder="Enter the caption for the post" spellcheck="false"></textarea>
+          </div>
+          <form id="uploadForm" enctype="multipart/form-data">
+            <div class="upload-box" id="dropZone">
+              <input type="file" id="fileInput" name="file" hidden />
+              <p id="textforfile">Drag & drop a file here, or click to browse</p>
+            </div>
+            <button class="submit" type="submit">Upload</button>
+          </form>
         </div>
-        <button class="submit" type="submit">Upload</button>
-      </form>   
-    </section>
+      </section>
+      <!--  campign  -->
 
-    <!--  SETTINGS  -->
-    <section class="page" id="page-settings">
-      <div class="panel">
-        <div class="accounts" id="settings-accounts"></div>
-      </div>
-    </section>
+      <section class="page" id="page-campaign">
+        <form id="uploadForm" enctype="multipart/form-data">
+          <div class="upload-box" id="dropZone">
+            <input type="file" id="fileInput" name="file" hidden />
+            <p id="textforfile">Drag & drop a file here, or click to browse</p>
+          </div>
+          <button class="submit" type="submit">Upload</button>
+        </form>
+      </section>
 
-  </main>
-</div>
+      <!--  SETTINGS  -->
+      <section class="page" id="page-settings">
+        <div class="panel">
+          <div class="accounts" id="settings-accounts"></div>
+        </div>
+      </section>
 
-<script src="script.js"></script>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
 </body>
+
 </html>

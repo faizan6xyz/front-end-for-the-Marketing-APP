@@ -492,7 +492,36 @@ form.addEventListener('submit', async (e) => {
     else alert('Error: ' + data.error);}
   catch (err) {
     alert('Upload failed: ' + err.message); }});
-        })
+const platformSelect = document.getElementById('platform');
+const postTypeSelect = document.getElementById('postType');
+const postTypes = {
+  instagram: [ { value: 'video', label: 'Video' }, 
+                { value: 'photo', label: 'Photo' },
+                { value: 'carousel', label: 'Carousel' },
+                { value: 'story', label: 'Story' },
+                { value: 'reel', label: 'Reel' },  ],
+  linkedin: [ { value: 'text', label: 'Text-Only Post' },
+            { value: 'single-image', label: 'Single Image Post' },
+            { value: 'multi-image', label: 'Multi-Image Post' },
+            { value: 'document', label: 'Document Post' },
+            { value: 'video-post', label: 'Video Post' },
+            { value: 'article', label: 'Article' },
+            { value: 'poll', label: 'Poll' },
+            { value: 'live', label: 'LinkedIn Live' },
+            { value: 'newsletter', label: 'Newsletter' },  ], };
+function updatePostTypes() {
+  const platform = platformSelect.value;
+  const options = postTypes[platform] || [];
+  postTypeSelect.innerHTML = ''; 
+  options.forEach(opt => {
+    const el = document.createElement('option');
+    el.value = opt.value;
+    el.textContent = opt.label;
+    postTypeSelect.appendChild(el);  });}
+updatePostTypes();  
+platformSelect.addEventListener('change', updatePostTypes);
+
+})
 
     
     // now add the configrations of the accont in a section so the user can delete and add account
