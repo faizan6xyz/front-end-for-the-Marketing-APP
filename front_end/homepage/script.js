@@ -30,7 +30,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         instagram: "Instagram",
         whatsapp: "Whatsapp",
         gmail: "Gmail",
-        create: "Create",
+        post : "Post",
+        campaign : "Campaign",
         settings: "Settings", };
 
 function showPage(target) {
@@ -463,9 +464,35 @@ document.querySelectorAll(".multi-select").forEach((container) => {
             const selected = Array.from(checkboxes)
                 .filter((c) => c.checked)
                 .map((c) => c.value);
-            label.textContent = selected.length ? selected.join(", ") : "Select metrics";    }); }); }); })
+            label.textContent = selected.length ? selected.join(", ") : "Select metrics";    }); }); });
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const form = document.getElementById('uploadForm');
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropZone.classList.add('dragover');});
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  fileInput.files = e.dataTransfer.files;
+  dropZone.querySelector('p').textContent = fileInput.files[0].name; });
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length) { dropZone.querySelector('p').textContent = fileInput.files[0].name;}});
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!fileInput.files.length) return alert('Choose a file first');
+  const formData = new FormData();
+  formData.append('file', fileInput.files[0]);
+  try {
+    const res = await fetch('/upload', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (res.ok) alert('Uploaded: ' + data.filename);
+    else alert('Error: ' + data.error);}
+  catch (err) {
+    alert('Upload failed: ' + err.message); }});
+        })
 
-
-
-
+    
     // now add the configrations of the accont in a section so the user can delete and add account
