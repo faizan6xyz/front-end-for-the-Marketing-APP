@@ -364,11 +364,11 @@ async function loadSettingsAccounts(res) {
         const body = await res.json();
         if (!body.status) throw new Error(body.reason || "Failed to load accounts");
         const data = body.data;
-        const categories = { instagram_account_ids: { label: "Instagram", loginRoute: "/auth/instagram/login" },
-            whatsapp_account_ids: { label: "WhatsApp", loginRoute: "/auth/whatsapp/login" },
-            gmail_emails: { label: "Gmail", loginRoute: "/auth/gmail/login" },
-            drive_emails: { label: "Drive", loginRoute: "/auth/drive/login" },
-            linkedin_account_ids: { label: "LinkedIn", loginRoute: "/auth/linkedin/login" },  };
+        const categories = { instagram: { label: "Instagram", loginRoute: "/auth/instagram/login" },
+            whatsapp: { label: "WhatsApp", loginRoute: "/auth/whatsapp/login" },
+            gmail: { label: "Gmail", loginRoute: "/auth/gmail/login" },
+            drive: { label: "Drive", loginRoute: "/auth/drive/login" },
+            linkedin: { label: "LinkedIn", loginRoute: "/auth/linkedin/login" },  };
         container.innerHTML = "";
         Object.entries(categories).forEach(([key, { label, loginRoute }]) => {
             const values = data[key] || [];
@@ -407,7 +407,6 @@ async function loadSettingsAccounts(res) {
     catch (err) {
         container.innerHTML = `<p style="color:#c0392b;">Failed to load accounts: ${err.message}</p>`;
         console.error(err);   }}
-
 
 navItems.forEach((item) => {
     item.addEventListener("click", async () => {
@@ -492,23 +491,26 @@ form.addEventListener('submit', async (e) => {
     else alert('Error: ' + data.error);}
   catch (err) {
     alert('Upload failed: ' + err.message); }});
+    
 const platformSelect = document.getElementById('platform');
 const postTypeSelect = document.getElementById('postType');
+const Idselect = document.getElementById('accounts');
 const postTypes = {
-  instagram: [ { value: 'video', label: 'Video' }, 
+  instagram: [  { value: 'video', label: 'Video' }, 
                 { value: 'photo', label: 'Photo' },
                 { value: 'carousel', label: 'Carousel' },
                 { value: 'story', label: 'Story' },
                 { value: 'reel', label: 'Reel' },  ],
-  linkedin: [ { value: 'text', label: 'Text-Only Post' },
-            { value: 'single-image', label: 'Single Image Post' },
-            { value: 'multi-image', label: 'Multi-Image Post' },
-            { value: 'document', label: 'Document Post' },
-            { value: 'video-post', label: 'Video Post' },
-            { value: 'article', label: 'Article' },
-            { value: 'poll', label: 'Poll' },
-            { value: 'live', label: 'LinkedIn Live' },
-            { value: 'newsletter', label: 'Newsletter' },  ], };
+  linkedin: [   { value: 'text', label: 'Text-Only Post' },
+                { value: 'single-image', label: 'Single Image Post' },
+                { value: 'multi-image', label: 'Multi-Image Post' },
+                { value: 'document', label: 'Document Post' },
+                { value: 'video-post', label: 'Video Post' },
+                { value: 'article', label: 'Article' },
+                { value: 'poll', label: 'Poll' },
+                { value: 'live', label: 'LinkedIn Live' },
+                { value: 'newsletter', label: 'Newsletter' },  ], };
+let accountsData = { instagram: [], linkedin: [],whatsapp: [],drive: [], gmail: [] };
 function updatePostTypes() {
   const platform = platformSelect.value;
   const options = postTypes[platform] || [];
@@ -518,10 +520,35 @@ function updatePostTypes() {
     el.value = opt.value;
     el.textContent = opt.label;
     postTypeSelect.appendChild(el);  });}
-updatePostTypes();  
-platformSelect.addEventListener('change', updatePostTypes);
+function updateAccountOptions() {
+  const platform = platformSelect.value;
+  const accounts = accountsData[platform] || [];
+  Idselect.innerHTML = '';
+  accounts.forEach(acc => {
+    const el = document.createElement('option');
+    el.value = acc.id;
+    el.textContent = acc.username || acc.name;
+    Idselect.appendChild(el);  });}
+async function fetchAccounts() {
+  const token = localStorage.getItem("authToken");
+  const params = new URLSearchParams({ token });
+  const response = await fetch(`/vrify?${params.toString()}`);
+  const json = await res.json();
+  const data = json.data;
+  accountsData.instagram = data.instagram || [];
+  accountsData.linkedin = data.linkedin || [];
+  accountsData.whatsapp = data.whatsapp || [];
+  accountsData.drive = data.drive || [];
+  accountsData.gmail = data.gmail || [];
+  updateAccountOptions(); }
+fetchAccounts();
+updatePostTypes();
+platformSelect.addEventListener('change', () => {
+  updatePostTypes();
+  updateAccountOptions();  });
 
 })
 
     
-    // now add the configrations of the accont in a section so the user can delete and add account
+    // add the username metrics from the plotform selection in post , ids will come from the api
+    // make the args parameter go in the json ones  
