@@ -2,8 +2,8 @@
 :root {
   --orange-50: #fff7ed;
   --orange-100: #ffedd5;
-  --orange-400: #fb923c;
-  --orange-500: #f97316;
+  --orange-400: #90eef2;
+  --orange-500: #74d3d7;
   --orange-600: #ea580c;
   --ink-900: #1f2328;
   --ink-700: #4b5158;
@@ -13,7 +13,7 @@
   --card: #ffffff;
   --green: #16a34a;
   --red: #dc2626;
-  --amber: #d97706;
+  --amber: #470811;
   --radius: 14px;
 }
 
@@ -133,7 +133,7 @@ body {
   align-items: center;
   gap: 8px;
   background: var(--card);
-  border: 1px solid var(--line);
+  border: 2px solid grey;
   border-radius: 10px;
   padding: 8px 12px;
   font-size: 13px;
@@ -147,21 +147,6 @@ body {
   background: transparent;
 }
 
-.icon-btn {
-  border: 1px solid var(--line);
-  background: var(--card);
-  border-radius: 10px;
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-}
-
-.avatar {
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--orange-400), var(--orange-600));
-  width: 36px;
-  height: 36px;
-}
 
 /* ===== Page switching ===== */
 .page { display: none; }
@@ -471,18 +456,33 @@ body {
 }
 
 .postselect{
-  height: 5%;
-  /* width: 100%; */
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: auto;
+  flex-wrap: nowrap;
 }
 
 .paltformslecr{
-  height: 60%;
-  margin-left: 6%;
+  height: auto;
+  margin-left: 0; 
 }
 
 .typeopost{
-  height: 60%;
-  margin-left: 1%;
+  height: auto;
+  margin-left: 0; 
+}
+
+.multi-select {
+  width: 10%;
+  flex-shrink: 0;
+}
+
+.info {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ink-400);
+  white-space: nowrap;
 }
 
 .post{
@@ -503,6 +503,12 @@ body {
 .ccaption{
   margin: 10px;
   font-size: large;
+}
+
+#thumbnailUploadBox{
+  height: 60%;
+  width: 20%;
+  margin-left: 74%;
 }
 
 .cap{

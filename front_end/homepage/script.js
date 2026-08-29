@@ -464,7 +464,88 @@ document.querySelectorAll(".multi-select").forEach((container) => {
                 .filter((c) => c.checked)
                 .map((c) => c.value);
             label.textContent = selected.length ? selected.join(", ") : "Select metrics";    }); }); });
- 
+    
+const platformSelect = document.getElementById('platform');
+const postTypeSelect = document.getElementById('postType');
+const accountsTrigger = document.getElementById('accountsTrigger');
+const accountsOptions = document.getElementById('accountsOptions');
+const accountsLabel = document.getElementById('accountsLabel');
+const thumbnailUploadBox = document.getElementById('thumbnailUploadBox');
+const thumbnailInput = document.getElementById('thumbnailInput');
+const postTypes = { instagram: [ { value: 'video', label: 'Video' },
+                                { value: 'photo', label: 'Photo' },
+                                { value: 'carousel', label: 'Carousel' },
+                                { value: 'story', label: 'Story' },
+                                { value: 'reel', label: 'Reel' }, ],
+                    linkedin: [ { value: 'text', label: 'Text-Only Post' },
+                                { value: 'single-image', label: 'Single Image Post' },
+                                { value: 'multi-image', label: 'Multi-Image Post' },
+                                { value: 'document', label: 'Document Post' },
+                                { value: 'video-post', label: 'Video Post' }, ], };
+let accountsData = { instagram: [], linkedin: [], whatsapp: [], drive: [], gmail: [] };
+function updatePostTypes() {
+  const platform = platformSelect.value;
+  const options = postTypes[platform] || [];
+  postTypeSelect.innerHTML = '';
+  options.forEach(opt => {
+    const el = document.createElement('option');
+    el.value = opt.value;
+    el.textContent = opt.label;
+    postTypeSelect.appendChild(el); });
+  updateThumbnailVisibility(); }
+function updateAccountOptions() {
+  const platform = platformSelect.value;
+  const accounts = accountsData[platform] || [];
+  accountsOptions.innerHTML = '';
+  accounts.forEach(username => {
+    const label = document.createElement('label');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.value = username;
+    checkbox.addEventListener('change', updateAccountsLabel);
+    const text = document.createTextNode(username);
+    label.appendChild(checkbox);
+    label.appendChild(text);
+    accountsOptions.appendChild(label); });
+  updateAccountsLabel(); }
+function updateAccountsLabel() {
+  const checked = accountsOptions.querySelectorAll('input[type="checkbox"]:checked');
+  if (checked.length === 0) {
+    accountsLabel.textContent = 'Select accounts';
+  } else if (checked.length === 1) {
+    accountsLabel.textContent = checked[0].parentElement.textContent.trim();
+  } else { accountsLabel.textContent = `${checked.length} accounts selected`; } }
+function getSelectedAccountIds() {
+  return Array.from(accountsOptions.querySelectorAll('input[type="checkbox"]:checked'))
+    .map(cb => cb.value); }
+function updateThumbnailVisibility() {
+  const platform = platformSelect.value;
+  const postType = postTypeSelect.value;
+  const needsThumbnail = platform === 'instagram' && (postType === 'reel' || postType === 'video');
+  thumbnailUploadBox.style.display = needsThumbnail ? 'block' : 'none';
+  if (!needsThumbnail) { thumbnailInput.value = ''; } }
+async function fetchAccounts() {
+  const token = localStorage.getItem("authToken");
+  const params = new URLSearchParams({ token });
+  const response = await fetch(`/vrify?${params.toString()}`);
+  const json = await response.json();
+  const data = json.data;
+  accountsData.instagram = data.instagram || [];
+  accountsData.linkedin = data.linkedin || [];
+  accountsData.whatsapp = data.whatsapp || [];
+  accountsData.drive = data.drive || [];
+  accountsData.gmail = data.gmail || [];
+  updateAccountOptions(); }
+fetchAccounts();
+updatePostTypes();
+platformSelect.addEventListener('change', () => { updatePostTypes();
+  updateAccountOptions(); });
+postTypeSelect.addEventListener('change', updateThumbnailVisibility);
+accountsTrigger.addEventListener('click', () => { accountsOptions.classList.toggle('open'); });
+document.addEventListener('click', (e) => {
+  if (!document.getElementById('accountsMultiSelect').contains(e.target)) { accountsOptions.classList.remove('open');  } });
+thumbnailUploadBox.addEventListener('click', () => thumbnailInput.click());
+
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 const form = document.getElementById('uploadForm');
@@ -528,64 +609,9 @@ form.addEventListener('submit', async (e) => {
     else alert('Error: ' + data.error); }
   catch (err) {
     alert('Upload failed: ' + err.message);  } });
-    
-const platformSelect = document.getElementById('platform');
-const postTypeSelect = document.getElementById('postType');
-const Idselect = document.getElementById('accounts');
-const postTypes = {
-  instagram: [  { value: 'video', label: 'Video' }, 
-                { value: 'photo', label: 'Photo' },
-                { value: 'carousel', label: 'Carousel' },
-                { value: 'story', label: 'Story' },
-                { value: 'reel', label: 'Reel' },  ],
-  linkedin: [   { value: 'text', label: 'Text-Only Post' },
-                { value: 'single-image', label: 'Single Image Post' },
-                { value: 'multi-image', label: 'Multi-Image Post' },
-                { value: 'document', label: 'Document Post' },
-                { value: 'video-post', label: 'Video Post' },
-                { value: 'article', label: 'Article' },
-                { value: 'poll', label: 'Poll' },
-                { value: 'live', label: 'LinkedIn Live' },
-                { value: 'newsletter', label: 'Newsletter' },  ], };
-let accountsData = { instagram: [], linkedin: [],whatsapp: [],drive: [], gmail: [] };
-function updatePostTypes() {
-  const platform = platformSelect.value;
-  const options = postTypes[platform] || [];
-  postTypeSelect.innerHTML = ''; 
-  options.forEach(opt => {
-    const el = document.createElement('option');
-    el.value = opt.value;
-    el.textContent = opt.label;
-    postTypeSelect.appendChild(el);  });}
-function updateAccountOptions() {
-  const platform = platformSelect.value;    
-  const accounts = accountsData[platform] || [];
-  Idselect.innerHTML = '';
-  accounts.forEach(acc => {
-    const el = document.createElement('option');
-    el.value = acc.id;
-    el.textContent = acc.username || acc.name;
-    Idselect.appendChild(el);  });}
-async function fetchAccounts() {
-  const token = localStorage.getItem("authToken");
-  const params = new URLSearchParams({ token });
-  const response = await fetch(`/vrify?${params.toString()}`);
-  const json = await res.json();
-  const data = json.data;
-  accountsData.instagram = data.instagram || [];
-  accountsData.linkedin = data.linkedin || [];
-  accountsData.whatsapp = data.whatsapp || [];
-  accountsData.drive = data.drive || [];
-  accountsData.gmail = data.gmail || [];
-  updateAccountOptions(); }
-fetchAccounts();
-updatePostTypes();
-platformSelect.addEventListener('change', () => {
-  updatePostTypes();
-  updateAccountOptions();  });
 
 })
 
     
     // add the username metrics from the plotform selection in post , ids will come from the api
-    // make the args parameter go in the json ones  
+    // make the args parameter go in the json ones      

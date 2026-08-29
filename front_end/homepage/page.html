@@ -53,14 +53,6 @@
     <main class="main">
       <header class="topbar">
         <h1 id="page-title">Dashboard</h1>
-        <div class="topbar-right">
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" placeholder="Search...">
-          </div>
-          <button class="icon-btn" aria-label="Notifications">🔔</button>
-          <div class="avatar"></div>
-        </div>
       </header>
 
       <!--  DASHBOARD  -->
@@ -228,12 +220,19 @@
           <div class="postselect">
             <select class="paltformslecr" id="platform" name="platform">
               <option value="instagram">Instagram</option>
-              <option value="linkedin">LinkedIn</option>
+              <option value="linkedin">LinkedIn</option>  
             </select>
             <select class="typeopost" id="postType" name="postType">
             </select>
-            <select class="accounts" id="accounts" name="accounts">
-            </select>
+            <div class="multi-select" id="accountsMultiSelect">
+              <div class="multi-select-trigger" id="accountsTrigger">
+                <span class="multi-select-label" id="accountsLabel">Select accounts</span>
+                <span class="multi-select-arrow">▾</span>
+              </div>
+              <div class="multi-select-options" id="accountsOptions">
+              </div>
+            </div>
+            <h5 class="info"> * Select the thumbnail first and then the video for the Reel and the Video</h5>
           </div>
           <div class="caption">
             <label class="ccaption" for="captt">Caption:</label>
@@ -241,13 +240,14 @@
               placeholder="Enter the caption for the post" spellcheck="false"></textarea>
           </div>
           <form id="uploadForm" enctype="multipart/form-data">
-          <div class="upload-box" id="dropZone">
-            <input type="file" id="fileInput" name="file" multiple hidden />
-            <p id="textforfile">Drag & drop media for the upload</p>
-            <ul id="fileList"></ul>
-          </div>
-          <ul id="fileList"></ul>
-          <button class="submit" type="submit">Upload</button>
+            <div class="upload-row">
+              <div class="upload-box" id="dropZone">
+                <input type="file" id="fileInput" name="file" multiple hidden />
+                <p class="uploadtext">Drag & drop media for the upload</p>
+                <ul id="fileList"></ul>
+              </div>  
+            </div>
+            <button class="submit" type="submit">Upload</button>
         </form>
         </div>
       </section>
