@@ -239,47 +239,49 @@
             <textarea class="cap" id="captt" name="caption" maxlength="2170"
               placeholder="Enter the caption for the post" spellcheck="false"></textarea>
           </div>
-          <form id="uploadForm" enctype="multipart/form-data">
+          <form id="uploadForm-post" enctype="multipart/form-data">
             <div class="upload-row">
-              <div class="upload-box" id="dropZone">
-                <input type="file" id="fileInput" name="file" multiple hidden />
-                <p class="uploadtext">Drag & drop media for the upload</p>
-                <ul id="fileList"></ul>
+              <div class="upload-box" id="dropZone-post">
+                <input type="file" id="fileInput-post" name="file" multiple hidden />
+                <p class="uploadtext" id="textforfile-post">Drag & drop media for the upload</p>
+                <ul id="fileList-post"></ul>
               </div>  
             </div>
             <button class="submit" type="submit">Upload</button>
         </form>
         </div>
       </section>
+
       <!--  campign  -->
-
-      <section class="page" id="page-campaign">
-        <div class="postselect">
-          <select class="paltformslecr" name="platform">
+        <section class="page" id="page-campaign">
+          <div class="postselect">
+            <select class="paltformslecr" id="platform-campaign" name="platform">
               <option value="gmail">Gmail</option>
-              <option value="whatsapp">Whatsapp</option>  
+              <option value="whatsapp">Whatsapp</option>
             </select>
-            <h5 class="info"> * 1. Add the {name} where you want to add the name of the Receiver in the text.  2.write all the Email Address / Phone number with comma between them . 3. if you have added {name} in the text , add the name of the each Receiver with comma between them  </h5>
-        </div>
-        <div class="caccc">
-          <label class="ccaption" for="captt">Text :</label>
-          <textarea class="cap1" id="captt" name="caption" maxlength="1024" placeholder="Enter the Text for the campaign" spellcheck="false"></textarea>
-          <lable class="ccaption" for="captt">To :</lable>
-          <textarea class="cap1" id="captt" name="caption" maxlength="2100" placeholder="Enter the Number / Email Address for the campaign" spellcheck="false"></textarea>
-          <lable class="ccaption" for="captt">Name :</lable>
-          <textarea class="cap1" id="captt" name="caption" maxlength="2100" placeholder="Enter the Name of the Receiver for the campaign" spellcheck="false"></textarea>  
-        </div>
-        <form id="uploadForm" enctype="multipart/form-data">
-          <div class="upload-row">
-              <div class="upload-box" id="dropZone">
-                <input type="file" id="fileInput" name="file" multiple hidden />
-                <p class="uploadtext">Drag & drop media for the upload</p>
-              </div>  
-            </div>
-          <button class="submit" type="submit">Upload</button>
-        </form>
-      </section>
+            <h5 class="info"> * 1. Add the {name} where you want to add the name of the Receiver in the text. 2. write all the Email Address / Phone number with comma between them. 3. if you have added {name} in the text, add the name of each Receiver with comma between them</h5>
+          </div>
+          <div class="caccc">
+            <label class="ccaption" for="captt-campaign-text">Text :</label>
+            <textarea class="cap1" id="captt-campaign-text" name="caption" maxlength="1024" placeholder="Enter the Text for the campaign" spellcheck="false"></textarea>
 
+            <label class="ccaption" for="captt-campaign-to">To :</label>
+            <textarea class="cap1" id="captt-campaign-to" name="to" maxlength="2100" placeholder="Enter the Number / Email Address for the campaign" spellcheck="false"></textarea>
+
+            <label class="ccaption" for="captt-campaign-name">Name :</label>
+            <textarea class="cap1" id="captt-campaign-name" name="recipient_name" maxlength="2100" placeholder="Enter the Name of the Receiver for the campaign" spellcheck="false"></textarea>
+          </div>
+<form id="uploadForm-campaign" enctype="multipart/form-data">
+              <div class="upload-row">
+              <div class="upload-box" id="dropZone-campaign">
+  <input type="file" id="fileInput-campaign" name="file" multiple hidden />
+  <p class="uploadtext" id="textforfile-campaign">Drag & drop media for the upload</p>
+  <ul id="fileList-campaign"></ul>
+</div>
+            </div>
+            <button class="submit" type="submit">Upload</button>
+          </form>
+</section>
       <!--  SETTINGS  -->
       <section class="page" id="page-settings">
         <div class="panel">
