@@ -455,7 +455,7 @@ body {
 .upload-box {
   border: 2px dashed #999;
   border-radius: 10px;
-  height: 60%;
+  height: 80%;
   width: 50%;
   margin-top: 1%;
   margin-left: 20%;
@@ -522,8 +522,36 @@ body {
   height: 7%;
   margin: 10px;
   padding: 5px;
-  margin-top: 10px;
+  margin-top: 10%;
   margin-left: 43%;
+}
+
+#fileList {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  max-height: 160px;      /* adjust this to show more/fewer rows before scrolling */
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+#fileList:empty {
+  display: none;          /* hides the box when there are no files */
+}
+
+#fileList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+}
+
+#fileList li:last-child {
+  border-bottom: none;
 }
 
 #textforfile{
@@ -546,3 +574,5 @@ body {
   .nav ul { flex-direction: row; }
   .support-btn { display: none; }
 }
+
+

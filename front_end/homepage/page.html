@@ -241,12 +241,14 @@
               placeholder="Enter the caption for the post" spellcheck="false"></textarea>
           </div>
           <form id="uploadForm" enctype="multipart/form-data">
-            <div class="upload-box" id="dropZone">
-              <input type="file" id="fileInput" name="file" hidden />
-              <p id="textforfile">Drag & drop a file here, or click to browse</p>
-            </div>
-            <button class="submit" type="submit">Upload</button>
-          </form>
+          <div class="upload-box" id="dropZone">
+            <input type="file" id="fileInput" name="file" multiple hidden />
+            <p id="textforfile">Drag & drop media for the upload</p>
+            <ul id="fileList"></ul>
+          </div>
+          <ul id="fileList"></ul>
+          <button class="submit" type="submit">Upload</button>
+        </form>
         </div>
       </section>
       <!--  campign  -->
@@ -255,7 +257,7 @@
         <form id="uploadForm" enctype="multipart/form-data">
           <div class="upload-box" id="dropZone">
             <input type="file" id="fileInput" name="file" hidden />
-            <p id="textforfile">Drag & drop a file here, or click to browse</p>
+            <p id="textforfile">Drag & drop here, or click to browse</p>
           </div>
           <button class="submit" type="submit">Upload</button>
         </form>

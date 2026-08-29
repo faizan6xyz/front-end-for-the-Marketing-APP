@@ -464,33 +464,70 @@ document.querySelectorAll(".multi-select").forEach((container) => {
                 .filter((c) => c.checked)
                 .map((c) => c.value);
             label.textContent = selected.length ? selected.join(", ") : "Select metrics";    }); }); });
+ 
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 const form = document.getElementById('uploadForm');
-dropZone.addEventListener('click', () => fileInput.click());
+const fileListEl = document.getElementById('fileList');
+const textForFile = document.getElementById('textforfile');
+let selectedFiles = []; // our source of truth, preserves order
+function syncInputFiles() {
+  const dataTransfer = new DataTransfer();
+  selectedFiles.forEach(file => dataTransfer.items.add(file));
+  fileInput.files = dataTransfer.files; }
+function renderFileList() {
+  fileListEl.innerHTML = '';
+  selectedFiles.forEach((file, index) => {
+    const li = document.createElement('li');
+    const label = document.createElement('span');
+    label.textContent = `${index + 1}. ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = '✕';
+    removeBtn.type = 'button';
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // prevent this click from reaching dropZone's click handler
+      selectedFiles.splice(index, 1);
+      syncInputFiles();
+      renderFileList();
+      updateBoxText(); });
+    li.appendChild(label);
+    li.appendChild(removeBtn);
+    fileListEl.appendChild(li); }); }
+function updateBoxText() {
+  textForFile.textContent = selectedFiles.length
+    ? `${selectedFiles.length} file(s) selected`
+    : 'Drag & drop media for the upload'; }
+function addFiles(newFiles) {
+  Array.from(newFiles).forEach(file => {
+    const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+    if (!exists) selectedFiles.push(file);  });
+  syncInputFiles();
+  renderFileList();
+  updateBoxText(); }
+dropZone.addEventListener('click', (e) => {
+  if (e.target.closest('#fileList')) return; // ignore clicks inside the list
+  fileInput.click();  });
 dropZone.addEventListener('dragover', (e) => {
   e.preventDefault();
   dropZone.classList.add('dragover');});
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', (e) => {
+dropZone.addEventListener('drop', (e) => { 
   e.preventDefault();
   dropZone.classList.remove('dragover');
-  fileInput.files = e.dataTransfer.files;
-  dropZone.querySelector('p').textContent = fileInput.files[0].name; });
-fileInput.addEventListener('change', () => {
-  if (fileInput.files.length) { dropZone.querySelector('p').textContent = fileInput.files[0].name;}});
+  addFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', () => {  addFiles(fileInput.files); });
 form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  if (!fileInput.files.length) return alert('Choose a file first');
+     e.preventDefault();
+  if (!selectedFiles.length) return alert('Choose a file first');
   const formData = new FormData();
-  formData.append('file', fileInput.files[0]);
+  selectedFiles.forEach(file => formData.append('file[]', file));
   try {
     const res = await fetch('/upload', { method: 'POST', body: formData });
     const data = await res.json();
-    if (res.ok) alert('Uploaded: ' + data.filename);
-    else alert('Error: ' + data.error);}
+    if (res.ok) alert('Uploaded: ' + (data.filename || 'success'));
+    else alert('Error: ' + data.error); }
   catch (err) {
-    alert('Upload failed: ' + err.message); }});
+    alert('Upload failed: ' + err.message);  } });
     
 const platformSelect = document.getElementById('platform');
 const postTypeSelect = document.getElementById('postType');
@@ -521,7 +558,7 @@ function updatePostTypes() {
     el.textContent = opt.label;
     postTypeSelect.appendChild(el);  });}
 function updateAccountOptions() {
-  const platform = platformSelect.value;
+  const platform = platformSelect.value;    
   const accounts = accountsData[platform] || [];
   Idselect.innerHTML = '';
   accounts.forEach(acc => {
