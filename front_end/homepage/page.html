@@ -254,11 +254,28 @@
       <!--  campign  -->
 
       <section class="page" id="page-campaign">
+        <div class="postselect">
+          <select class="paltformslecr" name="platform">
+              <option value="gmail">Gmail</option>
+              <option value="whatsapp">Whatsapp</option>  
+            </select>
+            <h5 class="info"> * 1. Add the {name} where you want to add the name of the Receiver in the text.  2.write all the Email Address / Phone number with comma between them . 3. if you have added {name} in the text , add the name of the each Receiver with comma between them  </h5>
+        </div>
+        <div class="caccc">
+          <label class="ccaption" for="captt">Text :</label>
+          <textarea class="cap1" id="captt" name="caption" maxlength="1024" placeholder="Enter the Text for the campaign" spellcheck="false"></textarea>
+          <lable class="ccaption" for="captt">To :</lable>
+          <textarea class="cap1" id="captt" name="caption" maxlength="2100" placeholder="Enter the Number / Email Address for the campaign" spellcheck="false"></textarea>
+          <lable class="ccaption" for="captt">Name :</lable>
+          <textarea class="cap1" id="captt" name="caption" maxlength="2100" placeholder="Enter the Name of the Receiver for the campaign" spellcheck="false"></textarea>
+        </div>
         <form id="uploadForm" enctype="multipart/form-data">
-          <div class="upload-box" id="dropZone">
-            <input type="file" id="fileInput" name="file" hidden />
-            <p id="textforfile">Drag & drop here, or click to browse</p>
-          </div>
+          <div class="upload-row">
+              <div class="upload-box" id="dropZone">
+                <input type="file" id="fileInput" name="file" multiple hidden />
+                <p class="uploadtext">Drag & drop media for the upload</p>
+              </div>  
+            </div>
           <button class="submit" type="submit">Upload</button>
         </form>
       </section>
