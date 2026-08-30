@@ -1,6 +1,6 @@
 async function getUserDetails() {
     const token = localStorage.getItem("authToken");
-    if (!token) { window.location.href = "http://127.0.0.1:5501/front_end/login/login.html";
+    if (!token) { window.location.href = "front_end/login/login.html";
         return false; }
     try { const response = await fetch("backend_user_check_url", {
             method: "GET",
@@ -8,15 +8,15 @@ async function getUserDetails() {
         if (!response.ok) { 
             if (response.status === 401) {  console.error("Token invalid or expired");  }
             localStorage.removeItem("authToken");
-            window.location.href = "http://127.0.0.1:5501/front_end/login/login.html";
+            window.location.href = "front_end/login/login.html";
             return false; }
         const data = await response.json();
         if (data.status) { return true; }
-        window.location.href = "http://127.0.0.1:5501/front_end/login/login.html";
+        window.location.href = "front_end/login/login.html";
         return false;
     } catch (err) { 
         console.error("Request failed:", err);
-        window.location.href = "http://127.0.0.1:5501/front_end/login/login.html";
+        window.location.href = "front_end/login/login.html";
         return false;} }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -449,8 +449,8 @@ const reloginBtn = document.getElementById("relogin-btn");
 if (reloginBtn) { reloginBtn.addEventListener("click", () => showPage("dashboard")); }
 const container = document.getElementById("rangeSelect");
 document.getElementById("logout").addEventListener("click", () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login.html"; });
+  localStorage.removeItem("authToken");
+  window.location.href = "/login.html";  });
 document.querySelectorAll(".multi-select").forEach((container) => {
     const trigger = container.querySelector(".multi-select-trigger");
     const optionsBox = container.querySelector(".multi-select-options");
@@ -534,7 +534,6 @@ form.addEventListener('submit', async (e) => {
     alert('Upload failed: ' + err.message);  }  }); }
 initDropzoneUploader({ dropZoneId: 'dropZone-post', fileInputId: 'fileInput-post', formId: 'uploadForm-post', fileListId: 'fileList-post', textId: 'textforfile-post', endpoint: '/upload'  });
 initDropzoneUploader({ dropZoneId: 'dropZone-campaign', fileInputId: 'fileInput-campaign', formId: 'uploadForm-campaign', fileListId: 'fileList-campaign', textId: 'textforfile-campaign', endpoint: '/upload-campaign'  });
-
    
 const platformSelect = document.getElementById('platform');
 const postTypeSelect = document.getElementById('postType');
@@ -576,15 +575,19 @@ function updateAccountOptions() {
 async function fetchAccounts() {
   const token = localStorage.getItem("authToken");
   const params = new URLSearchParams({ token });
-  const response = await fetch(`/vrify?${params.toString()}`);
-  const json = await res.json();
-  const data = json.data;
-  accountsData.instagram = data.instagram || [];
-  accountsData.linkedin = data.linkedin || [];
-  accountsData.whatsapp = data.whatsapp || [];
-  accountsData.drive = data.drive || [];
-  accountsData.gmail = data.gmail || [];
-  updateAccountOptions(); }
+  try {
+    const response = await fetch(`/vrify?${params.toString()}`);
+    if (!response.ok) { console.error("fetchAccounts failed:", response.status); return; }
+    const json = await response.json();
+    const data = json.data || {};
+    accountsData.instagram = data.instagram || [];
+    accountsData.linkedin = data.linkedin || [];
+    accountsData.whatsapp = data.whatsapp || [];
+    accountsData.drive = data.drive || [];
+    accountsData.gmail = data.gmail || [];
+    updateAccountOptions(); }
+ catch (err) {
+    console.error("Network error fetching accounts:", err); } }
 fetchAccounts();
 updatePostTypes();
 platformSelect.addEventListener('change', () => {
