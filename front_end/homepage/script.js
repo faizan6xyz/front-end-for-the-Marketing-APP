@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function checkSettingsConnection() {
     const token = localStorage.getItem("authToken");
     try {
-      const response = await fetch(`/vrify`, {
+      const response = await fetch(`http://127.0.0.1:5000/vrify`, {
         method: "POST", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token })
       });
       if (response.status === 401) { window.location.href = "/login"; return false; }
@@ -496,7 +496,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function fetchAccounts() {
     const token = localStorage.getItem("authToken");
     try {
-      const response = await fetch(`/vrify`, {
+      const response = await fetch(`http://127.0.0.1:5000/vrify`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() },
         body: JSON.stringify({ token })
