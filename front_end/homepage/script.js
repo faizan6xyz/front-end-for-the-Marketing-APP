@@ -465,7 +465,6 @@ function buildCampaignFormData(selectedFiles) {
   const body = document.getElementById('captt-campaign-text').value.trim();
   const toRaw = document.getElementById('captt-campaign-to').value.trim();
   const namesRaw = document.getElementById('captt-campaign-name').value.trim();
-  const token = getToken(); // replace with however your app stores/retrieves the auth token
   const target = toRaw ? toRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
   const names = namesRaw ? namesRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
   fd.append('token', token);
