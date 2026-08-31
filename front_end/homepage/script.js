@@ -366,138 +366,183 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-function initDropzoneUploader({ dropZoneId, fileInputId, formId, fileListId, textId, endpoint, buildFormData }) {
-  const dropZone = document.getElementById(dropZoneId);
-  const fileInput = document.getElementById(fileInputId);
-  const form = document.getElementById(formId);
-  const fileListEl = document.getElementById(fileListId);
-  const textForFile = document.getElementById(textId);
-  if (!dropZone || !fileInput || !form || !fileListEl || !textForFile) {
-    console.warn('Uploader init skipped, missing element for:', dropZoneId);
-    return;
-  }
-  let selectedFiles = [];
-  function syncInputFiles() {
-    const dataTransfer = new DataTransfer();
-    selectedFiles.forEach(file => dataTransfer.items.add(file));
-    fileInput.files = dataTransfer.files;
-  }
-  function renderFileList() {
-    fileListEl.innerHTML = '';
-    selectedFiles.forEach((file, index) => {
-      const li = document.createElement('li');
-      const label = document.createElement('span');
-      label.textContent = `${index + 1}. ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-      const removeBtn = document.createElement('button');
-      removeBtn.textContent = '✕';
-      removeBtn.type = 'button';
-      removeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        selectedFiles.splice(index, 1);
-        syncInputFiles();
-        renderFileList();
-        updateBoxText();
+  function initDropzoneUploader({ dropZoneId, fileInputId, formId, fileListId, textId, endpoint, buildFormData }) {
+    const dropZone = document.getElementById(dropZoneId);
+    const fileInput = document.getElementById(fileInputId);
+    const form = document.getElementById(formId);
+    const fileListEl = document.getElementById(fileListId);
+    const textForFile = document.getElementById(textId);
+    if (!dropZone || !fileInput || !form || !fileListEl || !textForFile) {
+      console.warn('Uploader init skipped, missing element for:', dropZoneId);
+      return;
+    }
+    let selectedFiles = [];
+    function syncInputFiles() {
+      const dataTransfer = new DataTransfer();
+      selectedFiles.forEach(file => dataTransfer.items.add(file));
+      fileInput.files = dataTransfer.files;
+    }
+    function renderFileList() {
+      fileListEl.innerHTML = '';
+      selectedFiles.forEach((file, index) => {
+        const li = document.createElement('li');
+        const label = document.createElement('span');
+        label.textContent = `${index + 1}. ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = '✕';
+        removeBtn.type = 'button';
+        removeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectedFiles.splice(index, 1);
+          syncInputFiles();
+          renderFileList();
+          updateBoxText();
+        });
+        li.appendChild(label);
+        li.appendChild(removeBtn);
+        fileListEl.appendChild(li);
       });
-      li.appendChild(label);
-      li.appendChild(removeBtn);
-      fileListEl.appendChild(li);
+    }
+    function updateBoxText() {
+      textForFile.textContent = selectedFiles.length
+        ? `${selectedFiles.length} file(s) selected`
+        : 'Drag & drop media for the upload';
+    }
+    function addFiles(newFiles) {
+      Array.from(newFiles).forEach(file => {
+        const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+        if (!exists) selectedFiles.push(file);
+      });
+      syncInputFiles();
+      renderFileList();
+      updateBoxText();
+    }
+    dropZone.addEventListener('click', (e) => {
+      if (e.target.closest(`#${fileListId}`)) return;
+      fileInput.click();
     });
-  }
-  function updateBoxText() {
-    textForFile.textContent = selectedFiles.length
-      ? `${selectedFiles.length} file(s) selected`
-      : 'Drag & drop media for the upload';
-  } 
-  function addFiles(newFiles) {
-    Array.from(newFiles).forEach(file => {
-      const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
-      if (!exists) selectedFiles.push(file);
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
     });
-    syncInputFiles();
-    renderFileList();
-    updateBoxText();
-  }
-  dropZone.addEventListener('click', (e) => {
-    if (e.target.closest(`#${fileListId}`)) return;
-    fileInput.click();
-  });
-  dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropZone.classList.add('dragover');
-  });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-  dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    addFiles(e.dataTransfer.files);
-  });
-  fileInput.addEventListener('change', () => { addFiles(fileInput.files); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      addFiles(e.dataTransfer.files);
+    });
+    fileInput.addEventListener('change', () => { addFiles(fileInput.files); });
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    // files are optional for a campaign (media is optional), so don't block submit if empty
-    const formData = buildFormData
-      ? buildFormData(selectedFiles)
-      : (() => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = buildFormData
+        ? buildFormData(selectedFiles)
+        : (() => {
           const fd = new FormData();
           selectedFiles.forEach(file => fd.append('file', file));
           return fd;
         })();
-    try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { "Request-ID": crypto.randomUUID() }, // no Content-Type — browser sets multipart boundary
-        body: formData
-      });
-      const data = await res.json();
-      if (res.ok) alert('Campaign sent: ' + (data.count ?? 0) + ' recipient(s) processed');
-      else alert('Error: ' + (data.error || 'unknown error'));
-    } catch (err) {
-      alert('Upload failed: ' + err.message);
-    }
-  });
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { "Request-ID": crypto.randomUUID() },
+          body: formData
+        });
+        const data = await res.json();
+        if (res.ok) alert('Campaign sent: ' + (data.count ?? 0) + ' recipient(s) processed');
+        else alert('Error: ' + (data.error || 'unknown error'));
+      } catch (err) {
+        alert('Upload failed: ' + err.message);
+      }
+    });
+  }
+
+  function buildCampaignFormData(selectedFiles) {
+    const fd = new FormData();
+    const platform = document.getElementById('platform-campaign').value;
+    const campaignName = document.getElementById('captt-campaign-cname').value.trim();
+    const body = document.getElementById('captt-campaign-text').value.trim();
+    const toRaw = document.getElementById('captt-campaign-to').value.trim();
+    const namesRaw = document.getElementById('captt-campaign-name').value.trim();
+    const target = toRaw ? toRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+    const names = namesRaw ? namesRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+    fd.append('token', token);
+    fd.append('platform', platform);
+    fd.append('campaign_name', campaignName);
+    fd.append('body', body);
+    fd.append('target', JSON.stringify(target));
+    fd.append('name', JSON.stringify(names));
+    selectedFiles.forEach(file => fd.append('file', file));
+    return fd;
+  }
+
+function buildCampaignEndpoint() {
+  const platform = document.getElementById('platform-post').value;
+  const type = document.getElementById('postType').value; // <-- adjust to real source
+  return `${platform}/upload/${type}`;
 }
 
-function buildCampaignFormData(selectedFiles) {
-  const fd = new FormData();
-  const platform = document.getElementById('platform-campaign').value;
-  const campaignName = document.getElementById('captt-campaign-cname').value.trim();
-  const body = document.getElementById('captt-campaign-text').value.trim();
-  const toRaw = document.getElementById('captt-campaign-to').value.trim();
-  const namesRaw = document.getElementById('captt-campaign-name').value.trim();
-  const target = toRaw ? toRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
-  const names = namesRaw ? namesRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
-  fd.append('token', token);
-  fd.append('platform', platform);
-  fd.append('campaign_name', campaignName);
-  fd.append('body', body);
-  fd.append('target', JSON.stringify(target));
-  fd.append('name', JSON.stringify(names));
-  selectedFiles.forEach(file => fd.append('file', file));
-  return fd;
-}
+  initDropzoneUploader({ dropZoneId: 'dropZone-campaign', fileInputId: 'fileInput-campaign', formId: 'uploadForm-campaign', fileListId: 'fileList-campaign', textId: 'textforfile-campaign', endpoint: '/campaign', buildFormData: buildCampaignFormData });
 
-initDropzoneUploader({  dropZoneId: 'dropZone-campaign',  fileInputId: 'fileInput-campaign', formId: 'uploadForm-campaign',  fileListId: 'fileList-campaign', textId: 'textforfile-campaign', endpoint: '/campaign', buildFormData: buildCampaignFormData });
+  initDropzoneUploader({ dropZoneId: 'dropZone-post', fileInputId: 'fileInput-post', formId: 'uploadForm-post', fileListId: 'fileList-post', textId: 'textforfile-post', endpoint: buildCampaignEndpoint , buildFormData: buildCampaignFormData });
 
-  const platformSelect = document.getElementById('platform');
+  const platformSelect = document.getElementById('platform-post');
   const postTypeSelect = document.getElementById('postType');
   const Idselect = document.getElementById('accounts');
   const postTypes = {
-    instagram: [{ value: 'video', label: 'Video' },
-    { value: 'photo', label: 'Photo' },
-    { value: 'carousel', label: 'Carousel' },
-    { value: 'story', label: 'Story' },
-    { value: 'reel', label: 'Reel' },],
-    linkedin: [{ value: 'text', label: 'Text-Only Post' },
-    { value: 'single-image', label: 'Single Image Post' },
-    { value: 'multi-image', label: 'Multi-Image Post' },
-    { value: 'document', label: 'Document Post' },
-    { value: 'video-post', label: 'Video Post' },
-    { value: 'article', label: 'Article' },
-    { value: 'poll', label: 'Poll' },
-    { value: 'live', label: 'LinkedIn Live' },
-    { value: 'newsletter', label: 'Newsletter' },],
+    instagram: [
+      { value: 'video', label: 'Video' },
+      { value: 'photo', label: 'Photo' },
+      { value: 'carousel', label: 'Carousel' },
+      { value: 'story', label: 'Story' },
+      { value: 'reel', label: 'Reel' },
+    ],
+    snapchat: [
+      { value: 'text', label: 'Text' },
+      { value: 'photo', label: 'Photo' },
+      { value: 'video', label: 'Video' },
+      { value: 'story', label: 'Story' },
+    ],
+    youtube: [
+      { value: 'video', label: 'Video' },
+      { value: 'short', label: 'Short' },
+    ],
+    x: [
+      { value: 'text', label: 'Text Post' },
+      { value: 'photo', label: 'Photo' },
+      { value: 'video', label: 'Video' },
+    ],
+    linkedin: [
+      { value: 'text', label: 'Text-Only Post' },
+      { value: 'single-image', label: 'Single Image Post' },
+      { value: 'multi-image', label: 'Multi-Image Post' },
+      { value: 'document', label: 'Document Post' },
+      { value: 'video-post', label: 'Video Post' },
+    ],
+    pinterest: [
+      { value: 'image', label: 'Image Pin' },
+      { value: 'video', label: 'Video Pin' },
+      { value: 'carousel', label: 'Carousel Pin' },
+    ],
+    reddit: [
+      { value: 'text', label: 'Text Post' },
+      { value: 'image', label: 'Image Post' },
+      { value: 'video', label: 'Video Post' },
+    ],
+    threads: [
+      { value: 'text', label: 'Text Post' },
+      { value: 'image', label: 'Image Post' },
+      { value: 'video', label: 'Video Post' },
+      { value: 'carousel', label: 'Carousel' },
+    ],
+    discord: [
+      { value: 'text', label: 'Text Message' },
+      { value: 'image', label: 'Image' },
+      { value: 'video', label: 'Video' },
+      { value: 'file', label: 'File' },
+    ],
   };
+
   let accountsData = { instagram: [], linkedin: [], whatsapp: [], drive: [], gmail: [] };
   function updatePostTypes() {
     const platform = platformSelect.value;
