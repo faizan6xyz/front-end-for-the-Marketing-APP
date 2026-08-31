@@ -35,6 +35,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     instagram: "Instagram",
     whatsapp: "Whatsapp",
     gmail: "Gmail",
+    youtube: "Youtube",
+    pinterest: "Pinterest",
+    reddit: "Reddit",
+    discord: "Discord",
+    snapchat: "Snapchat",
+    x: "X",
+    threads: "Threads",
     post: "Post",
     campaign: "Campaign",
     settings: "Settings",
@@ -442,8 +449,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           selectedFiles.forEach(file => fd.append('file', file));
           return fd;
         })();
+      const url = typeof endpoint === 'function' ? endpoint() : endpoint;
+
       try {
-        const res = await fetch(endpoint, {
+        const res = await fetch(url, {
           method: 'POST',
           headers: { "Request-ID": crypto.randomUUID() },
           body: formData
@@ -478,7 +487,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function buildCampaignEndpoint() {
   const platform = document.getElementById('platform-post').value;
-  const type = document.getElementById('postType').value; // <-- adjust to real source
+  const type = document.getElementById('postType').value; 
   return `${platform}/upload/${type}`;
 }
 
