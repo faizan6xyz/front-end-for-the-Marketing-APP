@@ -501,8 +501,8 @@ body {
 }
 
 .ccaption{
-  margin: 10px;
-  font-size: large;
+  margin: 5px;
+  font-size: smaller;
 }
 
 #thumbnailUploadBox{
@@ -521,7 +521,7 @@ body {
 }
 
 .cap1{
-  width: 27%;
+  width: 23%;
   height: 90%;
 }
 
