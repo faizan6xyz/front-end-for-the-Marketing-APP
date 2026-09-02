@@ -227,6 +227,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!body.status) throw new Error(body.reason || "Failed to load accounts");
       const data = body.data;
       const categories = {
+        instagram: { label: "Threads", loginRoute: "/auth/threads/login" },
+        instagram: { label: "Snapchat", loginRoute: "/auth/snapchat/login" },
+        instagram: { label: "Discord", loginRoute: "/auth/discord/login" },
+        instagram: { label: "Reddit", loginRoute: "/auth/reddit/login" },
+        instagram: { label: "Pinterest", loginRoute: "/auth/pinterest/login" },
+        instagram: { label: "X", loginRoute: "/auth/x/login" },
+        instagram: { label: "Youtube", loginRoute: "/auth/youtube/login" },
         instagram: { label: "Instagram", loginRoute: "/auth/instagram/login" },
         whatsapp: { label: "WhatsApp", loginRoute: "/auth/whatsapp/login" },
         gmail: { label: "Gmail", loginRoute: "/auth/gmail/login" },
@@ -513,7 +520,6 @@ function buildCampaignEndpoint() {
       { value: 'story', label: 'Story' },
     ],
     youtube: [
-      { value: 'video', label: 'Video' },
       { value: 'short', label: 'Short' },
     ],
     x: [
