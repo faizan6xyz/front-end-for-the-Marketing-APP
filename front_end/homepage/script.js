@@ -31,16 +31,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const pageTitle = document.getElementById("page-title");
   const titles = {
     dashboard: "Dashboard",
-    linkedln: "Linkedln",
     instagram: "Instagram",
     whatsapp: "Whatsapp",
     gmail: "Gmail",
     youtube: "Youtube",
     pinterest: "Pinterest",
-    reddit: "Reddit",
-    discord: "Discord",
-    snapchat: "Snapchat",
-    x: "X",
     threads: "Threads",
     post: "Post",
     campaign: "Campaign",
@@ -513,48 +508,19 @@ function buildCampaignEndpoint() {
       { value: 'story', label: 'Story' },
       { value: 'reel', label: 'Reel' },
     ],
-    snapchat: [
-      { value: 'text', label: 'Text' },
-      { value: 'photo', label: 'Photo' },
-      { value: 'video', label: 'Video' },
-      { value: 'story', label: 'Story' },
-    ],
     youtube: [
       { value: 'short', label: 'Short' },
-    ],
-    x: [
-      { value: 'text', label: 'Text Post' },
-      { value: 'photo', label: 'Photo' },
-      { value: 'video', label: 'Video' },
-    ],
-    linkedin: [
-      { value: 'text', label: 'Text-Only Post' },
-      { value: 'single-image', label: 'Single Image Post' },
-      { value: 'multi-image', label: 'Multi-Image Post' },
-      { value: 'document', label: 'Document Post' },
-      { value: 'video-post', label: 'Video Post' },
     ],
     pinterest: [
       { value: 'image', label: 'Image Pin' },
       { value: 'video', label: 'Video Pin' },
       { value: 'carousel', label: 'Carousel Pin' },
     ],
-    reddit: [
-      { value: 'text', label: 'Text Post' },
-      { value: 'image', label: 'Image Post' },
-      { value: 'video', label: 'Video Post' },
-    ],
     threads: [
       { value: 'text', label: 'Text Post' },
       { value: 'image', label: 'Image Post' },
       { value: 'video', label: 'Video Post' },
       { value: 'carousel', label: 'Carousel' },
-    ],
-    discord: [
-      { value: 'text', label: 'Text Message' },
-      { value: 'image', label: 'Image' },
-      { value: 'video', label: 'Video' },
-      { value: 'file', label: 'File' },
     ],
   };
 
