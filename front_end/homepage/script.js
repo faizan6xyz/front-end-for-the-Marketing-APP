@@ -31,11 +31,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const pageTitle = document.getElementById("page-title");
   const titles = {
     dashboard: "Dashboard",
+    linkedln: "Linkedln",
     instagram: "Instagram",
     whatsapp: "Whatsapp",
     gmail: "Gmail",
     youtube: "Youtube",
     pinterest: "Pinterest",
+    x: "X",
     threads: "Threads",
     post: "Post",
     campaign: "Campaign",
@@ -510,6 +512,18 @@ function buildCampaignEndpoint() {
     ],
     youtube: [
       { value: 'short', label: 'Short' },
+    ],
+    x: [
+      { value: 'text', label: 'Text Post' },
+      { value: 'photo', label: 'Photo' },
+      { value: 'video', label: 'Video' },
+    ],
+    linkedin: [
+      { value: 'text', label: 'Text-Only Post' },
+      { value: 'single-image', label: 'Single Image Post' },
+      { value: 'multi-image', label: 'Multi-Image Post' },
+      { value: 'document', label: 'Document Post' },
+      { value: 'video-post', label: 'Video Post' },
     ],
     pinterest: [
       { value: 'image', label: 'Image Pin' },
