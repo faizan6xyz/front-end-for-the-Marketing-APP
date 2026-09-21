@@ -616,3 +616,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // add the username metrics from the plotform selection in post , ids will come from the api
 // make the args parameter go in the json ones
+
+
+
+// using the the cookies makes the xxs resistant but not to the csrf attacks  
