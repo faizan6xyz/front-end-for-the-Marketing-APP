@@ -1,7 +1,7 @@
-const API_BASE_URL = "http://localhost:5000/api"; // change to your deployed URL
+const API_BASE_URL = "http://localhost:5000/api"; // production: "https://api.mysite.com/api"
 const SIGNUP_ENDPOINT = `${API_BASE_URL}/auth/signup`;
-const GOOGLE_OAUTH_URL = `${API_BASE_URL}/auth/google`;   // your backend's Google OAuth redirect route
-const FACEBOOK_OAUTH_URL = `${API_BASE_URL}/auth/facebook`; // your backend's Facebook OAuth redirect route
+const GOOGLE_OAUTH_URL = `${API_BASE_URL}/auth/google`;
+const FACEBOOK_OAUTH_URL = `${API_BASE_URL}/auth/facebook`;
 const form = document.getElementById("signup-form");
 const statusEl = document.getElementById("status");
 const fullNameInput = document.getElementById("full-name");
@@ -33,13 +33,9 @@ function setLoading(isLoading) {
   submitBtn.disabled = isLoading;
   submitBtn.classList.toggle("is-loading", isLoading);
 }
-function storeSession({ access_token, refresh_token } = {}) {
-  if (access_token) localStorage.setItem("access_token", access_token);
-  if (refresh_token) localStorage.setItem("refresh_token", refresh_token);
-}
-form.addEventListener("submit", async (event) => {  // runs after the forms submit button is pressed because it saya forms.addeventlistener
-  event.preventDefault();  // (stops page reload)
-  clearStatus(); // (wipes any old error message)
+form.addEventListener("submit", async (event) => {
+  event.preventDefault(); 
+  clearStatus();          
   const fullName = fullNameInput.value.trim();
   const email = emailInput.value.trim();
   const password = passwordInput.value;
@@ -52,6 +48,7 @@ form.addEventListener("submit", async (event) => {  // runs after the forms subm
   markInvalid(emailInput, !emailValid);
   markInvalid(passwordInput, !passwordValid);
   markInvalid(confirmPasswordInput, !confirmValid);
+
   if (!nameValid) {
     setStatus("Enter your full name.");
     return;
@@ -73,23 +70,28 @@ form.addEventListener("submit", async (event) => {  // runs after the forms subm
     const response = await fetch(SIGNUP_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include", // required so the browser stores the authToken cookie
       body: JSON.stringify({ full_name: fullName, email, password }),
     });
-
     let data = {};
     try {
       data = await response.json();
     } catch {
-      // no JSON body
     }
     if (!response.ok) {
-      const message = data.error || data.message || `Sign up failed (${response.status}).`;
-      throw new Error(message);
+      throw new Error(
+        data.error || data.message || `Sign up failed (${response.status}).`
+      );
     }
-    storeSession(data);
+    if (response.status === 202 || data.Statusdb === false) {
+      throw new Error(
+        data.detail || "Account created, but saving your details failed."
+      );
+    }
     setStatus("Account created. Redirecting…", "success");
     setTimeout(() => {
-    window.location.href = "https://www.mysite.com/dashboard";    }, 500);
+      window.location.href = data.next || "/dashboard";
+    }, 500);
   } catch (err) {
     setStatus(err.message || "Could not reach the server. Try again.");
   } finally {
@@ -99,7 +101,6 @@ form.addEventListener("submit", async (event) => {  // runs after the forms subm
 googleBtn.addEventListener("click", () => {
   window.location.href = GOOGLE_OAUTH_URL;
 });
-
 facebookBtn.addEventListener("click", () => {
   window.location.href = FACEBOOK_OAUTH_URL;
 });
