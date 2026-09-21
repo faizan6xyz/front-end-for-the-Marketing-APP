@@ -1,8 +1,7 @@
-
-const API_BASE_URL = "http://localhost:5000/api"; // change to your deployed URL
+const API_BASE_URL = "http://localhost:5000/api"; // production: "https://api.mysite.com/api"
 const LOGIN_ENDPOINT = `${API_BASE_URL}/auth/login`;
-const GOOGLE_OAUTH_URL = `${API_BASE_URL}/auth/google`;   // your backend's Google OAuth redirect route
-const FACEBOOK_OAUTH_URL = `${API_BASE_URL}/auth/facebook`; // your backend's Facebook OAuth redirect route
+const GOOGLE_OAUTH_URL = `${API_BASE_URL}/auth/google`;
+const FACEBOOK_OAUTH_URL = `${API_BASE_URL}/auth/facebook`;
 const form = document.getElementById("login-form");
 const statusEl = document.getElementById("status");
 const emailInput = document.getElementById("email");
@@ -15,7 +14,6 @@ function setStatus(message, type = "error") {
   statusEl.textContent = message;
   statusEl.classList.toggle("is-success", type === "success");
 }
-
 function clearStatus() {
   statusEl.textContent = "";
   statusEl.classList.remove("is-success");
@@ -32,11 +30,6 @@ document.querySelectorAll(".field input").forEach((input) => {
 function setLoading(isLoading) {
   submitBtn.disabled = isLoading;
   submitBtn.classList.toggle("is-loading", isLoading);
-}
-function storeSession({ access_token, refresh_token } = {}, remember) {
-  const store = remember ? localStorage : sessionStorage;
-  if (access_token) store.setItem("access_token", access_token);
-  if (refresh_token) store.setItem("refresh_token", refresh_token);
 }
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -56,22 +49,26 @@ form.addEventListener("submit", async (event) => {
     const response = await fetch(LOGIN_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      credentials: "include", // required so the browser stores the authToken cookie
+      body: JSON.stringify({ email, password, remember: rememberInput.checked }),
     });
     let data = {};
     try {
       data = await response.json();
     } catch {
-      // no JSON body
     }
     if (!response.ok) {
-      const message = data.error || data.message || `Login failed (${response.status}).`;
-      throw new Error(message);
+      throw new Error(
+        data.error || data.message || `Login failed (${response.status}).`
+      );
     }
-    storeSession(data, rememberInput.checked);
+    if (response.status === 202 || data.Statusdb === false) {
+      throw new Error(data.detail || "Logged in, but something went wrong. Try again.");
+    }
     setStatus("Logged in. Redirecting…", "success");
     setTimeout(() => {
-    window.location.href = "https://www.mysite.com/dashboard";   }, 500);
+      window.location.href = data.next || "/dashboard";
+    }, 500);
   } catch (err) {
     setStatus(err.message || "Could not reach the server. Try again.");
   } finally {
