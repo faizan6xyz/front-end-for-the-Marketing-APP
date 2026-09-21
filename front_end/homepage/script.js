@@ -1,5 +1,5 @@
 async function getUserDetails() {
-  const token = localStorage.getItem("authToken");
+  const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
   if (!token) {
     window.location.href = "front_end/login/login.html";
     return false;
@@ -8,7 +8,7 @@ async function getUserDetails() {
     const response = await fetch("backend_user_check_url", { method: "POST", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token: token }) });
     if (!response.ok) {
       if (response.status === 401) { console.error("Token invalid or expired"); }
-      localStorage.removeItem("authToken");
+      document.cookie = 'access_token=;';
       window.location.href = "front_end/login/login.html";
       return false;
     }
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function makeConnectionChecker({ storageKey, endpoint, loginRoute }) {
     return async function () {
-      const token = localStorage.getItem("authToken");
+      const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
       const accountId = localStorage.getItem(storageKey);
       if (!accountId) return null;
       try {
@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function checkSettingsConnection() {
-    const token = localStorage.getItem("authToken");
+    const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
     try {
       const response = await fetch(`http://127.0.0.1:5000/vrify`, {
         method: "POST", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token })
@@ -357,7 +357,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (reloginBtn) { reloginBtn.addEventListener("click", () => showPage("dashboard")); }
   const rangeSelectEl = document.getElementById("rangeSelect");
   document.getElementById("logout").addEventListener("click", () => {
-    localStorage.removeItem("authToken");
+    document.cookie = 'access_token=;';
     window.location.href = "/login.html";
   });
   document.querySelectorAll(".multi-select").forEach((rangeSelectEl) => {
@@ -489,15 +489,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     return fd;
   }
 
-function buildCampaignEndpoint() {
-  const platform = document.getElementById('platform-post').value;
-  const type = document.getElementById('postType').value; 
-  return `${platform}/upload/${type}`;
-}
+  function buildCampaignEndpoint() {
+    const platform = document.getElementById('platform-post').value;
+    const type = document.getElementById('postType').value;
+    return `${platform}/upload/${type}`;
+  }
 
   initDropzoneUploader({ dropZoneId: 'dropZone-campaign', fileInputId: 'fileInput-campaign', formId: 'uploadForm-campaign', fileListId: 'fileList-campaign', textId: 'textforfile-campaign', endpoint: '/campaign', buildFormData: buildCampaignFormData });
 
-  initDropzoneUploader({ dropZoneId: 'dropZone-post', fileInputId: 'fileInput-post', formId: 'uploadForm-post', fileListId: 'fileList-post', textId: 'textforfile-post', endpoint: buildCampaignEndpoint , buildFormData: buildCampaignFormData });
+  initDropzoneUploader({ dropZoneId: 'dropZone-post', fileInputId: 'fileInput-post', formId: 'uploadForm-post', fileListId: 'fileList-post', textId: 'textforfile-post', endpoint: buildCampaignEndpoint, buildFormData: buildCampaignFormData });
 
   const platformSelect = document.getElementById('platform-post');
   const postTypeSelect = document.getElementById('postType');
