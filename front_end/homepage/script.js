@@ -25,7 +25,7 @@ async function getUserDetails() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   // const isAuthed = await getUserDetails();
-  // if (!isAuthed) return; 
+  // if (!isAuthed) return;
   const navItems = document.querySelectorAll(".nav-item[data-target]");
   const pages = document.querySelectorAll(".page");
   const pageTitle = document.getElementById("page-title");
@@ -224,10 +224,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!body.status) throw new Error(body.reason || "Failed to load accounts");
       const data = body.data;
       const categories = {
-        instagram: { label: "Threads", loginRoute: "/auth/threads/login" },
-        instagram: { label: "Pinterest", loginRoute: "/auth/pinterest/login" },
-        instagram: { label: "X", loginRoute: "/auth/x/login" },
-        instagram: { label: "Youtube", loginRoute: "/auth/youtube/login" },
+        threads: { label: "Threads", loginRoute: "/auth/threads/login" },
+        pinterest: { label: "Pinterest", loginRoute: "/auth/pinterest/login" },
+        x: { label: "X", loginRoute: "/auth/x/login" },
+        youtube: { label: "Youtube", loginRoute: "/auth/youtube/login" },
         instagram: { label: "Instagram", loginRoute: "/auth/instagram/login" },
         whatsapp: { label: "WhatsApp", loginRoute: "/auth/whatsapp/login" },
         gmail: { label: "Gmail", loginRoute: "/auth/gmail/login" },
@@ -469,7 +469,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   function buildCampaignFormData(selectedFiles) {
     const fd = new FormData();
     const tokenMatch = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
-    const token = tokenMatch ? tokenMatch[1] : null; // was referencing an undeclared `token`
+    const token = tokenMatch ? tokenMatch[1] : null;
+
     const platform = document.getElementById('platform-campaign').value;
     const campaignName = document.getElementById('captt-campaign-cname').value.trim();
     const body = document.getElementById('captt-campaign-text').value.trim();
@@ -537,6 +538,28 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   let accountsData = { instagram: [], linkedin: [], whatsapp: [], drive: [], gmail: [] };
+  function syncAccountIdsToStorage(data) {
+    const storageMap = {
+      account_id: data.instagram,
+      linkedin_account_id: data.linkedin,
+      gmail_account_id: data.gmail,
+      whatsapp_account_id: data.whatsapp,
+    };
+
+    Object.entries(storageMap).forEach(([storageKey, accounts]) => {
+      if (Array.isArray(accounts) && accounts.length > 0) {
+        const primary = accounts[0];
+        const id = primary?.id ?? primary?.account_id ?? primary;
+        if (id !== undefined && id !== null) {
+          localStorage.setItem(storageKey, id);
+        } else {
+          localStorage.removeItem(storageKey);
+        }
+      } else {
+        localStorage.removeItem(storageKey);
+      }
+    });
+  }
   function updatePostTypes() {
     const platform = platformSelect.value;
     const options = postTypes[platform] || [];
@@ -557,25 +580,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       el.value = acc.id;
       el.textContent = acc.username || acc.name;
       Idselect.appendChild(el);
-    });
-  }
-  function syncAccountIdsToStorage(data) {
-    const storageMap = {
-      account_id: data.instagram,          
-      linkedin_account_id: data.linkedin,  
-      gmail_account_id: data.gmail,        
-      whatsapp_account_id: data.whatsapp,  
-    };
-    Object.entries(storageMap).forEach(([storageKey, accounts]) => {
-      if (Array.isArray(accounts) && accounts.length > 0) {
-        const primary = accounts[0];
-        const id = primary.id ?? primary.account_id ?? primary;
-        if (id !== undefined) {
-          localStorage.setItem(storageKey, id);
-        }
-      } else {
-        localStorage.removeItem(storageKey);
-      }
     });
   }
   async function fetchAccounts() {
@@ -606,8 +610,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     updatePostTypes();
     updateAccountOptions();
   });
+
 })
 
 
 // add the username metrics from the plotform selection in post , ids will come from the api
-// make the args parameter go in the json ones  
+// make the args parameter go in the json ones
