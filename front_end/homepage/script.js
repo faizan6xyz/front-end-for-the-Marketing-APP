@@ -225,9 +225,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       const data = body.data;
       const categories = {
         instagram: { label: "Threads", loginRoute: "/auth/threads/login" },
-        instagram: { label: "Snapchat", loginRoute: "/auth/snapchat/login" },
-        instagram: { label: "Discord", loginRoute: "/auth/discord/login" },
-        instagram: { label: "Reddit", loginRoute: "/auth/reddit/login" },
         instagram: { label: "Pinterest", loginRoute: "/auth/pinterest/login" },
         instagram: { label: "X", loginRoute: "/auth/x/login" },
         instagram: { label: "Youtube", loginRoute: "/auth/youtube/login" },
@@ -235,7 +232,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         whatsapp: { label: "WhatsApp", loginRoute: "/auth/whatsapp/login" },
         gmail: { label: "Gmail", loginRoute: "/auth/gmail/login" },
         drive: { label: "Drive", loginRoute: "/auth/drive/login" },
-        linkedin: { label: "LinkedIn", loginRoute: "/auth/linkedin/login" },
       };
       container.innerHTML = "";
       Object.entries(categories).forEach(([key, { label, loginRoute }]) => {
@@ -472,6 +468,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function buildCampaignFormData(selectedFiles) {
     const fd = new FormData();
+    const tokenMatch = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
+    const token = tokenMatch ? tokenMatch[1] : null; // was referencing an undeclared `token`
     const platform = document.getElementById('platform-campaign').value;
     const campaignName = document.getElementById('captt-campaign-cname').value.trim();
     const body = document.getElementById('captt-campaign-text').value.trim();
@@ -561,8 +559,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       Idselect.appendChild(el);
     });
   }
+  function syncAccountIdsToStorage(data) {
+    const storageMap = {
+      account_id: data.instagram,          
+      linkedin_account_id: data.linkedin,  
+      gmail_account_id: data.gmail,        
+      whatsapp_account_id: data.whatsapp,  
+    };
+    Object.entries(storageMap).forEach(([storageKey, accounts]) => {
+      if (Array.isArray(accounts) && accounts.length > 0) {
+        const primary = accounts[0];
+        const id = primary.id ?? primary.account_id ?? primary;
+        if (id !== undefined) {
+          localStorage.setItem(storageKey, id);
+        }
+      } else {
+        localStorage.removeItem(storageKey);
+      }
+    });
+  }
   async function fetchAccounts() {
-    const token = localStorage.getItem("authToken");
+    const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
     try {
       const response = await fetch(`http://127.0.0.1:5000/vrify`, {
         method: "POST",
@@ -577,6 +594,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       accountsData.whatsapp = data.whatsapp || [];
       accountsData.drive = data.drive || [];
       accountsData.gmail = data.gmail || [];
+      syncAccountIdsToStorage(data); 
       updateAccountOptions();
     } catch (err) {
       console.error("Network error fetching accounts:", err);
@@ -588,7 +606,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     updatePostTypes();
     updateAccountOptions();
   });
-
 })
 
 
