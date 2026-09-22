@@ -1,5 +1,5 @@
 const API_BASE_URL = "http://localhost:5000/api"; // production: "https://api.mysite.com/api"
-const LOGIN_ENDPOINT = `${API_BASE_URL}/auth/login`;
+const LOGIN_ENDPOINT = `${API_BASE_URL}/login`;
 const GOOGLE_OAUTH_URL = `${API_BASE_URL}/auth/google`;
 const FACEBOOK_OAUTH_URL = `${API_BASE_URL}/auth/facebook`;
 const form = document.getElementById("login-form");
@@ -49,7 +49,7 @@ form.addEventListener("submit", async (event) => {
     const response = await fetch(LOGIN_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include", // required so the browser stores the authToken cookie
+      credentials: "include", 
       body: JSON.stringify({ email, password, remember: rememberInput.checked }),
     });
     let data = {};

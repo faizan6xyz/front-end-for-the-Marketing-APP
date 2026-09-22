@@ -1,4 +1,6 @@
 async function getUserDetails() {
+  const authOk = await ensureAuthToken();
+  if (!authOk) return false;
   const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
   if (!token) {
     window.location.href = "front_end/login/login.html";
@@ -18,6 +20,32 @@ async function getUserDetails() {
     return false;
   } catch (err) {
     console.error("Request failed:", err);
+    window.location.href = "front_end/login/login.html";
+    return false;
+  }
+}
+
+async function ensureAuthToken() {
+  const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
+  if (token) return true;
+  try {
+    const response = await fetch("/refresh", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() },
+      credentials: "include"
+    });
+    if (response.status === 200) {
+      return true;
+    }
+    if (response.status === 400) {
+      window.location.href = "front_end/login/login.html";
+      return false;
+    }
+    console.error("Refresh failed:", response.status);
+    window.location.href = "front_end/login/login.html";
+    return false;
+  } catch (err) {
+    console.error("Refresh request failed:", err);
     window.location.href = "front_end/login/login.html";
     return false;
   }
@@ -53,6 +81,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function makeConnectionChecker({ storageKey, endpoint, loginRoute }) {
     return async function () {
+
+      const authOk = await ensureAuthToken();
+      if (!authOk) return false;
       const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
       const accountId = localStorage.getItem(storageKey);
       if (!accountId) return null;
@@ -198,6 +229,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function checkSettingsConnection() {
+
+    const authOk = await ensureAuthToken();
+    if (!authOk) return false;
     const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
     try {
       const response = await fetch(`http://127.0.0.1:5000/vrify`, {
@@ -442,6 +476,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const authOk = await ensureAuthToken();
+      if (!authOk) return false;
       const formData = buildFormData
         ? buildFormData(selectedFiles)
         : (() => {
@@ -583,6 +619,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
   async function fetchAccounts() {
+
+    const authOk = await ensureAuthToken();
+    if (!authOk) return false;
     const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
     try {
       const response = await fetch(`http://127.0.0.1:5000/vrify`, {
@@ -598,7 +637,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       accountsData.whatsapp = data.whatsapp || [];
       accountsData.drive = data.drive || [];
       accountsData.gmail = data.gmail || [];
-      syncAccountIdsToStorage(data); 
+      syncAccountIdsToStorage(data);
       updateAccountOptions();
     } catch (err) {
       console.error("Network error fetching accounts:", err);

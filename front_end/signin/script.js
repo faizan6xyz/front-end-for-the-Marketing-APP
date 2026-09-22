@@ -1,5 +1,5 @@
 const API_BASE_URL = "http://localhost:5000/api"; // production: "https://api.mysite.com/api"
-const SIGNUP_ENDPOINT = `${API_BASE_URL}/auth/signup`;
+const SIGNUP_ENDPOINT = `${API_BASE_URL}/signup`;
 const GOOGLE_OAUTH_URL = `${API_BASE_URL}/auth/google`;
 const FACEBOOK_OAUTH_URL = `${API_BASE_URL}/auth/facebook`;
 const form = document.getElementById("signup-form");
