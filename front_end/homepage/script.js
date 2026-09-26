@@ -59,7 +59,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const pageTitle = document.getElementById("page-title");
   const titles = {
     dashboard: "Dashboard",
-    linkedln: "Linkedln",
     instagram: "Instagram",
     whatsapp: "Whatsapp",
     gmail: "Gmail",
@@ -473,7 +472,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       addFiles(e.dataTransfer.files);
     });
     fileInput.addEventListener('change', () => { addFiles(fileInput.files); });
-
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const authOk = await ensureAuthToken();

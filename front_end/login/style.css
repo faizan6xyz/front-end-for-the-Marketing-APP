@@ -79,8 +79,6 @@ html, body {
 }
 
 .oauth-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-bottom: 20px;
 }
@@ -90,6 +88,7 @@ html, body {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  width: 100%;
   padding: 11px 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
