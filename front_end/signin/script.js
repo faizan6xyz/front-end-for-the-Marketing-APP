@@ -11,7 +11,6 @@ const confirmPasswordInput = document.getElementById("confirm-password");
 const agreeTermsInput = document.getElementById("agree-terms");
 const submitBtn = document.getElementById("signup-submit");
 const googleBtn = document.getElementById("google-login");
-const facebookBtn = document.getElementById("facebook-login");
 function setStatus(message, type = "error") {
   statusEl.textContent = message;
   statusEl.classList.toggle("is-success", type === "success");
@@ -34,8 +33,8 @@ function setLoading(isLoading) {
   submitBtn.classList.toggle("is-loading", isLoading);
 }
 form.addEventListener("submit", async (event) => {
-  event.preventDefault(); 
-  clearStatus();          
+  event.preventDefault();
+  clearStatus();
   const fullName = fullNameInput.value.trim();
   const email = emailInput.value.trim();
   const password = passwordInput.value;
@@ -90,7 +89,7 @@ form.addEventListener("submit", async (event) => {
     }
     setStatus("Account created. Redirecting…", "success");
     setTimeout(() => {
-      window.location.href = data.next || "/dashboard";
+      window.location.href = data.next || "/homepage.html";
     }, 500);
   } catch (err) {
     setStatus(err.message || "Could not reach the server. Try again.");
@@ -100,7 +99,4 @@ form.addEventListener("submit", async (event) => {
 });
 googleBtn.addEventListener("click", () => {
   window.location.href = GOOGLE_OAUTH_URL;
-});
-facebookBtn.addEventListener("click", () => {
-  window.location.href = FACEBOOK_OAUTH_URL;
 });
