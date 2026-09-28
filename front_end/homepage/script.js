@@ -52,8 +52,8 @@ async function ensureAuthToken() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // const isAuthed = await getUserDetails();
-  // if (!isAuthed) return;
+  const isAuthed = await getUserDetails();
+  if (!isAuthed) return;
   const navItems = document.querySelectorAll(".nav-item[data-target]");
   const pages = document.querySelectorAll(".page");
   const pageTitle = document.getElementById("page-title");
