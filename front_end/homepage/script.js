@@ -614,7 +614,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       instagram_account_id: data.instagram,
       gmail_account_id: data.gmail,
       whatsapp_account_id: data.whatsapp,
-      Gdrive_account_id: data.drive,
+      drive_account_id: data.drive,
       x_account_id: data.x,
       threads_account_id: data.threads,
       youtube_account_id: data.youtube,
