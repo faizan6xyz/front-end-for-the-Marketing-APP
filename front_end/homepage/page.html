@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,184 +8,245 @@
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
+
 <body>
-<div class="app">
+  <div class="app">
 
-  <aside class="sidebar">
-    <div class="brand"><span class="brand-name">Social Hub</span></div>
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-name">Social Hub</span></div>
 
-    <nav class="nav">
-      <ul>
-        <li class="nav-item active" data-target="dashboard"><span class="nav-icon">▦</span>Dashboard</li>
-      </ul>
-      <div class="nav-group">Channels</div>
-      <ul>
-        <li class="nav-item" data-target="instagram"><span class="nav-icon">◎</span>Instagram</li>
-        <li class="nav-item" data-target="whatsapp"><span class="nav-icon">✆</span>WhatsApp</li>
-        <li class="nav-item" data-target="gmail"><span class="nav-icon">✉</span>Gmail</li>
-        <li class="nav-item" data-target="youtube"><span class="nav-icon">▶</span>YouTube</li>
-        <li class="nav-item" data-target="pinterest"><span class="nav-icon">◍</span>Pinterest</li>
-        <li class="nav-item" data-target="x"><span class="nav-icon">✕</span>X</li>
-        <li class="nav-item" data-target="threads"><span class="nav-icon">@</span>Threads</li>
-      </ul>
-      <div class="nav-group">Publish</div>
-      <ul>
-        <li class="nav-item" data-target="post"><span class="nav-icon">✎</span>New post</li>
-        <li class="nav-item" data-target="campaign"><span class="nav-icon">➤</span>Campaign</li>
-        <li class="nav-item" data-target="settings"><span class="nav-icon">⚙</span>Settings</li>
-      </ul>
-    </nav>
+      <nav class="nav">
+        <ul>
+          <li class="nav-item active" data-target="dashboard"><span class="nav-icon">▦</span>Dashboard</li>
+        </ul>
+        <div class="nav-group">Channels</div>
+        <ul>
+          <li class="nav-item" data-target="instagram"><span class="nav-icon">◎</span>Instagram</li>
+          <li class="nav-item" data-target="whatsapp"><span class="nav-icon">✆</span>WhatsApp</li>
+          <li class="nav-item" data-target="gmail"><span class="nav-icon">✉</span>Gmail</li>
+          <li class="nav-item" data-target="youtube"><span class="nav-icon">▶</span>YouTube</li>
+          <li class="nav-item" data-target="pinterest"><span class="nav-icon">◍</span>Pinterest</li>
+          <li class="nav-item" data-target="x"><span class="nav-icon">✕</span>X</li>
+          <li class="nav-item" data-target="threads"><span class="nav-icon">@</span>Threads</li>
+          <li class="nav-item" data-target="complaint"><span class="nav-icon">⚑</span>Report issue</li>
+        </ul>
+        <div class="nav-group">Publish</div>
+        <ul>
+          <li class="nav-item" data-target="post"><span class="nav-icon">✎</span>New post</li>
+          <li class="nav-item" data-target="campaign"><span class="nav-icon">➤</span>Campaign</li>
+          <li class="nav-item" data-target="settings"><span class="nav-icon">⚙</span>Settings</li>
+        </ul>
+      </nav>
 
-    <div class="sidebar-foot">
-      <button class="support-btn" type="button">Help &amp; support</button>
-      <button id="logout" type="button">Log out</button>
-    </div>
-  </aside>
-
-  <main class="main">
-    <header class="topbar">
-      <h1 id="page-title">Dashboard</h1>
-      <div class="topbar-right">
-        <label class="search-box">
-          <span aria-hidden="true">⌕</span>
-          <input type="text" placeholder="Search" aria-label="Search">
-        </label>
+      <div class="sidebar-foot">
+        <button class="support-btn" type="button">Help &amp; support</button>
+        <button id="logout" type="button">Log out</button>
       </div>
-    </header>
+    </aside>
 
-    <!-- Dashboard -->
-    <section class="page active" id="page-dashboard">
-      <div class="stat-grid">
-        <div class="stat"><div class="value">–</div><div class="name">Posts published</div></div>
-        <div class="stat"><div class="value">–</div><div class="name">Total engagement</div></div>
-        <div class="stat"><div class="value">–</div><div class="name">Messages sent</div></div>
-        <div class="stat"><div class="value">–</div><div class="name">Connected accounts</div></div>
-      </div>
+    <main class="main">
+      <header class="topbar">
+        <h1 id="page-title">Dashboard</h1>
+        <div class="topbar-right">
+          <label class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input type="text" placeholder="Search" aria-label="Search">
+          </label>
+        </div>
+      </header>
 
-      <div class="panel">
-        <div class="panel-header">
-          <h2>Overview</h2>
-          <div class="multi-select" id="rangeSelect">
-            <div class="multi-select-trigger">
-              <span class="multi-select-label">Select metrics</span>
-              <span class="multi-select-arrow">▾</span>
+      <!-- Dashboard -->
+      <section class="page active" id="page-dashboard">
+        <div class="stat-grid">
+          <div class="stat">
+            <div class="value">–</div>
+            <div class="name">Posts published</div>
+          </div>
+          <div class="stat">
+            <div class="value">–</div>
+            <div class="name">Total engagement</div>
+          </div>
+          <div class="stat">
+            <div class="value">–</div>
+            <div class="name">Messages sent</div>
+          </div>
+          <div class="stat">
+            <div class="value">–</div>
+            <div class="name">Connected accounts</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Overview</h2>
+            <div class="multi-select" id="rangeSelect">
+              <div class="multi-select-trigger">
+                <span class="multi-select-label">Select metrics</span>
+                <span class="multi-select-arrow">▾</span>
+              </div>
+              <div class="multi-select-options">
+                <label><input type="checkbox" value="Likes"> Likes</label>
+                <label><input type="checkbox" value="Comments"> Comments</label>
+                <label><input type="checkbox" value="Views"> Views</label>
+                <label><input type="checkbox" value="Reach"> Reach</label>
+              </div>
             </div>
-            <div class="multi-select-options">
-              <label><input type="checkbox" value="Likes"> Likes</label>
-              <label><input type="checkbox" value="Comments"> Comments</label>
-              <label><input type="checkbox" value="Views"> Views</label>
-              <label><input type="checkbox" value="Reach"> Reach</label>
+          </div>
+          <p class="info">Pick the metrics you want to track. Charts appear here once accounts are connected.</p>
+        </div>
+      </section>
+
+      <!-- Channels with JS-rendered content -->
+      <section class="page" id="page-instagram">
+        <div class="panel">
+          <div class="card-grid" id="hello_insta"></div>
+        </div>
+      </section>
+      <section class="page" id="page-whatsapp">
+        <div class="panel">
+          <div id="hello_whatsapp"></div>
+        </div>
+      </section>
+      <section class="page" id="page-gmail">
+        <div class="panel">
+          <div id="hello_gmail"></div>
+        </div>
+      </section>
+      <section class="page" id="page-linkedin">
+        <div class="panel">
+          <div class="card-grid" id="hello_linkedin"></div>
+        </div>
+      </section>
+
+      <!-- Channels without a feed yet -->
+      <section class="page" id="page-youtube">
+        <div class="panel">
+          <p class="info">YouTube analytics will show here.</p>
+        </div>
+      </section>
+      <section class="page" id="page-pinterest">
+        <div class="panel">
+          <p class="info">Pinterest analytics will show here.</p>
+        </div>
+      </section>
+      <section class="page" id="page-x">
+        <div class="panel">
+          <p class="info">X analytics will show here.</p>
+        </div>
+      </section>
+      <section class="page" id="page-threads">
+        <div class="panel">
+          <p class="info">Threads analytics will show here.</p>
+        </div>
+      </section>
+
+      <!-- New post -->
+      <section class="page" id="page-post">
+        <form class="panel" id="uploadForm-post">
+          <div class="panel-header">
+            <h2>Create a post</h2>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="platform-post">Platform</label>
+              <select id="platform-post">
+                <option value="instagram">Instagram</option>
+                <option value="youtube">YouTube</option>
+                <option value="x">X</option>
+                <option value="linkedin">LinkedIn</option>
+                <option value="pinterest">Pinterest</option>
+                <option value="threads">Threads</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="accounts">Account</label>
+              <select id="accounts"></select>
+            </div>
+            <div class="field">
+              <label for="postType">Post type</label>
+              <select id="postType"></select>
             </div>
           </div>
+
+          <div class="upload-box" id="dropZone-post">
+            <p id="textforfile-post">Drag &amp; drop media for the upload</p>
+            <input type="file" id="fileInput-post" multiple hidden>
+            <ul class="file-list" id="fileList-post"></ul>
+          </div>
+
+          <div class="form-actions"><button class="primary-btn" type="submit">Publish</button></div>
+        </form>
+      </section>
+
+      <!-- Campaign -->
+      <section class="page" id="page-campaign">
+        <form class="panel" id="uploadForm-campaign">
+          <div class="panel-header">
+            <h2>Send a campaign</h2>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="platform-campaign">Channel</label>
+              <select id="platform-campaign">
+                <option value="whatsapp">WhatsApp</option>
+                <option value="gmail">Gmail</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="captt-campaign-cname">Campaign name</label>
+              <input type="text" id="captt-campaign-cname" placeholder="Diwali offer">
+            </div>
+            <div class="field wide">
+              <label for="captt-campaign-to">Recipients (comma separated)</label>
+              <input type="text" id="captt-campaign-to" placeholder="+91 98xxxxxx01, +91 98xxxxxx02">
+            </div>
+            <div class="field wide">
+              <label for="captt-campaign-name">Recipient names (same order)</label>
+              <input type="text" id="captt-campaign-name" placeholder="Asha, Ravi">
+            </div>
+            <div class="field wide">
+              <label for="captt-campaign-text">Message</label>
+              <textarea id="captt-campaign-text" placeholder="Write your message"></textarea>
+            </div>
+          </div>
+
+          <div class="upload-box" id="dropZone-campaign">
+            <p id="textforfile-campaign">Drag &amp; drop media for the upload</p>
+            <input type="file" id="fileInput-campaign" multiple hidden>
+            <ul class="file-list" id="fileList-campaign"></ul>
+          </div>
+
+          <div class="form-actions"><button class="primary-btn" type="submit">Send campaign</button></div>
+        </form>
+      </section>
+      <!-- Complaint -->
+      <section class="page" id="page-complaint">
+        <form class="panel" id="complaintForm">
+          <div class="panel-header">
+            <h2>Report an issue</h2>
+          </div>
+          <div class="form-grid">
+            <div class="field wide">
+              <label for="complaint-body">Describe the issue</label>
+              <textarea id="complaint-body" placeholder="What went wrong?" required></textarea>
+            </div>
+          </div>
+          <p class="info" id="complaint-status"></p>
+          <div class="form-actions"><button class="primary-btn" type="submit">Submit</button></div>
+        </form>
+      </section>
+
+      <!-- Settings -->
+      <section class="page" id="page-settings">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Connected accounts</h2>
+          </div>
+          <div id="settings-accounts"></div>
         </div>
-        <p class="info">Pick the metrics you want to track. Charts appear here once accounts are connected.</p>
-      </div>
-    </section>
-
-    <!-- Channels with JS-rendered content -->
-    <section class="page" id="page-instagram">
-      <div class="panel"><div class="card-grid" id="hello_insta"></div></div>
-    </section>
-    <section class="page" id="page-whatsapp">
-      <div class="panel"><div id="hello_whatsapp"></div></div>
-    </section>
-    <section class="page" id="page-gmail">
-      <div class="panel"><div id="hello_gmail"></div></div>
-    </section>
-    <section class="page" id="page-linkedin">
-      <div class="panel"><div class="card-grid" id="hello_linkedin"></div></div>
-    </section>
-
-    <!-- Channels without a feed yet -->
-    <section class="page" id="page-youtube"><div class="panel"><p class="info">YouTube analytics will show here.</p></div></section>
-    <section class="page" id="page-pinterest"><div class="panel"><p class="info">Pinterest analytics will show here.</p></div></section>
-    <section class="page" id="page-x"><div class="panel"><p class="info">X analytics will show here.</p></div></section>
-    <section class="page" id="page-threads"><div class="panel"><p class="info">Threads analytics will show here.</p></div></section>
-
-    <!-- New post -->
-    <section class="page" id="page-post">
-      <form class="panel" id="uploadForm-post">
-        <div class="panel-header"><h2>Create a post</h2></div>
-        <div class="form-grid">
-          <div class="field">
-            <label for="platform-post">Platform</label>
-            <select id="platform-post">
-              <option value="instagram">Instagram</option>
-              <option value="youtube">YouTube</option>
-              <option value="x">X</option>
-              <option value="linkedin">LinkedIn</option>
-              <option value="pinterest">Pinterest</option>
-              <option value="threads">Threads</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="accounts">Account</label>
-            <select id="accounts"></select>
-          </div>
-          <div class="field">
-            <label for="postType">Post type</label>
-            <select id="postType"></select>
-          </div>
-        </div>
-
-        <div class="upload-box" id="dropZone-post">
-          <p id="textforfile-post">Drag &amp; drop media for the upload</p>
-          <input type="file" id="fileInput-post" multiple hidden>
-          <ul class="file-list" id="fileList-post"></ul>
-        </div>
-
-        <div class="form-actions"><button class="primary-btn" type="submit">Publish</button></div>
-      </form>
-    </section>
-
-    <!-- Campaign -->
-    <section class="page" id="page-campaign">
-      <form class="panel" id="uploadForm-campaign">
-        <div class="panel-header"><h2>Send a campaign</h2></div>
-        <div class="form-grid">
-          <div class="field">
-            <label for="platform-campaign">Channel</label>
-            <select id="platform-campaign">
-              <option value="whatsapp">WhatsApp</option>
-              <option value="gmail">Gmail</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="captt-campaign-cname">Campaign name</label>
-            <input type="text" id="captt-campaign-cname" placeholder="Diwali offer">
-          </div>
-          <div class="field wide">
-            <label for="captt-campaign-to">Recipients (comma separated)</label>
-            <input type="text" id="captt-campaign-to" placeholder="+91 98xxxxxx01, +91 98xxxxxx02">
-          </div>
-          <div class="field wide">
-            <label for="captt-campaign-name">Recipient names (same order)</label>
-            <input type="text" id="captt-campaign-name" placeholder="Asha, Ravi">
-          </div>
-          <div class="field wide">
-            <label for="captt-campaign-text">Message</label>
-            <textarea id="captt-campaign-text" placeholder="Write your message"></textarea>
-          </div>
-        </div>
-
-        <div class="upload-box" id="dropZone-campaign">
-          <p id="textforfile-campaign">Drag &amp; drop media for the upload</p>
-          <input type="file" id="fileInput-campaign" multiple hidden>
-          <ul class="file-list" id="fileList-campaign"></ul>
-        </div>
-
-        <div class="form-actions"><button class="primary-btn" type="submit">Send campaign</button></div>
-      </form>
-    </section>
-
-    <!-- Settings -->
-    <section class="page" id="page-settings">
-      <div class="panel">
-        <div class="panel-header"><h2>Connected accounts</h2></div>
-        <div id="settings-accounts"></div>
-      </div>
-    </section>
-  </main>
-</div>
+      </section>
+    </main>
+  </div>
 </body>
+
 </html>
