@@ -313,14 +313,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error(err);
     }
   }
-
-  const checkInstagramConnection = makeConnectionChecker({ storageKey: "account_id", endpoint: "/instagram/posts", loginRoute: "/auth/instagram/login" });
+  const checkInstagramConnection = makeConnectionChecker({ storageKey: "instagram_account_id", endpoint: "/instagram/posts", loginRoute: "/auth/instagram/login" });
   const checkGmailConnection = makeConnectionChecker({ storageKey: "gmail_account_id", endpoint: "/gmail/sent", loginRoute: "/auth/gmail/login" });
   const checkWhatsappConnection = makeConnectionChecker({ storageKey: "whatsapp_account_id", endpoint: "/whatsapp/sent", loginRoute: "/auth/whatsapp/login" });
+  const checkXConnection = makeConnectionChecker({ storageKey: "x_account_id", endpoint: "/x/posts", loginRoute: "/auth/x/login" });
+  const checkPinterestConnection = makeConnectionChecker({ storageKey: "pinterest_account_id", endpoint: "/pinterest/pins", loginRoute: "/auth/pinterest/login" });
+  const checkYoutubeConnection = makeConnectionChecker({ storageKey: "youtube_account_id", endpoint: "/youtube/shorts", loginRoute: "/auth/youtube/login" });
+  const checkThreadsConnection = makeConnectionChecker({ storageKey: "threads_account_id", endpoint: "/threads/posts", loginRoute: "/auth/threads/login" });
 
   navItems.forEach((item) => {
     item.addEventListener("click", async () => {
       const target = item.dataset.target;
+
       if (target === "settings") {
         const res = await checkSettingsConnection();
         if (!res) return;
@@ -328,6 +332,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadSettingsAccounts(res);
         return;
       }
+
       if (target === "instagram") {
         const res = await checkInstagramConnection();
         if (res === null) {
@@ -340,6 +345,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadPostCards(res, { containerId: "hello_insta", cardClass: "insta-card", toggleEndpoint: "/posts/watch" });
         return;
       }
+
       if (target === "gmail") {
         const res = await checkGmailConnection();
         if (res === null) {
@@ -352,6 +358,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadMessageCards(res, { containerId: "hello_gmail", cardClass: "gmail-card", toField: "to" });
         return;
       }
+
       if (target === "whatsapp") {
         const res = await checkWhatsappConnection();
         if (res === null) {
@@ -364,10 +371,59 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadMessageCards(res, { containerId: "hello_whatsapp", cardClass: "whatsapp-card", toField: "recipient" });
         return;
       }
+
+      if (target === "x") {
+        const res = await checkXConnection();
+        if (res === null) {
+          showPage(target);
+          showConnectPrompt({ containerId: "hello_x", label: "X", loginRoute: "/auth/x/login" });
+          return;
+        }
+        if (!res) return;
+        showPage(target);
+        loadPostCards(res, { containerId: "hello_x", cardClass: "x-card" });
+        return;
+      }
+
+      if (target === "pinterest") {
+        const res = await checkPinterestConnection();
+        if (res === null) {
+          showPage(target);
+          showConnectPrompt({ containerId: "hello_pinterest", label: "Pinterest", loginRoute: "/auth/pinterest/login" });
+          return;
+        }
+        if (!res) return;
+        showPage(target);
+        loadPostCards(res, { containerId: "hello_pinterest", cardClass: "pinterest-card" });
+        return;
+      }
+      if (target === "youtube") {
+        const res = await checkYoutubeConnection();
+        if (res === null) {
+          showPage(target);
+          showConnectPrompt({ containerId: "hello_youtube", label: "YouTube", loginRoute: "/auth/youtube/login" });
+          return;
+        }
+        if (!res) return;
+        showPage(target);
+        loadPostCards(res, { containerId: "hello_youtube", cardClass: "youtube-card" });
+        return;
+      }
+      if (target === "threads") {
+        const res = await checkThreadsConnection();
+        if (res === null) {
+          showPage(target);
+          showConnectPrompt({ containerId: "hello_threads", label: "Threads", loginRoute: "/auth/threads/login" });
+          return;
+        }
+        if (!res) return;
+        showPage(target);
+        loadPostCards(res, { containerId: "hello_threads", cardClass: "threads-card" });
+        return;
+      }
       showPage(target);
     });
   });
-
   const initial = window.location.hash.replace("#", "");
   if (initial && titles[initial]) { showPage(initial); }
   const reloginBtn = document.getElementById("relogin-btn");
