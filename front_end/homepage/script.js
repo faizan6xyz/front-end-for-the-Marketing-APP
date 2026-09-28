@@ -1,7 +1,7 @@
 async function getUserDetails() {
   const authOk = await ensureAuthToken();
   if (!authOk) return false;
-  const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
+  const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
   if (!token) {
     window.location.href = "front_end/login/login.html";
     return false;
@@ -26,13 +26,13 @@ async function getUserDetails() {
 }
 
 async function ensureAuthToken() {
-  const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
+  const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
   if (token) return true;
   try {
     const response = await fetch("/refresh", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() },
-      credentials: "include"
+      body: JSON.stringify({ token: token }) 
     });
     if (response.status === 200) {
       return true;
@@ -69,6 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     post: "Post",
     campaign: "Campaign",
     settings: "Settings",
+    complaint: "Issue"
   };
 
   function showPage(target) {
@@ -83,7 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const authOk = await ensureAuthToken();
       if (!authOk) return false;
-      const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
+      const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
       const accountId = localStorage.getItem(storageKey);
       if (!accountId) return null;
       try {
@@ -231,7 +232,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const authOk = await ensureAuthToken();
     if (!authOk) return false;
-    const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
+    const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
     try {
       const response = await fetch(`http://127.0.0.1:5000/vrify`, {
         method: "POST", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token })
@@ -620,7 +621,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const authOk = await ensureAuthToken();
     if (!authOk) return false;
-    const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
+    const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
     try {
       const response = await fetch(`http://127.0.0.1:5000/vrify`, {
         method: "POST",
@@ -647,13 +648,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     updatePostTypes();
     updateAccountOptions();
   });
+  const complaintForm = document.getElementById("complaintForm");
+  const complaintStatus = document.getElementById("complaint-status");
 
+  complaintForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!(await ensureAuthToken())) return;
+
+    const bodyEl = document.getElementById("complaint-body");
+    const text = bodyEl.value.trim();
+    if (!text) return;
+
+    complaintStatus.textContent = "Submitting…";
+    try {
+      const res = await apiFetch("/complaint", { body: JSON.stringify({ token: token , body: text }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Request failed: ${res.status}`);
+      complaintStatus.textContent = "Thanks, your issue has been submitted.";
+      bodyEl.value = "";
+    } catch (err) {
+      complaintStatus.textContent = "Failed to submit: " + err.message;
+      console.error(err);
+    }
+  });
+  document.querySelector(".support-btn").addEventListener("click", () => showPage("complaint"));
 })
 
 
 // add the username metrics from the plotform selection in post , ids will come from the api
 // make the args parameter go in the json ones
-
-
 
 // using the the cookies makes the xxs resistant but not to the csrf attacks  
