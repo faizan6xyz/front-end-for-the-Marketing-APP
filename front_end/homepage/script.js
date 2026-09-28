@@ -32,7 +32,7 @@ async function ensureAuthToken() {
     const response = await fetch("/refresh", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() },
-      body: JSON.stringify({ token: token }) 
+      body: JSON.stringify({ token: token })
     });
     if (response.status === 200) {
       return true;
@@ -315,7 +315,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const checkInstagramConnection = makeConnectionChecker({ storageKey: "account_id", endpoint: "/instagram/posts", loginRoute: "/auth/instagram/login" });
-  const checkLinkedinConnection = makeConnectionChecker({ storageKey: "linkedin_account_id", endpoint: "/linkedin/posts", loginRoute: "/auth/linkedin/login" });
   const checkGmailConnection = makeConnectionChecker({ storageKey: "gmail_account_id", endpoint: "/gmail/sent", loginRoute: "/auth/gmail/login" });
   const checkWhatsappConnection = makeConnectionChecker({ storageKey: "whatsapp_account_id", endpoint: "/whatsapp/sent", loginRoute: "/auth/whatsapp/login" });
 
@@ -339,18 +338,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!res) return;
         showPage(target);
         loadPostCards(res, { containerId: "hello_insta", cardClass: "insta-card", toggleEndpoint: "/posts/watch" });
-        return;
-      }
-      if (target === "linkedln") {
-        const res = await checkLinkedinConnection();
-        if (res === null) {
-          showPage(target);
-          showConnectPrompt({ containerId: "hello_linkedin", label: "LinkedIn", loginRoute: "/auth/linkedin/login" });
-          return;
-        }
-        if (!res) return;
-        showPage(target);
-        loadPostCards(res, { containerId: "hello_linkedin", cardClass: "linkedin-card", toggleEndpoint: "/linkedin/posts/toggle" });
         return;
       }
       if (target === "gmail") {
@@ -552,13 +539,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       { value: 'photo', label: 'Photo' },
       { value: 'video', label: 'Video' },
     ],
-    linkedin: [
-      { value: 'text', label: 'Text-Only Post' },
-      { value: 'single-image', label: 'Single Image Post' },
-      { value: 'multi-image', label: 'Multi-Image Post' },
-      { value: 'document', label: 'Document Post' },
-      { value: 'video-post', label: 'Video Post' },
-    ],
     pinterest: [
       { value: 'image', label: 'Image Pin' },
       { value: 'video', label: 'Video Pin' },
@@ -572,13 +552,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     ],
   };
 
-  let accountsData = { instagram: [], linkedin: [], whatsapp: [], drive: [], gmail: [] };
+  let accountsData = { instagram: [], whatsapp: [], drive: [], gmail: [] };
   function syncAccountIdsToStorage(data) {
     const storageMap = {
-      account_id: data.instagram,
-      linkedin_account_id: data.linkedin,
+      instagram_account_id: data.instagram,
       gmail_account_id: data.gmail,
       whatsapp_account_id: data.whatsapp,
+      Gdrive_account_id: data.drive,
+      x_account_id: data.x,
+      threads_account_id: data.threads,
+      youtube_account_id: data.youtube,
+      pinterest_account_id: data.pinterest,
     };
 
     Object.entries(storageMap).forEach(([storageKey, accounts]) => {
@@ -632,8 +616,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       const json = await response.json();
       const data = json.data || {};
       accountsData.instagram = data.instagram || [];
-      accountsData.linkedin = data.linkedin || [];
       accountsData.whatsapp = data.whatsapp || [];
+      accountsData.threads = data.threads || [];
+      accountsData.youtube = data.youtube || [];
+      accountsData.pinterest = data.pinterest || [];
+      accountsData.x = data.x || [];
       accountsData.drive = data.drive || [];
       accountsData.gmail = data.gmail || [];
       syncAccountIdsToStorage(data);
@@ -661,7 +648,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     complaintStatus.textContent = "Submitting…";
     try {
-      const res = await apiFetch("/complaint", { body: JSON.stringify({ token: token , body: text }) });
+      const res = await apiFetch("/complaint", { body: JSON.stringify({ token: token, body: text }) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `Request failed: ${res.status}`);
       complaintStatus.textContent = "Thanks, your issue has been submitted.";
