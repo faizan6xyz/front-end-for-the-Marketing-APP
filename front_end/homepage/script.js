@@ -81,7 +81,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function makeConnectionChecker({ storageKey, endpoint, loginRoute }) {
     return async function () {
-
       const authOk = await ensureAuthToken();
       if (!authOk) return false;
       const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
@@ -127,7 +126,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     caption.textContent = post.caption || '';
     const stats = document.createElement('div');
     stats.className = 'stats';
-    stats.innerHTML = `
+    stats.innerHTML = ` 
     <span><span class="label">♥</span> ${post.like_count ?? 0}</span>
     <span><span class="label">💬</span> ${post.comments_count ?? 0}</span>`;
     const toggleRow = document.createElement('div');
@@ -235,7 +234,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
     try {
       const response = await fetch(`http://127.0.0.1:5000/vrify`, {
-        method: "POST", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token })
+        method: "POST", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token: token })
       });
       if (response.status === 401) { window.location.href = "/login"; return false; }
       if (!response.ok) { console.error("Settings check failed:", response.status); return false; }
@@ -548,7 +547,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const fd = new FormData();
     const tokenMatch = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
     const token = tokenMatch ? tokenMatch[1] : null;
-
     const platform = document.getElementById('platform-campaign').value;
     const campaignName = document.getElementById('captt-campaign-cname').value.trim();
     const body = document.getElementById('captt-campaign-text').value.trim();
