@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:5000/api"; // production: "https://api.mysite.com/api"
+const API_BASE_URL = "http://localhost:5000"; // production: "https://api.mysite.com/api"
 const SIGNUP_ENDPOINT = `${API_BASE_URL}/signup`;
 const GOOGLE_OAUTH_URL = `${API_BASE_URL}/auth/google`;
 const FACEBOOK_OAUTH_URL = `${API_BASE_URL}/auth/facebook`;
@@ -69,8 +69,8 @@ form.addEventListener("submit", async (event) => {
     const response = await fetch(SIGNUP_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include", // required so the browser stores the authToken cookie
-      body: JSON.stringify({ full_name: fullName, email, password }),
+      credentials: "include",
+      body: JSON.stringify({ email, password }),
     });
     let data = {};
     try {
@@ -89,7 +89,7 @@ form.addEventListener("submit", async (event) => {
     }
     setStatus("Account created. Redirecting…", "success");
     setTimeout(() => {
-      window.location.href = data.next || "/homepage.html";
+      window.location.href = "http://127.0.0.1:5001/front_end/homepage/page.html" ;
     }, 500);
   } catch (err) {
     setStatus(err.message || "Could not reach the server. Try again.");

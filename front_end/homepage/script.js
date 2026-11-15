@@ -3,7 +3,7 @@ async function getUserDetails() {
   if (!authOk) return false;
   const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
   if (!token) {
-    window.location.href = "front_end/login/login.html";
+    window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
     return false;
   }
   try {
@@ -11,16 +11,16 @@ async function getUserDetails() {
     if (!response.ok) {
       if (response.status === 401) { console.error("Token invalid or expired"); }
       document.cookie = 'access_token=;';
-      window.location.href = "front_end/login/login.html";
+      window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
       return false;
     }
     const data = await response.json();
     if (data.status) { return true; }
-    window.location.href = "front_end/login/login.html";
+    window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
     return false;
   } catch (err) {
     console.error("Request failed:", err);
-    window.location.href = "front_end/login/login.html";
+    window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
     return false;
   }
 }
@@ -38,15 +38,15 @@ async function ensureAuthToken() {
       return true;
     }
     if (response.status === 400) {
-      window.location.href = "front_end/login/login.html";
+      window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
       return false;
     }
     console.error("Refresh failed:", response.status);
-    window.location.href = "front_end/login/login.html";
+    window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
     return false;
   } catch (err) {
     console.error("Refresh request failed:", err);
-    window.location.href = "front_end/login/login.html";
+    window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
     return false;
   }
 }
@@ -78,10 +78,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (pageTitle && titles[target]) { pageTitle.textContent = titles[target]; }
     history.replaceState(null, "", `#${target}`);
   }
-
   function makeConnectionChecker({ storageKey, endpoint, loginRoute }) {
     return async function () {
-      const authOk = await ensureAuthToken();
+      const authOk = await ensureAuthToken();  
       if (!authOk) return false;
       const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
       const accountId = localStorage.getItem(storageKey);
@@ -98,7 +97,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     };
   }
-
   function showConnectPrompt({ containerId, label, loginRoute }) {
     const container = document.getElementById(containerId);
     if (!container) { console.error("Container not found:", containerId); return; }
@@ -111,7 +109,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       window.location.href = loginRoute;
     });
   }
-
   function buildSocialCard(post, { cardClass, toggleEndpoint }) {
     const card = document.createElement('div');
     card.className = cardClass;
@@ -164,7 +161,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     card.appendChild(body);
     return card;
   }
-
   async function loadPostCards(res, { containerId, cardClass, toggleEndpoint }) {
     const container = document.getElementById(containerId);
     container.innerHTML = '<p>Loading posts…</p>';
@@ -180,7 +176,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error(err);
     }
   }
-
   function buildMessageCard(msg, { cardClass, toField }) {
     const card = document.createElement('div');
     card.className = cardClass;
@@ -210,7 +205,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     card.appendChild(stats);
     return card;
   }
-
   async function loadMessageCards(res, { containerId, cardClass, toField }) {
     const container = document.getElementById(containerId);
     container.innerHTML = '<p>Loading messages…</p>';
@@ -226,9 +220,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error(err);
     }
   }
-
   async function checkSettingsConnection() {
-
     const authOk = await ensureAuthToken();
     if (!authOk) return false;
     const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
@@ -244,7 +236,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       return false;
     }
   }
-
   async function loadSettingsAccounts(res) {
     const container = document.getElementById("settings-accounts");
     if (!container) {
@@ -257,14 +248,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!body.status) throw new Error(body.reason || "Failed to load accounts");
       const data = body.data;
       const categories = {
-        threads: { label: "Threads", loginRoute: "/auth/threads/login" },
-        pinterest: { label: "Pinterest", loginRoute: "/auth/pinterest/login" },
-        x: { label: "X", loginRoute: "/auth/x/login" },
-        youtube: { label: "Youtube", loginRoute: "/auth/youtube/login" },
-        instagram: { label: "Instagram", loginRoute: "/auth/instagram/login" },
-        whatsapp: { label: "WhatsApp", loginRoute: "/auth/whatsapp/login" },
-        gmail: { label: "Gmail", loginRoute: "/auth/gmail/login" },
-        drive: { label: "Drive", loginRoute: "/auth/drive/login" },
+        threads: { label: "Threads", loginRoute: "/threads/auth/login" },
+        pinterest: { label: "Pinterest", loginRoute: "/pinterest/auth/login" },
+        x: { label: "X", loginRoute: "/x/auth/login" },
+        youtube: { label: "Youtube", loginRoute: "/youtube/auth/login" },
+        instagram: { label: "Instagram", loginRoute: "http://localhost:5000/instagram/auth/login" },
+        whatsapp: { label: "WhatsApp", loginRoute: "/whatsapp/auth/login" },
+        gmail: { label: "Gmail", loginRoute: "/gmail/auth/login" },
+        drive: { label: "Drive", loginRoute: "/drive/auth/login" },
       };
       container.innerHTML = "";
       Object.entries(categories).forEach(([key, { label, loginRoute }]) => {
@@ -312,13 +303,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error(err);
     }
   }
-  const checkInstagramConnection = makeConnectionChecker({ storageKey: "instagram_account_id", endpoint: "/instagram/posts", loginRoute: "/auth/instagram/login" });
-  const checkGmailConnection = makeConnectionChecker({ storageKey: "gmail_account_id", endpoint: "/gmail/sent", loginRoute: "/auth/gmail/login" });
-  const checkWhatsappConnection = makeConnectionChecker({ storageKey: "whatsapp_account_id", endpoint: "/whatsapp/sent", loginRoute: "/auth/whatsapp/login" });
-  const checkXConnection = makeConnectionChecker({ storageKey: "x_account_id", endpoint: "/x/posts", loginRoute: "/auth/x/login" });
-  const checkPinterestConnection = makeConnectionChecker({ storageKey: "pinterest_account_id", endpoint: "/pinterest/pins", loginRoute: "/auth/pinterest/login" });
-  const checkYoutubeConnection = makeConnectionChecker({ storageKey: "youtube_account_id", endpoint: "/youtube/shorts", loginRoute: "/auth/youtube/login" });
-  const checkThreadsConnection = makeConnectionChecker({ storageKey: "threads_account_id", endpoint: "/threads/posts", loginRoute: "/auth/threads/login" });
+  const checkInstagramConnection = makeConnectionChecker({ storageKey: "instagram_account_id", endpoint: "/instagram/posts", loginRoute: "/instagram/auth/login" });
+  const checkGmailConnection = makeConnectionChecker({ storageKey: "gmail_account_id", endpoint: "/gmail/sent", loginRoute: "/gmail/auth/login" });
+  const checkWhatsappConnection = makeConnectionChecker({ storageKey: "whatsapp_account_id", endpoint: "/whatsapp/sent", loginRoute: "/whatsapp/auth/login" });
+  const checkXConnection = makeConnectionChecker({ storageKey: "x_account_id", endpoint: "/x/posts", loginRoute: "/x/auth/login" });
+  const checkPinterestConnection = makeConnectionChecker({ storageKey: "pinterest_account_id", endpoint: "/pinterest/pins", loginRoute: "/pinterest/auth/login" });
+  const checkYoutubeConnection = makeConnectionChecker({ storageKey: "youtube_account_id", endpoint: "/youtube/shorts", loginRoute: "/youtube/auth/login" });
+  const checkThreadsConnection = makeConnectionChecker({ storageKey: "threads_account_id", endpoint: "/threads/posts", loginRoute: "/threads/auth/login" });
 
   navItems.forEach((item) => {
     item.addEventListener("click", async () => {
@@ -331,12 +322,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadSettingsAccounts(res);
         return;
       }
-
       if (target === "instagram") {
         const res = await checkInstagramConnection();
         if (res === null) {
           showPage(target);
-          showConnectPrompt({ containerId: "hello_insta", label: "Instagram", loginRoute: "/auth/instagram/login" });
+          showConnectPrompt({ containerId: "hello_insta", label: "Instagram", loginRoute: "/instagram/auth/login" });
           return;
         }
         if (!res) return;
@@ -344,12 +334,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadPostCards(res, { containerId: "hello_insta", cardClass: "insta-card", toggleEndpoint: "/posts/watch" });
         return;
       }
-
       if (target === "gmail") {
         const res = await checkGmailConnection();
         if (res === null) {
           showPage(target);
-          showConnectPrompt({ containerId: "hello_gmail", label: "Gmail", loginRoute: "/auth/gmail/login" });
+          showConnectPrompt({ containerId: "hello_gmail", label: "Gmail", loginRoute: "/gmail/auth/login" });
           return;
         }
         if (!res) return;
@@ -357,12 +346,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadMessageCards(res, { containerId: "hello_gmail", cardClass: "gmail-card", toField: "to" });
         return;
       }
-
       if (target === "whatsapp") {
         const res = await checkWhatsappConnection();
         if (res === null) {
           showPage(target);
-          showConnectPrompt({ containerId: "hello_whatsapp", label: "WhatsApp", loginRoute: "/auth/whatsapp/login" });
+          showConnectPrompt({ containerId: "hello_whatsapp", label: "WhatsApp", loginRoute: "/whatsapp/auth/login" });
           return;
         }
         if (!res) return;
@@ -370,12 +358,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadMessageCards(res, { containerId: "hello_whatsapp", cardClass: "whatsapp-card", toField: "recipient" });
         return;
       }
-
       if (target === "x") {
         const res = await checkXConnection();
         if (res === null) {
           showPage(target);
-          showConnectPrompt({ containerId: "hello_x", label: "X", loginRoute: "/auth/x/login" });
+          showConnectPrompt({ containerId: "hello_x", label: "X", loginRoute: "/x/auth/login" });
           return;
         }
         if (!res) return;
@@ -383,12 +370,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadPostCards(res, { containerId: "hello_x", cardClass: "x-card" });
         return;
       }
-
       if (target === "pinterest") {
         const res = await checkPinterestConnection();
         if (res === null) {
           showPage(target);
-          showConnectPrompt({ containerId: "hello_pinterest", label: "Pinterest", loginRoute: "/auth/pinterest/login" });
+          showConnectPrompt({ containerId: "hello_pinterest", label: "Pinterest", loginRoute: "/pinterest/auth/login" });
           return;
         }
         if (!res) return;
@@ -400,7 +386,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const res = await checkYoutubeConnection();
         if (res === null) {
           showPage(target);
-          showConnectPrompt({ containerId: "hello_youtube", label: "YouTube", loginRoute: "/auth/youtube/login" });
+          showConnectPrompt({ containerId: "hello_youtube", label: "YouTube", loginRoute: "/youtube/auth/login" });
           return;
         }
         if (!res) return;
@@ -412,7 +398,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const res = await checkThreadsConnection();
         if (res === null) {
           showPage(target);
-          showConnectPrompt({ containerId: "hello_threads", label: "Threads", loginRoute: "/auth/threads/login" });
+          showConnectPrompt({ containerId: "hello_threads", label: "Threads", loginRoute: "/threads/auth/login" });
           return;
         }
         if (!res) return;
@@ -517,8 +503,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     fileInput.addEventListener('change', () => { addFiles(fileInput.files); });
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const authOk = await ensureAuthToken();
-      if (!authOk) return false;
+      // const authOk = await ensureAuthToken();
+      // if (!authOk) return false;
       const formData = buildFormData
         ? buildFormData(selectedFiles)
         : (() => {
@@ -542,7 +528,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   }
-
   function buildCampaignFormData(selectedFiles) {
     const fd = new FormData();
     const tokenMatch = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
@@ -563,13 +548,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     selectedFiles.forEach(file => fd.append('file', file));
     return fd;
   }
-
   function buildCampaignEndpoint() {
     const platform = document.getElementById('platform-post').value;
     const type = document.getElementById('postType').value;
     return `${platform}/upload/${type}`;
   }
-
   initDropzoneUploader({ dropZoneId: 'dropZone-campaign', fileInputId: 'fileInput-campaign', formId: 'uploadForm-campaign', fileListId: 'fileList-campaign', textId: 'textforfile-campaign', endpoint: '/campaign', buildFormData: buildCampaignFormData });
 
   initDropzoneUploader({ dropZoneId: 'dropZone-post', fileInputId: 'fileInput-post', formId: 'uploadForm-post', fileListId: 'fileList-post', textId: 'textforfile-post', endpoint: buildCampaignEndpoint, buildFormData: buildCampaignFormData });
@@ -656,9 +639,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
   async function fetchAccounts() {
-
-    const authOk = await ensureAuthToken();
-    if (!authOk) return false;
+    // const authOk = await ensureAuthToken();
+    // if (!authOk) return false;
     const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
     try {
       const response = await fetch(`http://127.0.0.1:5000/vrify`, {
@@ -695,11 +677,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   complaintForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!(await ensureAuthToken())) return;
-
     const bodyEl = document.getElementById("complaint-body");
     const text = bodyEl.value.trim();
     if (!text) return;
-
     complaintStatus.textContent = "Submitting…";
     try {
       const res = await apiFetch("/complaint", { body: JSON.stringify({ token: token, body: text }) });

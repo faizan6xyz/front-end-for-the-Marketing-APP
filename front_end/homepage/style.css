@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
 
-/* ===== Tokens ===== */
+/*  Tokens  */
 :root {
   --bg: #edf2f7;
   --surface: #ffffff;
@@ -22,7 +22,7 @@
 }
 
 
-/* ===== Base ===== */
+/*  Base  */
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 
@@ -45,7 +45,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   outline-offset: 2px;
 }
 
-/* ===== Layout ===== */
+/*  Layout  */
 .app { display: flex; min-height: 100vh; }
 
 .sidebar {
@@ -125,7 +125,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .search-box:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
 .search-box input { border: 0; outline: 0; background: transparent; width: 200px; }
 
-/* ===== Pages ===== */
+/*  Pages  */
 .page { display: none; }
 .page.active { display: block; }
 
@@ -142,7 +142,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .panel-header h2 { font-size: 16px; font-weight: 600; }
 .info { margin: 0; font-size: 13px; color: var(--ink-3); }
 
-/* ===== Stat tiles (dashboard) ===== */
+/*  Stat tiles (dashboard)  */
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; width: 100%; margin-bottom: 18px; }
 .stat {
   padding: 18px;
@@ -153,7 +153,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .stat .value { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
 .stat .name { color: var(--ink-3); font-size: 13px; }
 
-/* ===== Form controls ===== */
+/*  Form controls  */
 .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .field > label { font-size: 13px; font-weight: 600; color: var(--ink-2); }
 
@@ -189,7 +189,7 @@ textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
 .primary-btn:active, .sentbotton:active, .connect-btn:active { transform: translateY(1px); }
 .form-actions { display: flex; justify-content: flex-end; margin-top: 18px; }
 
-/* ===== Multi-select ===== */
+/*  Multi-select  */
 .multi-select { position: relative; width: 240px; }
 .multi-select-trigger {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
@@ -214,7 +214,7 @@ textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
 .multi-select-options label { display: flex; align-items: center; gap: 10px; padding: 8px 12px; cursor: pointer; color: var(--ink-2); }
 .multi-select-options label:hover { background: var(--surface-2); }
 
-/* ===== Upload zone ===== */
+/*  Upload zone  */
 .upload-box {
   padding: 34px 20px;
   text-align: center;
@@ -243,7 +243,7 @@ textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
 .file-list button { border: 0; background: transparent; color: var(--ink-3); cursor: pointer; font-size: 14px; }
 .file-list button:hover { color: var(--danger); }
 
-/* ===== Post cards (Instagram / LinkedIn) ===== */
+/*  Post cards (Instagram / LinkedIn)  */
 .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
 #hello_insta, #hello_linkedin, #hello_gmail, #hello_whatsapp { min-height: 260px; }
 #hello_insta:has(.ig-connect-box), #hello_linkedin:has(.ig-connect-box), #hello_gmail:has(.ig-connect-box), #hello_whatsapp:has(.ig-connect-box) {
@@ -284,7 +284,7 @@ textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
 .post-toggle input:focus-visible + .post-toggle-slider { outline: 2px solid var(--brand); outline-offset: 2px; }
 .post-toggle input:disabled + .post-toggle-slider { opacity: 0.55; cursor: wait; }
 
-/* ===== Message cards (Gmail / WhatsApp) ===== */
+/*  Message cards (Gmail / WhatsApp)  */
 .gmail-card, .whatsapp-card {
   padding: 14px 16px;
   margin-bottom: 10px;
@@ -298,7 +298,7 @@ textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
 .gmail-card .subject, .gmail-card .body, .whatsapp-card .body { margin: 0 0 6px; color: var(--ink); }
 .gmail-card .snippet { margin: 0 0 8px; color: var(--ink-3); }
 
-/* ===== Empty / connect state ===== */
+/*  Empty / connect state  */
 .ig-connect-box {
   max-width: 340px;
   padding: 32px 28px;
@@ -309,7 +309,7 @@ textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
 }
 .ig-connect-box p { margin: 0 0 16px; color: var(--ink-2); font-weight: 500; }
 
-/* ===== Settings ===== */
+/*  Settings  */
 .settings-category { padding: 18px 0; border-bottom: 1px solid var(--line); }
 .settings-category:last-child { border-bottom: 0; }
 .settings-category h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
@@ -321,7 +321,7 @@ textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
 .add-more { background: transparent; color: var(--brand); border: 1px dashed var(--brand); }
 .add-more:hover { background: var(--brand-soft); }
 
-/* ===== Responsive ===== */
+/*  Responsive  */
 @media (max-width: 860px) {
   .app { flex-direction: column; }
   .sidebar { position: static; width: 100%; height: auto; flex-direction: row; align-items: center; padding: 10px 12px; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); }
