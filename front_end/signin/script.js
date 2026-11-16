@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:5000"; // production: "https://api.mysite.com/api"
+const API_BASE_URL = "http://127.0.0.1:5000"; // production: "https://api.mysite.com/api"
 const SIGNUP_ENDPOINT = `${API_BASE_URL}/signup`;
 const GOOGLE_OAUTH_URL = `${API_BASE_URL}/auth/google`;
 const FACEBOOK_OAUTH_URL = `${API_BASE_URL}/auth/facebook`;
