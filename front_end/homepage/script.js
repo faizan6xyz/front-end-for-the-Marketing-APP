@@ -7,7 +7,7 @@ async function getUserDetails() {
     return false;
   }
   try {
-    const response = await fetch("backend_user_check_url", { method: "POST", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token: token }) });
+    const response = await fetch("http://127.0.0.1:5000/check", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token }),});
     if (!response.ok) {
       if (response.status === 401) { console.error("Token invalid or expired"); }
       document.cookie = 'access_token=;';
@@ -29,8 +29,9 @@ async function ensureAuthToken() {
   const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
   if (token) return true;
   try {
-    const response = await fetch("/refresh", {
+    const response = await fetch("http://127.0.0.1:5000/refresh", {
       method: "POST",
+       credentials: "include",
       headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() },
       body: JSON.stringify({ token: token })
     });
@@ -143,7 +144,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.target.disabled = true;
       try {
         const response = await fetch(toggleEndpoint, {
-          method: 'POST', headers: { 'Content-Type': 'application/json', "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ post_id: post.id })
+          method: 'POST',  credentials: "include",headers: { 'Content-Type': 'application/json', "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ post_id: post.id })
         });
         if (!response.ok) throw new Error(`Toggle failed: ${response.status}`);
       } catch (err) {
@@ -226,7 +227,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
     try {
       const response = await fetch(`http://127.0.0.1:5000/vrify`, {
-        method: "POST", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token: token })
+        method: "POST", credentials: "include", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token: token })
       });
       if (response.status === 401) { window.location.href = "/login"; return false; }
       if (!response.ok) { console.error("Settings check failed:", response.status); return false; }
@@ -516,7 +517,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       try {
         const res = await fetch(url, {
-          method: 'POST',
+          method: 'POST', credentials: "include",
           headers: { "Request-ID": crypto.randomUUID() },
           body: formData
         });
@@ -639,12 +640,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
   async function fetchAccounts() {
-    // const authOk = await ensureAuthToken();
-    // if (!authOk) return false;
+    const authOk = await ensureAuthToken();
+    if (!authOk) return false;
     const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
     try {
       const response = await fetch(`http://127.0.0.1:5000/vrify`, {
-        method: "POST",
+        method: "POST", credentials: "include",
         headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() },
         body: JSON.stringify({ token })
       });
@@ -682,7 +683,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!text) return;
     complaintStatus.textContent = "Submitting…";
     try {
-      const res = await apiFetch("/complaint", { body: JSON.stringify({ token: token, body: text }) });
+      const res = await apifetch("http://127.0.0.1:5000/complaint", { body: JSON.stringify({ token: token, body: text }) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `Request failed: ${res.status}`);
       complaintStatus.textContent = "Thanks, your issue has been submitted.";
