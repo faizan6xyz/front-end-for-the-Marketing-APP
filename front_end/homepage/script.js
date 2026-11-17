@@ -7,7 +7,7 @@ async function getUserDetails() {
     return false;
   }
   try {
-    const response = await fetch("http://127.0.0.1:5000/check", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token }),});
+    const response = await fetch("http://127.0.0.1:5000/check", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token }), });
     if (!response.ok) {
       if (response.status === 401) { console.error("Token invalid or expired"); }
       document.cookie = 'access_token=;';
@@ -31,7 +31,7 @@ async function ensureAuthToken() {
   try {
     const response = await fetch("http://127.0.0.1:5000/refresh", {
       method: "POST",
-       credentials: "include",
+      credentials: "include",
       headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() },
       body: JSON.stringify({ token: token })
     });
@@ -81,14 +81,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   function makeConnectionChecker({ storageKey, endpoint, loginRoute }) {
     return async function () {
-      const authOk = await ensureAuthToken();  
+      const authOk = await ensureAuthToken();
       if (!authOk) return false;
       const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
       const accountId = localStorage.getItem(storageKey);
       if (!accountId) return null;
       try {
         const params = new URLSearchParams({ account_id: accountId });
-        const response = await fetch(`${endpoint}?${params}`, { method: "POST", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token: token }) });
+        const response = await fetch(`${endpoint}?${params}`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token: token }) });
         if (response.status === 400) { window.location.href = loginRoute; return false; }
         if (!response.ok) { console.error(`${storageKey} check failed:`, response.status); return false; }
         return response;
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.target.disabled = true;
       try {
         const response = await fetch(toggleEndpoint, {
-          method: 'POST',  credentials: "include",headers: { 'Content-Type': 'application/json', "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ post_id: post.id })
+          method: 'POST', credentials: "include", headers: { 'Content-Type': 'application/json', "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ post_id: post.id })
         });
         if (!response.ok) throw new Error(`Toggle failed: ${response.status}`);
       } catch (err) {
@@ -239,7 +239,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   async function loadSettingsAccounts(res) {
     const container = document.getElementById("settings-accounts");
-    if (!container) {
+    if (!container) { 
       console.error("Settings container not found");
       return;
     }
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         pinterest: { label: "Pinterest", loginRoute: "/pinterest/auth/login" },
         x: { label: "X", loginRoute: "/x/auth/login" },
         youtube: { label: "Youtube", loginRoute: "/youtube/auth/login" },
-        instagram: { label: "Instagram", loginRoute: "http://localhost:5000/instagram/auth/login" },
+        instagram: { label: "Instagram", loginRoute: "http://127.0.0.1:5000/instagram/auth/login" },
         whatsapp: { label: "WhatsApp", loginRoute: "/whatsapp/auth/login" },
         gmail: { label: "Gmail", loginRoute: "/gmail/auth/login" },
         drive: { label: "Drive", loginRoute: "/drive/auth/login" },
