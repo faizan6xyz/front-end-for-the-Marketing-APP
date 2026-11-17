@@ -1,689 +1,720 @@
-async function getUserDetails() {
-  const authOk = await ensureAuthToken();
-  if (!authOk) return false;
-  const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
-  if (!token) {
-    window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
-    return false;
-  }
+
+const API_BASE = "http://127.0.0.1:5000";
+const LOGIN_URL = "http://127.0.0.1:5001/front_end/login/login.html";
+const ERROR_COLOR = "#c0392b";
+const PAGE_TITLES = {
+  dashboard: "Dashboard",
+  instagram: "Instagram",
+  whatsapp: "Whatsapp",
+  gmail: "Gmail",
+  youtube: "Youtube",
+  pinterest: "Pinterest",
+  x: "X",
+  threads: "Threads",
+  post: "Post",
+  campaign: "Campaign",
+  settings: "Settings",
+  complaint: "Issue",
+};
+const ACCOUNT_KEYS = ["instagram", "gmail", "whatsapp", "drive", "x", "threads", "youtube", "pinterest"];
+const SETTINGS_CATEGORIES = [
+  { key: "threads", label: "Threads" },
+  { key: "pinterest", label: "Pinterest" },
+  { key: "x", label: "X" },
+  { key: "youtube", label: "Youtube" },
+  { key: "instagram", label: "Instagram" },
+  { key: "whatsapp", label: "WhatsApp" },
+  { key: "gmail", label: "Gmail" },
+  { key: "drive", label: "Drive" },
+];
+const POST_TYPES = {
+  instagram: [
+    { value: "video", label: "Video" },
+    { value: "photo", label: "Photo" },
+    { value: "carousel", label: "Carousel" },
+    { value: "story", label: "Story" },
+    { value: "reel", label: "Reel" },
+  ],
+  youtube: [{ value: "short", label: "Short" }],
+  x: [
+    { value: "text", label: "Text Post" },
+    { value: "photo", label: "Photo" },
+    { value: "video", label: "Video" },
+  ],
+  pinterest: [
+    { value: "image", label: "Image Pin" },
+    { value: "video", label: "Video Pin" },
+    { value: "carousel", label: "Carousel Pin" },
+  ],
+  threads: [
+    { value: "text", label: "Text Post" },
+    { value: "image", label: "Image Post" },
+    { value: "video", label: "Video Post" },
+    { value: "carousel", label: "Carousel" },
+  ],
+};
+
+const PLATFORMS = {
+  instagram: {
+    label: "Instagram",
+    containerId: "hello_insta",
+    endpoint: "/instagram/posts",
+    render: (res) => loadPostCards(res, { containerId: "hello_insta", cardClass: "insta-card", toggleEndpoint: "/posts/watch" }),
+  },
+  gmail: {
+    label: "Gmail",
+    containerId: "hello_gmail",
+    endpoint: "/gmail/sent",
+    render: (res) => loadMessageCards(res, { containerId: "hello_gmail", cardClass: "gmail-card", toField: "to" }),
+  },
+  whatsapp: {
+    label: "WhatsApp",
+    containerId: "hello_whatsapp",
+    endpoint: "/whatsapp/sent",
+    render: (res) => loadMessageCards(res, { containerId: "hello_whatsapp", cardClass: "whatsapp-card", toField: "recipient" }),
+  },
+  x: {
+    label: "X",
+    containerId: "hello_x",
+    endpoint: "/x/posts",
+    render: (res) => loadPostCards(res, { containerId: "hello_x", cardClass: "x-card" }),
+  },
+  pinterest: {
+    label: "Pinterest",
+    containerId: "hello_pinterest",
+    endpoint: "/pinterest/pins",
+    render: (res) => loadPostCards(res, { containerId: "hello_pinterest", cardClass: "pinterest-card" }),
+  },
+  youtube: {
+    label: "YouTube",
+    containerId: "hello_youtube",
+    endpoint: "/youtube/shorts",
+    render: (res) => loadPostCards(res, { containerId: "hello_youtube", cardClass: "youtube-card" }),
+  },
+  threads: {
+    label: "Threads",
+    containerId: "hello_threads",
+    endpoint: "/threads/posts",
+    render: (res) => loadPostCards(res, { containerId: "hello_threads", cardClass: "threads-card" }),
+  },
+};
+let accountsReady = Promise.resolve();
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  if (!match) return null;
   try {
-    const response = await fetch("http://127.0.0.1:5000/check", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token }), });
-    if (!response.ok) {
-      if (response.status === 401) { console.error("Token invalid or expired"); }
-      document.cookie = 'access_token=;';
-      window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
-      return false;
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+}
+
+function clearAuthCookie() {
+  document.cookie = "authToken=; Max-Age=0; path=/";
+  document.cookie = "access_token=; Max-Age=0; path=/";
+}
+
+function redirectToLogin() {
+  window.location.href = LOGIN_URL;
+  return false;
+}
+async function apiPost(path, payload = {}, { query, ensure = true, withToken = true } = {}) {
+  if (ensure && !(await ensureAuthToken())) return null;
+  const token = withToken ? getCookie("authToken") : null;
+  const headers = { "Request-ID": crypto.randomUUID() };
+  let body;
+  if (payload instanceof FormData) {
+    if (token && !payload.has("token")) payload.append("token", token);
+    body = payload;
+  } else {
+    headers["Content-Type"] = "application/json";
+    body = JSON.stringify(withToken ? { token, ...payload } : payload);
+  }
+  const qs = query ? `?${new URLSearchParams(query)}` : "";
+  return fetch(`${API_BASE}${path}${qs}`, {
+    method: "POST",
+    credentials: "include",
+    headers,
+    body,
+  });
+}
+async function ensureAuthToken() {
+  if (getCookie("authToken")) return true;
+  try {
+    const res = await apiPost("/refresh", {}, { ensure: false, withToken: false });
+    if (res.ok) return true;
+    console.error("Refresh failed:", res.status);
+  } catch (err) {
+    console.error("Refresh request failed:", err);
+  }
+  return redirectToLogin();
+}
+async function getUserDetails() {
+  if (!(await ensureAuthToken())) return false;
+  if (!getCookie("authToken")) return redirectToLogin(); 
+ try {
+    const res = await apiPost("/check", {}, { ensure: false });
+    if (!res.ok) {
+      if (res.status === 401) console.error("Token invalid or expired");
+      clearAuthCookie();
+      return redirectToLogin();
     }
-    const data = await response.json();
-    if (data.status) { return true; }
-    window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
-    return false;
+    const data = await res.json();
+    return data.status ? true : redirectToLogin();
   } catch (err) {
     console.error("Request failed:", err);
-    window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
+    return redirectToLogin();
+  }
+}
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function showError(container, message) {
+  const p = el("p", "", message);
+  p.style.color = ERROR_COLOR;
+  container.replaceChildren(p);
+}
+
+function accountId(a) {
+  return a && typeof a === "object" ? (a.id ?? a.account_id) : a;
+}
+
+function accountLabel(a) {
+  return a && typeof a === "object" ? (a.username || a.name || a.id) : a;
+}
+async function loginRequest(loginRoute, label = "Account") {
+  try {
+    const res = await apiPost(loginRoute);
+    if (!res) return;
+    if (res.redirected) {
+      window.location.href = res.url;
+      return;
+    }
+    if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
+    const isJson = (res.headers.get("content-type") || "").includes("application/json");
+    const data = isJson ? await res.json() : null;
+    const url = data?.redirect_url || data?.auth_url || data?.url;
+    if (url) {
+      window.location.href = url;
+      return;
+    }
+    console.log(data ?? (await res.text()));
+  } catch (err) {
+    console.error(`${label} login error:`, err);
+  }
+}
+
+function buildConnectButton({ label, loginRoute, text, extraClass = "" }) {
+  const button = el("button", `connect-btn ${extraClass}`.trim(), text);
+  button.type = "button";
+  button.addEventListener("click", async () => {
+    button.disabled = true; // prevent double-clicks
+    try {
+      await loginRequest(loginRoute, label);
+    } finally {
+      button.disabled = false;
+    }
+  });
+  return button;
+}
+
+function buildConnectBox(label, loginRoute) {
+  const box = el("div", "ig-connect-box");
+  box.append(
+    el("p", "", `No ${label} account connected`),
+    buildConnectButton({ label, loginRoute, text: `Connect ${label}` })
+  );
+  return box;
+}
+
+function showConnectPrompt({ containerId, label, loginRoute }) {
+  const container = document.getElementById(containerId);
+  if (!container) {
+    console.error("Container not found:", containerId);
+    return;
+  }
+  container.replaceChildren(buildConnectBox(label, loginRoute));
+}
+function makeConnectionChecker({ storageKey, endpoint }) {
+  return async function () {
+    await accountsReady;
+    const accountIdValue = localStorage.getItem(storageKey);
+    if (!accountIdValue) return null; 
+   try {
+      const res = await apiPost(endpoint, {}, { query: { account_id: accountIdValue } });
+      if (!res) return false;
+      if (!res.ok) {
+        console.error(`${storageKey} check failed:`, res.status);
+        return false;
+      }
+      return res;
+    } catch (err) {
+      console.error(`Network error checking ${storageKey}:`, err);
+      return false;
+    }
+  };
+}
+function buildToggleRow(post, toggleEndpoint) {
+  const row = el("div", "post-toggle-row");
+  const switchLabel = el("label", "post-toggle");
+  const input = el("input", "post-toggle-input");
+  input.type = "checkbox";
+  input.dataset.postId = post.id;
+  switchLabel.append(input, el("span", "post-toggle-slider"));
+  const status = el("span", "post-toggle-status", "Off");
+  row.append(el("span", "post-toggle-title", "Analysis"), switchLabel, status); 
+ input.addEventListener("change", async () => {
+    status.textContent = input.checked ? "On" : "Off";
+    if (!input.checked) return; 
+   input.disabled = true;
+    try {
+      const res = await apiPost(toggleEndpoint, { post_id: post.id });
+      if (!res?.ok) throw new Error(`Toggle failed: ${res ? res.status : "not authenticated"}`);
+    } catch (err) {
+      console.error("Toggle request failed:", err);
+      input.checked = false;
+      status.textContent = "Off";
+    } finally {
+      input.disabled = false;
+    }
+  }); 
+ return row;
+}
+
+function buildSocialCard(post, { cardClass, toggleEndpoint }) {
+  const card = el("div", cardClass); 
+ const src = post.thumbnail_url || post.media_url;
+  if (src) {
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = post.caption ? post.caption.slice(0, 60) : "Post";
+    img.loading = "lazy";
+    card.appendChild(img);
+  } 
+ const body = el("div", "body");
+  body.appendChild(el("p", "caption", post.caption || "")); 
+ const stats = el("div", "stats");
+  [["♥", post.like_count], ["💬", post.comments_count]].forEach(([icon, count]) => {
+    const stat = el("span");
+    stat.append(el("span", "label", icon), ` ${count ?? 0}`);
+    stats.appendChild(stat);
+  });
+  body.appendChild(stats);
+  if (toggleEndpoint) body.appendChild(buildToggleRow(post, toggleEndpoint));
+  card.appendChild(body);
+  return card;
+}
+
+function buildMessageCard(msg, { cardClass, toField }) {
+  const card = el("div", cardClass); 
+ const header = el("div", "header");
+  header.append(
+    el("span", "to", `To: ${msg[toField] || "Unknown"}`),
+    el("span", "date", msg.sent_at ? new Date(msg.sent_at).toLocaleString() : "")
+  ); 
+ const bodyText = el(
+    "p",
+    msg.subject !== undefined ? "subject" : "body",
+    msg.subject || msg.text || "(no content)"
+  ); 
+ const stats = el("div", "stats");
+  const status = el("span");
+  status.append(el("span", "label", "Status:"), ` ${msg.status || "sent"}`);
+  stats.appendChild(status); 
+ card.append(header, bodyText);
+  if (msg.snippet) card.appendChild(el("p", "snippet", msg.snippet));
+  card.appendChild(stats);
+  return card;
+}
+
+async function loadCards(res, { containerId, loadingText, emptyText, listKey, build }) {
+  const container = document.getElementById(containerId);
+  if (!container) {
+    console.error("Container not found:", containerId);
+    return;
+  }
+  container.replaceChildren(el("p", "", loadingText)); 
+ try {
+    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+    const data = await res.json();
+    const items = data[listKey] || [];
+    if (items.length === 0) {
+      container.replaceChildren(el("p", "", emptyText));
+      return;
+    }
+    container.replaceChildren(...items.map(build));
+  } catch (err) {
+    showError(container, `Failed to load: ${err.message}`);
+    console.error(err);
+  }
+}
+
+const loadPostCards = (res, opts) =>
+  loadCards(res, {
+    containerId: opts.containerId,
+    loadingText: "Loading posts…",
+    emptyText: "No posts found.",
+    listKey: "posts",
+    build: (post) => buildSocialCard(post, opts),
+  });
+
+const loadMessageCards = (res, opts) =>
+  loadCards(res, {
+    containerId: opts.containerId,
+    loadingText: "Loading messages…",
+    emptyText: "No sent messages found.",
+    listKey: "messages",
+    build: (msg) => buildMessageCard(msg, opts),
+  });
+
+function syncAccountIdsToStorage(data) {
+  ACCOUNT_KEYS.forEach((key) => {
+    const storageKey = `${key}_account_id`;
+    const accounts = data[key];
+    const id = Array.isArray(accounts) && accounts.length ? accountId(accounts[0]) : null;
+    if (id !== undefined && id !== null) {
+      localStorage.setItem(storageKey, id);
+    } else {
+      localStorage.removeItem(storageKey);
+    }
+  });
+}
+
+async function fetchAccounts() {
+  try {
+    const res = await apiPost("/vrify");
+    if (!res?.ok) {
+      console.error("fetchAccounts failed:", res?.status);
+      return {};
+    }
+    const json = await res.json();
+    const data = json.data || {};
+    syncAccountIdsToStorage(data);
+    return data;
+  } catch (err) {
+    console.error("Network error fetching accounts:", err);
+    return {};
+  }
+}
+
+async function checkSettingsConnection() {
+  try {
+    const res = await apiPost("/vrify");
+    if (!res) return false;
+    if (res.status === 401) return redirectToLogin();
+    if (!res.ok) {
+      console.error("Settings check failed:", res.status);
+      return false;
+    }
+    return res;
+  } catch (err) {
+    console.error("Network error checking settings:", err);
     return false;
   }
 }
 
-async function ensureAuthToken() {
-  const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
-  if (token) return true;
-  try {
-    const response = await fetch("http://127.0.0.1:5000/refresh", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() },
-      body: JSON.stringify({ token: token })
-    });
-    if (response.status === 200) {
-      return true;
-    }
-    if (response.status === 400) {
-      window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
-      return false;
-    }
-    console.error("Refresh failed:", response.status);
-    window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
-    return false;
-  } catch (err) {
-    console.error("Refresh request failed:", err);
-    window.location.href = "http://127.0.0.1:5001/front_end/login/login.html";
-    return false;
+async function loadSettingsAccounts(res) {
+  const container = document.getElementById("settings-accounts");
+  if (!container) {
+    console.error("Settings container not found");
+    return;
   }
+  container.replaceChildren(el("p", "", "Loading accounts…")); 
+ try {
+    const body = await res.json();
+    if (!body.status) throw new Error(body.reason || "Failed to load accounts");
+    const data = body.data || {}; 
+   const sections = SETTINGS_CATEGORIES.map(({ key, label }) => {
+      const loginRoute = `/${key}/auth/login`;
+      const accounts = data[key] || []; 
+     const section = el("div", "settings-category");
+      section.appendChild(el("h3", "", label)); 
+     if (accounts.length === 0) {
+        section.appendChild(buildConnectBox(label, loginRoute));
+        return section;
+      } 
+     const list = el("div", "settings-account-list");
+      accounts.forEach((acct, i) => {
+        const row = el("label", "settings-account-row");
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.id = `${key}-${i}`;
+        input.name = key;
+        input.value = accountId(acct);
+        input.checked = true;
+        row.append(input, el("span", "", accountLabel(acct)));
+        list.appendChild(row);
+      });
+      list.appendChild(
+        buildConnectButton({ label, loginRoute, text: `+ Add another ${label} account`, extraClass: "add-more" })
+      );
+      section.appendChild(list);
+      return section;
+    }); 
+   container.replaceChildren(...sections);
+  } catch (err) {
+    showError(container, `Failed to load accounts: ${err.message}`);
+    console.error(err);
+  }
+}
+function fieldValue(id) {
+  return document.getElementById(id)?.value.trim() ?? "";
+}
+
+function splitList(raw) {
+  return raw ? raw.split(",").map((s) => s.trim()).filter(Boolean) : [];
+}
+
+function buildCampaignFormData(selectedFiles) {
+  const fd = new FormData();
+  fd.append("platform", fieldValue("platform-campaign"));
+  fd.append("campaign_name", fieldValue("captt-campaign-cname"));
+  fd.append("body", fieldValue("captt-campaign-text"));
+  fd.append("target", JSON.stringify(splitList(fieldValue("captt-campaign-to"))));
+  fd.append("name", JSON.stringify(splitList(fieldValue("captt-campaign-name"))));
+  selectedFiles.forEach((file) => fd.append("file", file));
+  return fd; // token is added by apiPost
+}
+
+function buildPostFormData(selectedFiles) {
+  const fd = new FormData();
+  fd.append("platform", fieldValue("platform-post"));
+  fd.append("post_type", fieldValue("postType"));
+  fd.append("account_id", fieldValue("accounts"));
+  // fd.append("caption", fieldValue("<your caption input id>"));
+  selectedFiles.forEach((file) => fd.append("file", file));
+  return fd;
+}
+
+function buildPostEndpoint() {
+  return `/${fieldValue("platform-post")}/upload/${fieldValue("postType")}`;
+}
+
+function initDropzoneUploader({ dropZoneId, fileInputId, formId, fileListId, textId, endpoint, buildFormData, successMessage }) {
+  const dropZone = document.getElementById(dropZoneId);
+  const fileInput = document.getElementById(fileInputId);
+  const form = document.getElementById(formId);
+  const fileListEl = document.getElementById(fileListId);
+  const textForFile = document.getElementById(textId); 
+ if (!dropZone || !fileInput || !form || !fileListEl || !textForFile) {
+    console.warn("Uploader init skipped, missing element for:", dropZoneId);
+    return;
+  } 
+ let selectedFiles = []; 
+ function syncInputFiles() {
+    const dataTransfer = new DataTransfer();
+    selectedFiles.forEach((file) => dataTransfer.items.add(file));
+    fileInput.files = dataTransfer.files;
+  } 
+ function updateBoxText() {
+    textForFile.textContent = selectedFiles.length
+      ? `${selectedFiles.length} file(s) selected`
+      : "Drag & drop media for the upload";
+  } 
+ function renderFileList() {
+    fileListEl.replaceChildren(
+      ...selectedFiles.map((file, index) => {
+        const li = document.createElement("li");
+        const removeBtn = el("button", "", "✕");
+        removeBtn.type = "button";
+        removeBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectedFiles.splice(index, 1);
+          refresh();
+        });
+        li.append(el("span", "", `${index + 1}. ${file.name} (${(file.size / 1024).toFixed(1)} KB)`), removeBtn);
+        return li;
+      })
+    );
+  } 
+ function refresh() {
+    syncInputFiles();
+    renderFileList();
+    updateBoxText();
+  } 
+ function addFiles(newFiles) {
+    Array.from(newFiles).forEach((file) => {
+      const exists = selectedFiles.some((f) => f.name === file.name && f.size === file.size);
+      if (!exists) selectedFiles.push(file);
+    });
+    refresh();
+  } 
+ dropZone.addEventListener("click", (e) => {
+    if (e.target.closest(`#${fileListId}`)) return;
+    fileInput.click();
+  });
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("dragover");
+  });
+  dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+    addFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener("change", () => addFiles(fileInput.files)); 
+ form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+      const path = typeof endpoint === "function" ? endpoint() : endpoint;
+      const res = await apiPost(path, buildFormData(selectedFiles));
+      if (!res) return;
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) alert(`${successMessage}: ${data.count ?? 0} recipient(s) processed`);
+      else alert("Error: " + (data.error || "unknown error"));
+    } catch (err) {
+      alert("Upload failed: " + err.message);
+    }
+  });
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const isAuthed = await getUserDetails();
-  if (!isAuthed) return;
-  const navItems = document.querySelectorAll(".nav-item[data-target]");
+  if (!(await getUserDetails())) return; 
+ const navItems = document.querySelectorAll(".nav-item[data-target]");
   const pages = document.querySelectorAll(".page");
-  const pageTitle = document.getElementById("page-title");
-  const titles = {
-    dashboard: "Dashboard",
-    instagram: "Instagram",
-    whatsapp: "Whatsapp",
-    gmail: "Gmail",
-    youtube: "Youtube",
-    pinterest: "Pinterest",
-    x: "X",
-    threads: "Threads",
-    post: "Post",
-    campaign: "Campaign",
-    settings: "Settings",
-    complaint: "Issue"
-  };
-
-  function showPage(target) {
-    pages.forEach((page) => { page.classList.toggle("active", page.id === `page-${target}`); });
-    navItems.forEach((item) => { item.classList.toggle("active", item.dataset.target === target); });
-    if (pageTitle && titles[target]) { pageTitle.textContent = titles[target]; }
+  const pageTitle = document.getElementById("page-title"); 
+ function showPage(target) {
+    pages.forEach((page) => page.classList.toggle("active", page.id === `page-${target}`));
+    navItems.forEach((item) => item.classList.toggle("active", item.dataset.target === target));
+    if (pageTitle && PAGE_TITLES[target]) pageTitle.textContent = PAGE_TITLES[target];
     history.replaceState(null, "", `#${target}`);
-  }
-  function makeConnectionChecker({ storageKey, endpoint, loginRoute }) {
-    return async function () {
-      const authOk = await ensureAuthToken();
-      if (!authOk) return false;
-      const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
-      const accountId = localStorage.getItem(storageKey);
-      if (!accountId) return null;
-      try {
-        const params = new URLSearchParams({ account_id: accountId });
-        const response = await fetch(`${endpoint}?${params}`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token: token }) });
-        if (response.status === 400) { window.location.href = loginRoute; return false; }
-        if (!response.ok) { console.error(`${storageKey} check failed:`, response.status); return false; }
-        return response;
-      } catch (err) {
-        console.error(`Network error checking ${storageKey}:`, err);
-        return false;
-      }
-    };
-  }
-  function showConnectPrompt({ containerId, label, loginRoute }) {
-    const container = document.getElementById(containerId);
-    if (!container) { console.error("Container not found:", containerId); return; }
-    container.innerHTML = `
-    <div class="ig-connect-box">
-      <p>No ${label} account connected</p>
-      <button class="connect-btn">Connect ${label}</button>
-    </div>`;
-    container.querySelector(".connect-btn").addEventListener("click", () => {
-      window.location.href = loginRoute;
-    });
-  }
-  function buildSocialCard(post, { cardClass, toggleEndpoint }) {
-    const card = document.createElement('div');
-    card.className = cardClass;
-    const img = document.createElement('img');
-    img.src = post.thumbnail_url || post.media_url;
-    img.alt = post.caption ? post.caption.slice(0, 60) : 'Post';
-    img.loading = 'lazy';
-    const body = document.createElement('div');
-    body.className = 'body';
-    const caption = document.createElement('p');
-    caption.className = 'caption';
-    caption.textContent = post.caption || '';
-    const stats = document.createElement('div');
-    stats.className = 'stats';
-    stats.innerHTML = ` 
-    <span><span class="label">♥</span> ${post.like_count ?? 0}</span>
-    <span><span class="label">💬</span> ${post.comments_count ?? 0}</span>`;
-    const toggleRow = document.createElement('div');
-    toggleRow.className = 'post-toggle-row';
-    toggleRow.innerHTML = `
-    <span class="post-toggle-title">Analysis</span>
-    <label class="post-toggle">
-      <input type="checkbox" class="post-toggle-input" data-post-id="${post.id}">
-      <span class="post-toggle-slider"></span>
-    </label>
-    <span class="post-toggle-status">Off</span>`;
-    const toggleInput = toggleRow.querySelector('.post-toggle-input');
-    const toggleStatus = toggleRow.querySelector('.post-toggle-status');
-    toggleInput.addEventListener('change', async (e) => {
-      toggleStatus.textContent = e.target.checked ? 'On' : 'Off';
-      if (!e.target.checked) return;
-      e.target.disabled = true;
-      try {
-        const response = await fetch(toggleEndpoint, {
-          method: 'POST', credentials: "include", headers: { 'Content-Type': 'application/json', "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ post_id: post.id })
-        });
-        if (!response.ok) throw new Error(`Toggle failed: ${response.status}`);
-      } catch (err) {
-        console.error('Toggle request failed:', err);
-        e.target.checked = false;
-        toggleStatus.textContent = 'Off';
-      } finally {
-        e.target.disabled = false;
-      }
-    });
-    body.appendChild(caption);
-    body.appendChild(stats);
-    body.appendChild(toggleRow);
-    card.appendChild(img);
-    card.appendChild(body);
-    return card;
-  }
-  async function loadPostCards(res, { containerId, cardClass, toggleEndpoint }) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '<p>Loading posts…</p>';
-    try {
-      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-      const data = await res.json();
-      const posts = data.posts || [];
-      container.innerHTML = '';
-      if (posts.length === 0) { container.innerHTML = '<p>No posts found.</p>'; return; }
-      posts.forEach(post => container.appendChild(buildSocialCard(post, { cardClass, toggleEndpoint })));
-    } catch (err) {
-      container.innerHTML = `<p style="color:#c0392b;">Failed to load posts: ${err.message}</p>`;
-      console.error(err);
-    }
-  }
-  function buildMessageCard(msg, { cardClass, toField }) {
-    const card = document.createElement('div');
-    card.className = cardClass;
-
-    const header = document.createElement('div');
-    header.className = 'header';
-    header.innerHTML = `
-    <span class="to">To: ${msg[toField] || 'Unknown'}</span>
-    <span class="date">${msg.sent_at ? new Date(msg.sent_at).toLocaleString() : ''}</span>`;
-
-    const bodyText = document.createElement('p');
-    bodyText.className = msg.subject !== undefined ? 'subject' : 'body';
-    bodyText.textContent = msg.subject || msg.text || '(no content)';
-
-    const stats = document.createElement('div');
-    stats.className = 'stats';
-    stats.innerHTML = `<span><span class="label">Status:</span> ${msg.status || 'sent'}</span>`;
-
-    card.appendChild(header);
-    card.appendChild(bodyText);
-    if (msg.snippet) {
-      const snippet = document.createElement('p');
-      snippet.className = 'snippet';
-      snippet.textContent = msg.snippet;
-      card.appendChild(snippet);
-    }
-    card.appendChild(stats);
-    return card;
-  }
-  async function loadMessageCards(res, { containerId, cardClass, toField }) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '<p>Loading messages…</p>';
-    try {
-      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-      const data = await res.json();
-      const messages = data.messages || [];
-      container.innerHTML = '';
-      if (messages.length === 0) { container.innerHTML = '<p>No sent messages found.</p>'; return; }
-      messages.forEach(msg => container.appendChild(buildMessageCard(msg, { cardClass, toField })));
-    } catch (err) {
-      container.innerHTML = `<p style="color:#c0392b;">Failed to load messages: ${err.message}</p>`;
-      console.error(err);
-    }
-  }
-  async function checkSettingsConnection() {
-    const authOk = await ensureAuthToken();
-    if (!authOk) return false;
-    const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/vrify`, {
-        method: "POST", credentials: "include", headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() }, body: JSON.stringify({ token: token })
-      });
-      if (response.status === 401) { window.location.href = "/login"; return false; }
-      if (!response.ok) { console.error("Settings check failed:", response.status); return false; }
-      return response;
-    } catch (error) {
-      console.error("Network error checking settings:", error);
-      return false;
-    }
-  }
-  async function loadSettingsAccounts(res) {
-    const container = document.getElementById("settings-accounts");
-    if (!container) { 
-      console.error("Settings container not found");
-      return;
-    }
-    container.innerHTML = "<p>Loading accounts…</p>";
-    try {
-      const body = await res.json();
-      if (!body.status) throw new Error(body.reason || "Failed to load accounts");
-      const data = body.data;
-      const categories = {
-        threads: { label: "Threads", loginRoute: "/threads/auth/login" },
-        pinterest: { label: "Pinterest", loginRoute: "/pinterest/auth/login" },
-        x: { label: "X", loginRoute: "/x/auth/login" },
-        youtube: { label: "Youtube", loginRoute: "/youtube/auth/login" },
-        instagram: { label: "Instagram", loginRoute: "http://127.0.0.1:5000/instagram/auth/login" },
-        whatsapp: { label: "WhatsApp", loginRoute: "/whatsapp/auth/login" },
-        gmail: { label: "Gmail", loginRoute: "/gmail/auth/login" },
-        drive: { label: "Drive", loginRoute: "/drive/auth/login" },
-      };
-      container.innerHTML = "";
-      Object.entries(categories).forEach(([key, { label, loginRoute }]) => {
-        const values = data[key] || [];
-        const section = document.createElement("div");
-        section.className = "settings-category";
-        const heading = document.createElement("h3");
-        heading.textContent = label;
-        section.appendChild(heading);
-        if (values.length === 0) {
-          const empty = document.createElement("div");
-          empty.className = "ig-connect-box";
-          empty.innerHTML = `
-                    <p>No ${label} account connected</p>
-                    <button class="connect-btn" data-route="${loginRoute}">Connect ${label}</button>`;
-          section.appendChild(empty);
-        }
-        else {
-          const list = document.createElement("div");
-          list.className = "settings-account-list";
-          values.forEach((value, i) => {
-            const row = document.createElement("label");
-            row.className = "settings-account-row";
-            const checkboxId = `${key}-${i}`;
-            row.innerHTML = `
-                        <input type="checkbox" id="${checkboxId}" name="${key}" value="${value}" checked>
-                        <span>${value}</span>`;
-            list.appendChild(row);
-          });
-          const addMore = document.createElement("button");
-          addMore.className = "connect-btn add-more";
-          addMore.dataset.route = loginRoute;
-          addMore.textContent = `+ Add another ${label} account`;
-          list.appendChild(addMore);
-          section.appendChild(list);
-        }
-        container.appendChild(section);
-      });
-      container.querySelectorAll(".connect-btn").forEach((btn) => {
-        btn.addEventListener("click", () => { window.location.href = btn.dataset.route; });
-      });
-    }
-    catch (err) {
-      container.innerHTML = `<p style="color:#c0392b;">Failed to load accounts: ${err.message}</p>`;
-      console.error(err);
-    }
-  }
-  const checkInstagramConnection = makeConnectionChecker({ storageKey: "instagram_account_id", endpoint: "/instagram/posts", loginRoute: "/instagram/auth/login" });
-  const checkGmailConnection = makeConnectionChecker({ storageKey: "gmail_account_id", endpoint: "/gmail/sent", loginRoute: "/gmail/auth/login" });
-  const checkWhatsappConnection = makeConnectionChecker({ storageKey: "whatsapp_account_id", endpoint: "/whatsapp/sent", loginRoute: "/whatsapp/auth/login" });
-  const checkXConnection = makeConnectionChecker({ storageKey: "x_account_id", endpoint: "/x/posts", loginRoute: "/x/auth/login" });
-  const checkPinterestConnection = makeConnectionChecker({ storageKey: "pinterest_account_id", endpoint: "/pinterest/pins", loginRoute: "/pinterest/auth/login" });
-  const checkYoutubeConnection = makeConnectionChecker({ storageKey: "youtube_account_id", endpoint: "/youtube/shorts", loginRoute: "/youtube/auth/login" });
-  const checkThreadsConnection = makeConnectionChecker({ storageKey: "threads_account_id", endpoint: "/threads/posts", loginRoute: "/threads/auth/login" });
-
-  navItems.forEach((item) => {
+  } 
+ /* ---- Accounts + post form selects ---- */
+  const platformSelect = document.getElementById("platform-post");
+  const postTypeSelect = document.getElementById("postType");
+  const accountSelect = document.getElementById("accounts");
+  let accountsData = {}; 
+ function updatePostTypes() {
+    if (!platformSelect || !postTypeSelect) return;
+    const options = POST_TYPES[platformSelect.value] || [];
+    postTypeSelect.replaceChildren(
+      ...options.map((opt) => {
+        const o = el("option", "", opt.label);
+        o.value = opt.value;
+        return o;
+      })
+    );
+  } 
+ function updateAccountOptions() {
+    if (!platformSelect || !accountSelect) return;
+    const accounts = accountsData[platformSelect.value] || [];
+    accountSelect.replaceChildren(
+      ...accounts.map((acc) => {
+        const o = el("option", "", accountLabel(acc));
+        o.value = accountId(acc);
+        return o;
+      })
+    );
+  } 
+ accountsReady = fetchAccounts().then((data) => {
+    accountsData = data;
+    updateAccountOptions();
+  });
+  updatePostTypes();
+  platformSelect?.addEventListener("change", () => {
+    updatePostTypes();
+    updateAccountOptions();
+  }); 
+ /* ---- Navigation ---- */
+  const checkers = Object.fromEntries(
+    Object.entries(PLATFORMS).map(([key, cfg]) => [
+      key,
+      makeConnectionChecker({ storageKey: `${key}_account_id`, endpoint: cfg.endpoint }),
+    ])
+  ); 
+ navItems.forEach((item) => {
     item.addEventListener("click", async () => {
-      const target = item.dataset.target;
-
-      if (target === "settings") {
+      const target = item.dataset.target; 
+     if (target === "settings") {
         const res = await checkSettingsConnection();
         if (!res) return;
         showPage(target);
         loadSettingsAccounts(res);
         return;
-      }
-      if (target === "instagram") {
-        const res = await checkInstagramConnection();
-        if (res === null) {
-          showPage(target);
-          showConnectPrompt({ containerId: "hello_insta", label: "Instagram", loginRoute: "/instagram/auth/login" });
-          return;
-        }
-        if (!res) return;
+      } 
+     const platform = PLATFORMS[target];
+      if (!platform) {
         showPage(target);
-        loadPostCards(res, { containerId: "hello_insta", cardClass: "insta-card", toggleEndpoint: "/posts/watch" });
+        return;
+      } 
+     const res = await checkers[target]();
+      if (res === null) {
+        showPage(target);
+        showConnectPrompt({
+          containerId: platform.containerId,
+          label: platform.label,
+          loginRoute: `/${target}/auth/login`,
+        });
         return;
       }
-      if (target === "gmail") {
-        const res = await checkGmailConnection();
-        if (res === null) {
-          showPage(target);
-          showConnectPrompt({ containerId: "hello_gmail", label: "Gmail", loginRoute: "/gmail/auth/login" });
-          return;
-        }
-        if (!res) return;
-        showPage(target);
-        loadMessageCards(res, { containerId: "hello_gmail", cardClass: "gmail-card", toField: "to" });
-        return;
-      }
-      if (target === "whatsapp") {
-        const res = await checkWhatsappConnection();
-        if (res === null) {
-          showPage(target);
-          showConnectPrompt({ containerId: "hello_whatsapp", label: "WhatsApp", loginRoute: "/whatsapp/auth/login" });
-          return;
-        }
-        if (!res) return;
-        showPage(target);
-        loadMessageCards(res, { containerId: "hello_whatsapp", cardClass: "whatsapp-card", toField: "recipient" });
-        return;
-      }
-      if (target === "x") {
-        const res = await checkXConnection();
-        if (res === null) {
-          showPage(target);
-          showConnectPrompt({ containerId: "hello_x", label: "X", loginRoute: "/x/auth/login" });
-          return;
-        }
-        if (!res) return;
-        showPage(target);
-        loadPostCards(res, { containerId: "hello_x", cardClass: "x-card" });
-        return;
-      }
-      if (target === "pinterest") {
-        const res = await checkPinterestConnection();
-        if (res === null) {
-          showPage(target);
-          showConnectPrompt({ containerId: "hello_pinterest", label: "Pinterest", loginRoute: "/pinterest/auth/login" });
-          return;
-        }
-        if (!res) return;
-        showPage(target);
-        loadPostCards(res, { containerId: "hello_pinterest", cardClass: "pinterest-card" });
-        return;
-      }
-      if (target === "youtube") {
-        const res = await checkYoutubeConnection();
-        if (res === null) {
-          showPage(target);
-          showConnectPrompt({ containerId: "hello_youtube", label: "YouTube", loginRoute: "/youtube/auth/login" });
-          return;
-        }
-        if (!res) return;
-        showPage(target);
-        loadPostCards(res, { containerId: "hello_youtube", cardClass: "youtube-card" });
-        return;
-      }
-      if (target === "threads") {
-        const res = await checkThreadsConnection();
-        if (res === null) {
-          showPage(target);
-          showConnectPrompt({ containerId: "hello_threads", label: "Threads", loginRoute: "/threads/auth/login" });
-          return;
-        }
-        if (!res) return;
-        showPage(target);
-        loadPostCards(res, { containerId: "hello_threads", cardClass: "threads-card" });
-        return;
-      }
+      if (!res) return;
       showPage(target);
+      platform.render(res);
     });
-  });
-  const initial = window.location.hash.replace("#", "");
-  if (initial && titles[initial]) { showPage(initial); }
-  const reloginBtn = document.getElementById("relogin-btn");
-  if (reloginBtn) { reloginBtn.addEventListener("click", () => showPage("dashboard")); }
-  const rangeSelectEl = document.getElementById("rangeSelect");
-  document.getElementById("logout").addEventListener("click", () => {
-    document.cookie = 'access_token=;';
-    window.location.href = "/login.html";
-  });
-  document.querySelectorAll(".multi-select").forEach((rangeSelectEl) => {
-    const trigger = rangeSelectEl.querySelector(".multi-select-trigger");
-    const optionsBox = rangeSelectEl.querySelector(".multi-select-options");
-    const label = rangeSelectEl.querySelector(".multi-select-label");
-    const checkboxes = rangeSelectEl.querySelectorAll('input[type="checkbox"]');
-    trigger.addEventListener("click", () => { optionsBox.classList.toggle("open"); });
-    document.addEventListener("click", (e) => { if (!rangeSelectEl.contains(e.target)) optionsBox.classList.remove("open"); });
+  }); 
+ const initial = window.location.hash.replace("#", "");
+  if (initial && PAGE_TITLES[initial]) showPage(initial); 
+ document.getElementById("relogin-btn")?.addEventListener("click", () => showPage("dashboard"));
+  document.querySelector(".support-btn")?.addEventListener("click", () => showPage("complaint")); 
+ document.getElementById("logout")?.addEventListener("click", () => {
+    clearAuthCookie();
+    redirectToLogin();
+  }); 
+ /* ---- Multi-select dropdowns ---- */
+  document.querySelectorAll(".multi-select").forEach((root) => {
+    const trigger = root.querySelector(".multi-select-trigger");
+    const optionsBox = root.querySelector(".multi-select-options");
+    const label = root.querySelector(".multi-select-label");
+    const checkboxes = root.querySelectorAll('input[type="checkbox"]'); 
+   trigger?.addEventListener("click", () => optionsBox?.classList.toggle("open"));
+    document.addEventListener("click", (e) => {
+      if (!root.contains(e.target)) optionsBox?.classList.remove("open");
+    });
     checkboxes.forEach((cb) => {
       cb.addEventListener("change", () => {
-        const selected = Array.from(checkboxes)
-          .filter((c) => c.checked)
-          .map((c) => c.value);
-        label.textContent = selected.length ? selected.join(", ") : "Select metrics";
+        const selected = Array.from(checkboxes).filter((c) => c.checked).map((c) => c.value);
+        if (label) label.textContent = selected.length ? selected.join(", ") : "Select metrics";
       });
     });
-  });
-
-  function initDropzoneUploader({ dropZoneId, fileInputId, formId, fileListId, textId, endpoint, buildFormData }) {
-    const dropZone = document.getElementById(dropZoneId);
-    const fileInput = document.getElementById(fileInputId);
-    const form = document.getElementById(formId);
-    const fileListEl = document.getElementById(fileListId);
-    const textForFile = document.getElementById(textId);
-    if (!dropZone || !fileInput || !form || !fileListEl || !textForFile) {
-      console.warn('Uploader init skipped, missing element for:', dropZoneId);
-      return;
-    }
-    let selectedFiles = [];
-    function syncInputFiles() {
-      const dataTransfer = new DataTransfer();
-      selectedFiles.forEach(file => dataTransfer.items.add(file));
-      fileInput.files = dataTransfer.files;
-    }
-    function renderFileList() {
-      fileListEl.innerHTML = '';
-      selectedFiles.forEach((file, index) => {
-        const li = document.createElement('li');
-        const label = document.createElement('span');
-        label.textContent = `${index + 1}. ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-        const removeBtn = document.createElement('button');
-        removeBtn.textContent = '✕';
-        removeBtn.type = 'button';
-        removeBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          selectedFiles.splice(index, 1);
-          syncInputFiles();
-          renderFileList();
-          updateBoxText();
-        });
-        li.appendChild(label);
-        li.appendChild(removeBtn);
-        fileListEl.appendChild(li);
-      });
-    }
-    function updateBoxText() {
-      textForFile.textContent = selectedFiles.length
-        ? `${selectedFiles.length} file(s) selected`
-        : 'Drag & drop media for the upload';
-    }
-    function addFiles(newFiles) {
-      Array.from(newFiles).forEach(file => {
-        const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
-        if (!exists) selectedFiles.push(file);
-      });
-      syncInputFiles();
-      renderFileList();
-      updateBoxText();
-    }
-    dropZone.addEventListener('click', (e) => {
-      if (e.target.closest(`#${fileListId}`)) return;
-      fileInput.click();
-    });
-    dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
-    });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('dragover');
-      addFiles(e.dataTransfer.files);
-    });
-    fileInput.addEventListener('change', () => { addFiles(fileInput.files); });
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      // const authOk = await ensureAuthToken();
-      // if (!authOk) return false;
-      const formData = buildFormData
-        ? buildFormData(selectedFiles)
-        : (() => {
-          const fd = new FormData();
-          selectedFiles.forEach(file => fd.append('file', file));
-          return fd;
-        })();
-      const url = typeof endpoint === 'function' ? endpoint() : endpoint;
-
-      try {
-        const res = await fetch(url, {
-          method: 'POST', credentials: "include",
-          headers: { "Request-ID": crypto.randomUUID() },
-          body: formData
-        });
-        const data = await res.json();
-        if (res.ok) alert('Campaign sent: ' + (data.count ?? 0) + ' recipient(s) processed');
-        else alert('Error: ' + (data.error || 'unknown error'));
-      } catch (err) {
-        alert('Upload failed: ' + err.message);
-      }
-    });
-  }
-  function buildCampaignFormData(selectedFiles) {
-    const fd = new FormData();
-    const tokenMatch = document.cookie.match(/(?:^|; )authToken=([^;]*)/);
-    const token = tokenMatch ? tokenMatch[1] : null;
-    const platform = document.getElementById('platform-campaign').value;
-    const campaignName = document.getElementById('captt-campaign-cname').value.trim();
-    const body = document.getElementById('captt-campaign-text').value.trim();
-    const toRaw = document.getElementById('captt-campaign-to').value.trim();
-    const namesRaw = document.getElementById('captt-campaign-name').value.trim();
-    const target = toRaw ? toRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
-    const names = namesRaw ? namesRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
-    fd.append('token', token);
-    fd.append('platform', platform);
-    fd.append('campaign_name', campaignName);
-    fd.append('body', body);
-    fd.append('target', JSON.stringify(target));
-    fd.append('name', JSON.stringify(names));
-    selectedFiles.forEach(file => fd.append('file', file));
-    return fd;
-  }
-  function buildCampaignEndpoint() {
-    const platform = document.getElementById('platform-post').value;
-    const type = document.getElementById('postType').value;
-    return `${platform}/upload/${type}`;
-  }
-  initDropzoneUploader({ dropZoneId: 'dropZone-campaign', fileInputId: 'fileInput-campaign', formId: 'uploadForm-campaign', fileListId: 'fileList-campaign', textId: 'textforfile-campaign', endpoint: '/campaign', buildFormData: buildCampaignFormData });
-
-  initDropzoneUploader({ dropZoneId: 'dropZone-post', fileInputId: 'fileInput-post', formId: 'uploadForm-post', fileListId: 'fileList-post', textId: 'textforfile-post', endpoint: buildCampaignEndpoint, buildFormData: buildCampaignFormData });
-
-  const platformSelect = document.getElementById('platform-post');
-  const postTypeSelect = document.getElementById('postType');
-  const Idselect = document.getElementById('accounts');
-  const postTypes = {
-    instagram: [
-      { value: 'video', label: 'Video' },
-      { value: 'photo', label: 'Photo' },
-      { value: 'carousel', label: 'Carousel' },
-      { value: 'story', label: 'Story' },
-      { value: 'reel', label: 'Reel' },
-    ],
-    youtube: [
-      { value: 'short', label: 'Short' },
-    ],
-    x: [
-      { value: 'text', label: 'Text Post' },
-      { value: 'photo', label: 'Photo' },
-      { value: 'video', label: 'Video' },
-    ],
-    pinterest: [
-      { value: 'image', label: 'Image Pin' },
-      { value: 'video', label: 'Video Pin' },
-      { value: 'carousel', label: 'Carousel Pin' },
-    ],
-    threads: [
-      { value: 'text', label: 'Text Post' },
-      { value: 'image', label: 'Image Post' },
-      { value: 'video', label: 'Video Post' },
-      { value: 'carousel', label: 'Carousel' },
-    ],
-  };
-
-  let accountsData = { instagram: [], whatsapp: [], drive: [], gmail: [] };
-  function syncAccountIdsToStorage(data) {
-    const storageMap = {
-      instagram_account_id: data.instagram,
-      gmail_account_id: data.gmail,
-      whatsapp_account_id: data.whatsapp,
-      drive_account_id: data.drive,
-      x_account_id: data.x,
-      threads_account_id: data.threads,
-      youtube_account_id: data.youtube,
-      pinterest_account_id: data.pinterest,
-    };
-
-    Object.entries(storageMap).forEach(([storageKey, accounts]) => {
-      if (Array.isArray(accounts) && accounts.length > 0) {
-        const primary = accounts[0];
-        const id = primary?.id ?? primary?.account_id ?? primary;
-        if (id !== undefined && id !== null) {
-          localStorage.setItem(storageKey, id);
-        } else {
-          localStorage.removeItem(storageKey);
-        }
-      } else {
-        localStorage.removeItem(storageKey);
-      }
-    });
-  }
-  function updatePostTypes() {
-    const platform = platformSelect.value;
-    const options = postTypes[platform] || [];
-    postTypeSelect.innerHTML = '';
-    options.forEach(opt => {
-      const el = document.createElement('option');
-      el.value = opt.value;
-      el.textContent = opt.label;
-      postTypeSelect.appendChild(el);
-    });
-  }
-  function updateAccountOptions() {
-    const platform = platformSelect.value;
-    const accounts = accountsData[platform] || [];
-    Idselect.innerHTML = '';
-    accounts.forEach(acc => {
-      const el = document.createElement('option');
-      el.value = acc.id;
-      el.textContent = acc.username || acc.name;
-      Idselect.appendChild(el);
-    });
-  }
-  async function fetchAccounts() {
-    const authOk = await ensureAuthToken();
-    if (!authOk) return false;
-    const token = document.cookie.match(/(?:^|; )authToken=([^;]*)/)?.[1];
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/vrify`, {
-        method: "POST", credentials: "include",
-        headers: { "Content-Type": "application/json", "Request-ID": crypto.randomUUID() },
-        body: JSON.stringify({ token })
-      });
-      if (!response.ok) { console.error("fetchAccounts failed:", response.status); return; }
-      const json = await response.json();
-      const data = json.data || {};
-      accountsData.instagram = data.instagram || [];
-      accountsData.whatsapp = data.whatsapp || [];
-      accountsData.threads = data.threads || [];
-      accountsData.youtube = data.youtube || [];
-      accountsData.pinterest = data.pinterest || [];
-      accountsData.x = data.x || [];
-      accountsData.drive = data.drive || [];
-      accountsData.gmail = data.gmail || [];
-      syncAccountIdsToStorage(data);
-      updateAccountOptions();
-    } catch (err) {
-      console.error("Network error fetching accounts:", err);
-    }
-  }
-  fetchAccounts();
-  updatePostTypes();
-  platformSelect.addEventListener('change', () => {
-    updatePostTypes();
-    updateAccountOptions();
-  });
+  }); 
+ /* ---- Uploaders ---- */
+  initDropzoneUploader({
+    dropZoneId: "dropZone-campaign",
+    fileInputId: "fileInput-campaign",
+    formId: "uploadForm-campaign",
+    fileListId: "fileList-campaign",
+    textId: "textforfile-campaign",
+    endpoint: "/campaign",
+    buildFormData: buildCampaignFormData,
+    successMessage: "Campaign sent",
+  }); 
+ initDropzoneUploader({
+    dropZoneId: "dropZone-post",
+    fileInputId: "fileInput-post",
+    formId: "uploadForm-post",
+    fileListId: "fileList-post",
+    textId: "textforfile-post",
+    endpoint: buildPostEndpoint,
+    buildFormData: buildPostFormData,
+    successMessage: "Post submitted",
+  }); 
+ /* ---- Complaint form ---- */
   const complaintForm = document.getElementById("complaintForm");
-  const complaintStatus = document.getElementById("complaint-status");
-
-  complaintForm.addEventListener("submit", async (e) => {
+  const complaintStatus = document.getElementById("complaint-status"); 
+ complaintForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (!(await ensureAuthToken())) return;
     const bodyEl = document.getElementById("complaint-body");
     const text = bodyEl.value.trim();
-    if (!text) return;
-    complaintStatus.textContent = "Submitting…";
+    if (!text) return; 
+   complaintStatus.textContent = "Submitting…";
     try {
-      const res = await apifetch("http://127.0.0.1:5000/complaint", { body: JSON.stringify({ token: token, body: text }) });
+      const res = await apiPost("/complaint", { body: text });
+      if (!res) return;
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `Request failed: ${res.status}`);
       complaintStatus.textContent = "Thanks, your issue has been submitted.";
@@ -693,11 +724,4 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error(err);
     }
   });
-  document.querySelector(".support-btn").addEventListener("click", () => showPage("complaint"));
-})
-
-
-// add the username metrics from the plotform selection in post , ids will come from the api
-// make the args parameter go in the json ones
-
-// using the the cookies makes the xxs resistant but not to the csrf attacks  
+});
