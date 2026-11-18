@@ -1,5 +1,5 @@
 
-const API_BASE = "http://127.0.0.1:5000";
+const API_BASE = "https://concerning-rapidly-planning-wedding.trycloudflare.com";
 const LOGIN_URL = "http://127.0.0.1:5001/front_end/login/login.html";
 const ERROR_COLOR = "#c0392b";
 const PAGE_TITLES = {
@@ -30,7 +30,7 @@ const SETTINGS_CATEGORIES = [
 const POST_TYPES = {
   instagram: [
     { value: "video", label: "Video" },
-    { value: "photo", label: "Photo" },
+    { value: "photo", label: "Photo" }, 
     { value: "carousel", label: "Carousel" },
     { value: "story", label: "Story" },
     { value: "reel", label: "Reel" },
@@ -190,8 +190,8 @@ async function loginRequest(loginRoute, label = "Account") {
   try {
     const res = await apiPost(loginRoute);
     if (!res) return;
-    if (res.redirected) {
-      window.location.href = res.url;
+    if (res.status === 200 && res.auth_url) {
+      window.location.href = res.auth_url;
       return;
     }
     if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
@@ -221,7 +221,6 @@ function buildConnectButton({ label, loginRoute, text, extraClass = "" }) {
   });
   return button;
 }
-
 function buildConnectBox(label, loginRoute) {
   const box = el("div", "ig-connect-box");
   box.append(
