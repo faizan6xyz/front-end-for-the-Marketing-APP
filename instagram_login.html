@@ -1,12 +1,19 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Connect Instagram</title>
+<title>Instagram Posts</title>
+
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -15,19 +22,36 @@
     background: #0f1115;
     color: #e8e8ea;
     padding: 16px;
-  }
-  .card {
+}
+
+.card {
     width: 100%;
     max-width: 400px;
     background: #181b21;
     border: 1px solid #2a2e37;
     border-radius: 16px;
     padding: 32px 28px;
-  }
-  h1 { font-size: 22px; margin-bottom: 6px; }
-  p.sub { font-size: 14px; color: #9aa0ab; margin-bottom: 24px; }
-  label { display: block; font-size: 13px; color: #9aa0ab; margin-bottom: 6px; }
-  input {
+}
+
+h1 {
+    font-size: 22px;
+    margin-bottom: 6px;
+}
+
+p.sub {
+    font-size: 14px;
+    color: #9aa0ab;
+    margin-bottom: 24px;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    color: #9aa0ab;
+    margin-bottom: 6px;
+}
+
+input {
     width: 100%;
     padding: 11px 12px;
     background: #0f1115;
@@ -36,9 +60,14 @@
     color: inherit;
     font-size: 14px;
     margin-bottom: 18px;
-  }
-  input:focus { outline: none; border-color: #c13584; }
-  button {
+}
+
+input:focus {
+    outline: none;
+    border-color: #c13584;
+}
+
+button {
     width: 100%;
     padding: 12px;
     border: none;
@@ -49,72 +78,135 @@
     cursor: pointer;
     background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
     transition: opacity .15s;
-  }
-  button:disabled { opacity: .6; cursor: not-allowed; }
-  #msg { margin-top: 16px; font-size: 13px; min-height: 18px; }
-  #msg.error { color: #ff6b6b; }
-  #msg.ok { color: #6bd68a; }
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+#msg {
+    margin-top: 16px;
+    font-size: 13px;
+    min-height: 18px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+#msg.error {
+    color: #ff6b6b;
+}
+
+#msg.ok {
+    color: #6bd68a;
+}
+
 </style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>Connect Instagram</h1>
-    <p class="sub">Authorize your Instagram account to continue.</p>
 
-    <label for="token">Access token</label>
-    <input id="token" type="text" placeholder="Paste your app token" autocomplete="off">
+<div class="card">
 
-    <button id="btn">Connect Instagram</button>
+    <h1>Instagram Posts</h1>
+
+    <p class="sub">
+        Enter your Instagram username and authentication token.
+    </p>
+
+    <label for="username">Instagram Username</label>
+    <input
+        id="username"
+        type="text"
+        placeholder="Enter Instagram username"
+        autocomplete="off"
+    >
+
+    <label for="authToken">Auth Token</label>
+    <input
+        id="authToken"
+        type="password"
+        placeholder="Enter your auth token"
+        autocomplete="off"
+    >
+
+    <button id="btn">Get Instagram Posts</button>
+
     <div id="msg"></div>
-  </div>
+
+</div>
 
 <script>
-  const API_URL = "http://127.0.0.1:5000/instagram/auth/login";
 
-  const tokenInput = document.getElementById("token");
-  const btn = document.getElementById("btn");
-  const msg = document.getElementById("msg");
-  const params = new URLSearchParams(window.location.search);
-  tokenInput.value = params.get("token") || localStorage.getItem("app_token") || "";
-  function setMsg(text, type = "") {
+const API_URL =
+    "https://rental-background-painted-governmental.trycloudflare.com/instagram/posts/";
+const usernameInput = document.getElementById("username");
+const authTokenInput = document.getElementById("authToken");
+const btn = document.getElementById("btn");
+const msg = document.getElementById("msg");
+
+function setMsg(text, type = "") {
     msg.textContent = text;
     msg.className = type;
-  }
-  btn.addEventListener("click", async () => {
-    const token = tokenInput.value.trim();
-    if (!token) return setMsg("Please enter a token.", "error");
+}
+
+btn.addEventListener("click", async () => {
+
+    const username = usernameInput.value.trim();
+    const authToken = authTokenInput.value.trim();
+
+    if (!username) {
+        return setMsg("Please enter an Instagram username.", "error");
+    }
+
+    if (!authToken) {
+        return setMsg("Please enter your auth token.", "error");
+    }
 
     btn.disabled = true;
-    setMsg("Contacting server...");
+    setMsg("Fetching Instagram posts...");
 
     try {
-      localStorage.setItem("app_token", token);
 
-      const res = await fetch(API_URL, {
-        method: "POST",credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token })
-      });
+        const res = await fetch(API_URL, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json","Request-ID": crypto.randomUUID()
+            },
+            body: JSON.stringify({
+                username: username,
+                token: authToken
+            })
+        });
 
-      const data = await res.json();
-      console.log(data)
-      if (data.status === "failed") {
-        setMsg("Failed: " + (data.reason || "unknown error"), "error");
-        btn.disabled = false;
-        return;
-      }
-      if (data.auth_url) {
-        setMsg("Redirecting to Instagram...", "ok");
-        window.location.href = data.auth_url;
-      } else {
-        setMsg("No auth_url in response.", "error");
-        btn.disabled = false;
-      }
+        const data = await res.json();
+
+        console.log("API Response:", data);
+
+        if (!res.ok) {
+            throw new Error(
+                data.reason || `HTTP Error: ${res.status}`
+            );
+        }
+
+        setMsg("Successfully fetched Instagram posts!", "ok");
+
+        console.log("Instagram Posts:", data);
+
     } catch (err) {
-      setMsg("Request failed: " + err.message, "error");
-      btn.disabled = false;
+
+        console.error("Error:", err);
+
+        setMsg("Request failed: " + err.message, "error");
+
+    } finally {
+        btn.disabled = false;
     }
-  });
+
+});
+
 </script>
+
 </body>
 </html>
