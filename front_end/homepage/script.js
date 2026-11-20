@@ -1,5 +1,5 @@
 "use strict";
-const API_BASE = "https://influenced-leone-reproduce-advisory.trycloudflare.com".trim().replace(/\/+$/, "");
+const API_BASE = "https://expect-isa-possess-trial.trycloudflare.com/".trim().replace(/\/+$/, "");
 const LOGIN_URL = "http://127.0.0.1:5001/front_end/login/login.html";
 const ERROR_COLOR = "#c0392b";
 const PAGE_TITLES = {
@@ -265,7 +265,7 @@ function buildConnectBox(label, loginRoute) {
   return box;
 }
 
-function buildSocialCard(post, { cardClass }) {
+function buildSocialCard(post, { cardClass, onSaved } = {}) {
   const card = el("div", cardClass);
   const src = post.thumbnail_url || post.media_url;
   if (src) {
@@ -273,7 +273,7 @@ function buildSocialCard(post, { cardClass }) {
     img.src = src;
     img.alt = post.caption ? post.caption.slice(0, 60) : "Post";
     img.loading = "lazy";
-    card.appendChild(img); }
+    card.appendChild(img);}
   const stats = el("div", "stats");
   [["♥", post.like_count], ["💬", post.comments_count]].forEach(([icon, count]) => {
     const stat = el("span");
@@ -281,14 +281,78 @@ function buildSocialCard(post, { cardClass }) {
     stats.appendChild(stat); });
   const body = el("div", "body");
   body.append(el("p", "caption", post.caption || ""), stats);
-  if (post.workflow) {
-    const wf = el("div", "workflow");
-    [["Comment", post.workflow.comment], ["Message", post.workflow.message]].forEach(([label, text]) => {
-      if (!text) return;
-      const row = el("p", "workflow-row");
-      row.append(el("span", "label", `${label}: `), text);
-      wf.appendChild(row); });
-    body.appendChild(wf); }
+  const wf = el("div", "workflow");
+  const hasWorkflow = () =>
+    !!(post.workflow && (post.workflow.comment || post.workflow.message));
+  
+  function renderView() {
+    wf.replaceChildren();
+    if (hasWorkflow()) {
+      [["Comment", post.workflow.comment], ["Message", post.workflow.message]].forEach(
+        ([label, text]) => {
+          if (!text) return;
+          const row = el("p", "workflow-row");
+          row.append(el("span", "label", `${label}: `), text);
+          wf.appendChild(row); } ); }
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "workflow-btn";
+    btn.textContent = hasWorkflow() ? "Change workflow" : "Add workflow";
+    btn.addEventListener("click", renderForm);
+    wf.appendChild(btn);  }
+  
+  function makeField(labelText, value) {
+    const wrap = el("label", "workflow-field");
+    const input = document.createElement("input");
+    input.type = "text";
+    input.maxLength = 200;
+    input.placeholder = labelText;
+    input.value = value || "";
+    wrap.append(el("span", "label", labelText), input);
+    return { wrap, input }; }
+  
+  function renderForm() {
+    wf.replaceChildren();
+    const commentField = makeField("Comment", post.workflow?.comment);
+    const messageField = makeField("Message", post.workflow?.message);
+    const error = el("p", "workflow-error");
+    const done = document.createElement("button");
+    done.type = "button";
+    done.className = "workflow-btn";
+    done.textContent = "Done";
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "workflow-btn secondary";
+    cancel.textContent = "Cancel";
+    cancel.addEventListener("click", renderView);
+    done.addEventListener("click", async () => {
+      const comment = commentField.input.value.trim();
+      const message = messageField.input.value.trim();
+      if (!comment || !message) {
+        error.textContent = "Both comment and message are required.";
+        return; }
+      done.disabled = cancel.disabled = true;
+      done.textContent = "Saving...";
+      error.textContent = "";
+      try {
+        const res = await apiPost("/add_workflow", { id: post.id, comment,message,});
+        if (!res) throw new Error("Please log in again.");
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.status) {
+          throw new Error(data.reason || `Request failed (${res.status})`);}
+        post.workflow = { comment, message };
+        if (onSaved) onSaved(post);
+        renderView();
+      } catch (err) {
+        error.textContent = err.message;
+        done.disabled = cancel.disabled = false;
+        done.textContent = "Done"; }});
+    const actions = el("div", "workflow-actions");
+    actions.append(done, cancel);
+    wf.append(commentField.wrap, messageField.wrap, error, actions);
+    commentField.input.focus(); }
+  renderView();
+  body.appendChild(wf);
   card.appendChild(body);
   return card; }
 
